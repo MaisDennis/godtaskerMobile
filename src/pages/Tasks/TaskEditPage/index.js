@@ -27,8 +27,8 @@ export default function TaskEditPage({ navigation, route }) {
 
   function handleSubmit() {
     console.tron.log('Submit')
-    const parsedStartDate = parseISO(startDate);
-    const parsedDueDate = parseISO(dueDate);
+    // const parsedStartDate = parseISO(startDate);
+    // const parsedDueDate = parseISO(dueDate);
     api.put(`tasks/${data.id}`, {
       name: name,
       description: description,

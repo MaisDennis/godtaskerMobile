@@ -21,7 +21,7 @@ const formattedDate = fdate =>
     ? '-'
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
-export default function Task({ data, navigation }) {
+export default function Task({ data, navigation, position }) {
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const today = new Date();
@@ -78,6 +78,7 @@ export default function Task({ data, navigation }) {
         <TopHeaderView>
           <AlignView>
             <TitleView>
+              {/* <TitleText>{position}</TitleText> */}
               <TaskIcon name="clipboard" pastDueDate={pastDueDate()}/>
               <TitleText pastDueDate={pastDueDate()}>{data.name} </TitleText>
             </TitleView>

@@ -23,7 +23,8 @@ display: flex;
 flex-direction: row;
 align-items: center;
 justify-content: space-between;
-height: 84px;
+height: 66px; /* maintain in px. */
+/* height: 9%; */
 background-color: #222;
 `;
 
@@ -33,7 +34,8 @@ display: flex;
 flex-direction: row;
 justify-content: space-between;
 width: 100%;
-height: 50px;
+height: 5%;
+/* background-color: #f5f; */
 `;
 export const UpperTabView = styled.View`
 height: auto;

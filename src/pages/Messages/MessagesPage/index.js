@@ -60,8 +60,11 @@ export default function MessagesPage({ navigation, route }) {
           <SearchBarTextInput></SearchBarTextInput>
         </HeaderTabView>
         { tasks == ''
-          ? <Title3>Não há conversas em aberto.</Title3>
-          : <List
+          ? (
+            <Title3>Não há conversas em aberto.</Title3>
+          )
+          : (
+            <List
               data={tasks}
               keyExtractor={item => String(item.id)}
               renderItem={({ item }) => (
@@ -72,10 +75,8 @@ export default function MessagesPage({ navigation, route }) {
                 />
               )}
             />
+          )
         }
-
-
-
       </Container>
 
   );

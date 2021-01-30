@@ -11,8 +11,8 @@ import api from '~/services/api';
 export default function Messages({ data, navigation }) {
   const messageArrayLength = data.messages.length;
   const senderUserName = data.user.user_name;
-  const lastMessage = data.messages[messageArrayLength-1].message
-  const lastMessageTime = (data.messages[messageArrayLength-1].timestamp).slice(-4, )
+  const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
+  const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-4, ) : "";
   const [ whatever, setWhatever] = useState();
   // console.tron.log(data)
   let editedMessages = data.messages;

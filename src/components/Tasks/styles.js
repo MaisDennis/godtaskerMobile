@@ -19,24 +19,26 @@ export const TopHeaderView = styled.View`
   display: flex;
   flex-direction:row;
   width: 100%;
-  margin: 0 20px;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  background-color: #666;
+  background-color: #da321c;
+  /* background-color: #aa2a19; */
 `;
 export const HeaderView = styled.View`
   display: flex;
   flex-direction:row;
   align-items: center;
   width: 100%;
-  margin: 0px 20px;
+  margin: 0 auto;
   padding: 0 8px;
   border-radius: 24px;
   /* background-color: #f00; */
 `;
 export const MainHeaderView = styled.View`
   width: 90%;
+  /* padding: 0 8px; */
   /* background-color: #ee3; */
+
 `;
 export const AsideView = styled.View`
 display: flex;
@@ -54,16 +56,18 @@ color: #ccc;
 export const MiddleHeaderView = styled.View`
   display: flex;
   flex-direction:column;
+  justify-content: space-between;
   width: 100%;
-  padding: 0 4px;
   /* background-color: #f00; */
+  /* padding: 4px 0; */
 `;
 export const BottomHeaderView = styled.View`
   display: flex;
   flex-direction:row;
   align-items: center;
+  justify-content: space-around;
   width: auto;
-  padding: 0 4px;
+  padding: 0;
   /* background-color: #f44; */
 `;
 export const AlignBottomView = styled.View`
@@ -104,11 +108,11 @@ export const TitleText = styled.Text`
 export const OuterStatusView = styled.View`
   display: flex;
   flex-direction:row;
-  /* align-items: center; */
-  width: 90%;
+  align-items: center;
+  width: 70%;
   border-radius: 16px;
-  margin: 4px;
-  margin-bottom: 8px;
+  margin: 4px 0;
+  /* margin-bottom: 8px; */
   background-color: #F5F5F5;
 `;
 export const InnerStatusView = styled.View`
@@ -129,6 +133,7 @@ export const NameText = styled.Text`
   font-size: 16px;
   color: #222;
   /* margin: auto 4px; */
+  /* background-color: #4433ee; */
 `;
 export const DescriptionView = styled.View`
   display: flex;
@@ -191,6 +196,7 @@ background: #F5F5F5;
 export const StartTime = styled.Text`
   font-weight: bold;
   font-size: 14px;
+  /* background-color: #4433ee; */
 `;
 export const DueTimeView = styled.View`
   border-radius: 12px;

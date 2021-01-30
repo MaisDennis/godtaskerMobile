@@ -8,6 +8,7 @@ import Tasks from '~/pages/Tasks/TasksPage';
 import TasksFinished from '~/pages/Tasks/TasksFinishedPage';
 import Messages from '~/pages/Messages/MessagesPage';
 import Contacts from '~/pages/Contacts/ContactsPage';
+import Settings from '~/pages/Settings';
 // -----------------------------------------------------------------------------
 const Tab = createBottomTabNavigator();
 
@@ -69,7 +70,7 @@ export default function TabRoutes({ navigation }) {
         />
         <Tab.Screen
           name="Settings"
-          component={TasksFinished}
+          component={Settings}
           options={{ tabBarLabel: 'Config.' }}
         />
       </Tab.Navigator>

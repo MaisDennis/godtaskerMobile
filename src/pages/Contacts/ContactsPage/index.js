@@ -1,8 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { View, Text } from 'react-native'
-import { Container,   List,
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt';
+// -----------------------------------------------------------------------------
+import { Container, List, Header, AddIcon, SpaceView, HeaderTouchable,
   HeaderTabView, SearchBarTextInput, Title3 } from './styles'
+import HeaderView from '~/components/HeaderView'
 import Contacts from '~/components/Contacts'
 import api from '~/services/api';
 
@@ -12,6 +16,11 @@ export default function ContactsPage({ navigation, route }) {
   const [defaultContacts, setDefaultContacts] = useState([]);
   const [ queryInput, setQueryInput ] = useState([]);
   const [inputState, setInputState] = useState('');
+  const formattedDate = fdate =>
+  fdate == null
+    ? '-'
+    : format(fdate, "dd 'de' MMMM',' yyyy", { locale: pt });
+  const todayDate = formattedDate(new Date())
 
   useEffect(() => {
     loadContacts(userId);
@@ -38,14 +47,26 @@ export default function ContactsPage({ navigation, route }) {
     <Contacts key={index} data={item} navigation={navigation}/>
   );
 
+  function handleCreateContact() {
+    navigation.navigate('ContactCreate')
+  }
+
   return (
     <Container>
-    <HeaderTabView>
-          <SearchBarTextInput
-            value={inputState}
-            onChangeText={handleUpdateInput}
-          ></SearchBarTextInput>
-    </HeaderTabView>
+      <Header>
+        <SpaceView/>
+        <HeaderView data={todayDate}/>
+        <HeaderTouchable onPress={handleCreateContact}>
+          <AddIcon name='plus' size={28}/>
+        </HeaderTouchable>
+      </Header>
+      <HeaderTabView>
+        <SearchBarTextInput
+          value={inputState}
+          onChangeText={handleUpdateInput}
+        ></SearchBarTextInput>
+      </HeaderTabView>
+
       <List
         data={contacts}
         renderItem={renderItem}

@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native'
 import DatePicker from 'react-native-date-picker' // https://github.com/henninghall/react-native-date-picker
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Feather';
+import { TextInputMask as InputMask } from 'react-native-masked-text'
 
 export const Container = styled.SafeAreaView`
   display: flex;
@@ -166,4 +167,13 @@ export const DescriptionSpan = styled.Text`
   line-height: 20px;
   margin: 4px;
   color: #222;
+`;
+
+export const PhoneMask = styled(InputMask)`
+  color: #fff;
+  background: rgba(0,0,0,0.3);
+  margin: 4px auto;
+  width: 90%;
+  padding-left: 10px;
+  height: 46px;
 `;

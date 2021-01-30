@@ -3,7 +3,7 @@ import { View, Text, Image } from 'react-native'
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 
-import { HeaderContainer, HeaderText, HeaderImage } from './styles';
+import { AlignView, HeaderContainer, HeaderText, HeaderImage } from './styles';
 import godtaskerFont from '~/assets/detective/godtaskerFontPlainGreySmall.png';
 
 export default function HeaderView({data}) {
@@ -15,6 +15,7 @@ export default function HeaderView({data}) {
   const todayDate = formattedDate(new Date())
 
   return (
+    <AlignView>
     <HeaderContainer>
       <HeaderImage
         source={godtaskerFont}
@@ -22,5 +23,6 @@ export default function HeaderView({data}) {
       {/* <HeaderText>{todayDate}</HeaderText> */}
       <HeaderText>{data}</HeaderText>
     </HeaderContainer>
+    </AlignView>
   )
 }

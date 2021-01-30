@@ -14,6 +14,7 @@ import SignIn from './pages/SignIn';
 import TaskCreate from './pages/Tasks/TaskCreatePage';
 import TaskEdit from './pages/Tasks/TaskEditPage';
 import Confirm from './pages/Confirm';
+import ContactCreate from './pages/Contacts/ContactCreatePage';
 import ContactEdit from './pages/Contacts/ContactEditPage';
 import ContactTasks from './pages/Contacts/ContactTasksPage';
 
@@ -126,6 +127,29 @@ export default function App() {
             headerTitle: (props => (
               <>
                 <HeaderView data={'Finalizar a tarefa'}/>
+              </>
+            )),
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 24,
+            },
+            headerStyle: {
+              backgroundColor: '#222',
+              height: 90,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="ContactCreate"
+          component={ContactCreate}
+          options={{
+            // title: 'Editar a tarefa',
+            headerTitle: (props => (
+              <>
+                <HeaderView data={'Criar uma tarefa'}/>
               </>
             )),
             headerShown: true,
