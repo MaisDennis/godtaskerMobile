@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 // -----------------------------------------------------------------------------
@@ -15,11 +15,11 @@ import {
 export default function UserPage({ navigation }) {
   const [tasks, setTasks] = useState([]);
   const user_id = useSelector(state => state.user.profile.id);
+  const update_tasks = useSelector(state => state.task.tasks);
 
   useEffect(() => {
     loadTasks('', user_id);
-    // console.tron.log(tasks)
-  }, [ user_id ]);
+  }, [ update_tasks ]);
 
   const formattedDate = fdate =>
   fdate == null

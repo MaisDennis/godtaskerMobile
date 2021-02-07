@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { useDispatch } from 'react-redux';
 import { Container, Header, SpaceView,
   UserProfileView, UserImageView, UserImage, UserInfoView, UserText,
   UserAboutText,
@@ -8,7 +9,15 @@ import { Container, Header, SpaceView,
   AlignView
 } from './styles';
 import HeaderView from '~/components/HeaderView'
+import { signOut } from '../../store/modules/auth/actions';
+
 export default function SettingsPage() {
+  const dispatch = useDispatch();
+
+  function handleSignOut() {
+    dispatch(signOut())
+  }
+
   return (
     <Container>
       <Header>
@@ -76,6 +85,7 @@ export default function SettingsPage() {
           </AlignView>
         </SettingsItemView>
         <SubHrView/>
+
         <SettingsItemView>
           <SettignsLeftView>
           <AlignView>
@@ -87,7 +97,9 @@ export default function SettingsPage() {
           </SettignsLeftView>
           <AlignView>
             <SettingsRightView>
-              <NextIcon name="arrow-right" size={16}></NextIcon>
+              <TouchableOpacity onPress={handleSignOut}>
+                <NextIcon name="arrow-right" size={16}></NextIcon>
+              </TouchableOpacity>
             </SettingsRightView>
           </AlignView>
         </SettingsItemView>

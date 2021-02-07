@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux';
-import { View, Text, TouchableOpacity } from 'react-native'
-import CheckBox from '@react-native-community/checkbox';
-import Modal from 'react-native-modal';
+import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { TouchableOpacity } from 'react-native'
 // -----------------------------------------------------------------------------
-import { Container, FormScrollView, ItemWrapperView, LabelText,
-  Input, SubTaskView, SubTaskLabelText, SubTaskInput,
-  DateInput, DateOptionsView, DateOptions, Options, TitleText,
-  SubmitView, AlignView, SubmitIcon, AlignCheckBoxView, CheckBoxWrapper, CheckBoxView, DescriptionSpan,
-ModalButtonWrapper, PhoneMask
+import {
+  Container, FormScrollView, ItemWrapperView, LabelText,
+  Input,  SubmitView, AlignView, SubmitIcon,  PhoneMask
 } from './styles'
-import { parseISO, format } from 'date-fns';
+import { updateContacts } from '~/store/modules/contact/actions';
 import api from '~/services/api';
-// import { ptBR } from 'date-fns/locale';
 
-export default function ContactCreatePage() {
+export default function ContactCreatePage({ navigation }) {
   const userId = useSelector( state => state.user.profile.id)
+  const dispatch = useDispatch();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [workerName, setWorkerName] = useState("");
@@ -40,8 +37,8 @@ export default function ContactCreatePage() {
     } catch(error) {
       console.tron.log(error);
     }
-    setFirstName("");  setLastName(""); setWorkerName(""); setDepartment("")
-    setPhonenumber("");
+    dispatch(updateContacts(new Date()))
+    navigation.goBack()
   }
 
     // ---------------------------------------------------------------------------
@@ -53,6 +50,8 @@ export default function ContactCreatePage() {
           <Input
             value={firstName}
             onChangeText={setFirstName}
+            placeholder="Edson"
+            placeholderTextColor='#ccc'
           ></Input>
         </ItemWrapperView>
         <ItemWrapperView>
@@ -60,6 +59,8 @@ export default function ContactCreatePage() {
           <Input
             value={lastName}
             onChangeText={setLastName}
+            placeholder="Arantes de Nascimento"
+            placeholderTextColor='#ccc'
           ></Input>
         </ItemWrapperView>
         <ItemWrapperView>
@@ -67,6 +68,8 @@ export default function ContactCreatePage() {
           <Input
             value={workerName}
             onChangeText={setWorkerName}
+            placeholder="Pelé"
+            placeholderTextColor='#ccc'
           ></Input>
         </ItemWrapperView>
         <ItemWrapperView>
@@ -74,6 +77,8 @@ export default function ContactCreatePage() {
           <Input
             value={department}
             onChangeText={setDepartment}
+            placeholder="RH"
+            placeholderTextColor='#ccc'
           ></Input>
         </ItemWrapperView>
         <ItemWrapperView>
@@ -87,11 +92,12 @@ export default function ContactCreatePage() {
                 dddMask: '(99) ',
               }
             }
-            placeholder="Número de Whatsapp"
+            placeholder="(10)  91010-1010"
             returnKeyType="next"
             value={phonenumber}
             onChangeText={setPhonenumber}
             placeholderTextColor={'#999'}
+            placeholderTextColor='#ccc'
           />
         </ItemWrapperView>
         <TouchableOpacity onPress={handleSubmit}>

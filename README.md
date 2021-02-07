@@ -30,3 +30,10 @@ Color palette
   8.  #009966
   9.  #beef69 green cow
   10. #ffeaac yellow canary
+
+  11. #73c479
+  12. #73a6c4
+  13. #c49173
+  13. #c47773
+  14. #c473be
+  15. #c4c473

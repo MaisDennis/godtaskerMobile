@@ -4,7 +4,7 @@ export const AlignView = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 70%;
+  width: 100%;
   height: 100%;
   /* background: #F5F5F5; */
 `;
@@ -14,7 +14,7 @@ export const HeaderContainer = styled.View`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   /* background: #F5F5; */
 `;
 
@@ -32,7 +32,7 @@ width: 150px; */
 /* height: 60px;
 width: 44%; */
 height: 40px;
-/* width: 40%; */
+/* width: 125px; */
 width: 116px;
 /* background: #f00; */
 `;

@@ -28,6 +28,17 @@ export const ItemWrapperView = styled.View`
   align-items: flex-start;
   /* background-color: #ff0; */
 `;
+export const ModalView = styled.View`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: auto;
+  width: 100%;
+  margin-bottom: 12px;
+  /* padding: 12px; */
+  align-items: flex-start;
+  /* background-color: #ff0; */
+`;
 
 export const LabelText = styled.Text`
   font-size: 14px;

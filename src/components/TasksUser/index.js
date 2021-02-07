@@ -5,16 +5,14 @@ import { format, parseISO } from 'date-fns';
 import CheckBox from '@react-native-community/checkbox';
 // -----------------------------------------------------------------------------
 import pt from 'date-fns/locale/pt';
-// import Icon from 'react-native-vector-icons/Feather';
-import Button from '~/components/Button';
 import {
-  Container, TitleView, TaskIcon, TitleText, NameText, DescriptionView, DescriptionBorderView, DescriptionSpan,
-  DatesAndButtonView, TagView, Label, StartTimeView, StartTime, DueTimeView, DueTime,  ButtonView, HrLine, MessageButton,
+  Container, TitleView, TitleIcon, TaskIcon, TitleText, NameText,
+  DescriptionView, DescriptionBorderView, DescriptionSpan,
+  DatesAndButtonView, TagView, Label, StartTimeView, StartTime,
+  DueTimeView, DueTime,  ButtonView, HrLine,
   ConfirmButton, UserView,
   HeaderView, TopHeaderView, MiddleHeaderView, BottomHeaderView, AlignBottomView, AlignView,
   OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine,
-  Icon,
-
 } from './styles';
 import api from '~/services/api';
 // -----------------------------------------------------------------------------
@@ -26,21 +24,24 @@ const formattedDate = fdate =>
 export default function TaskUser({ data, navigation }) {
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
+  const [statusResult, setStatusResult] = useState(0);
   const today = new Date();
   const dueDate = parseISO(data.due_date);
+  const subTasks = data.sub_task_list
 
   useEffect (() => {
-    pastDueDate()
+    setStatusResult(handleStatus())
+  }, [ toggleCheckBox ])
 
-  }, [])
-
-  // function pastDueDate() {
-  //   let flag = false;
-  //   if (today > dueDate) {
-  //     flag = true;
-  //   }
-  //   return flag;
-  // }
+  function handleStatus() {
+    let weige = 0;
+    subTasks.map(s => {
+      if(s.complete === true) {
+        weige = weige + s.weige_percentage
+      }
+    })
+    return Math.round(weige);
+  }
 
   const pastDueDate = () => {
     let flag = false;
@@ -50,7 +51,7 @@ export default function TaskUser({ data, navigation }) {
 
   function handleToggleTask() {
     setToggleTask(!toggleTask)
-    console.tron.log(data)
+    // console.tron.log(data)
   }
 
   async function handletoggleCheckBox(value, position) {
@@ -73,8 +74,7 @@ export default function TaskUser({ data, navigation }) {
       start_date: data.start_date,
       due_date: data.due_date,
       worker: data.worker,
-     });
-    // console.tron.log('edit task')
+    });
   }
 
   function handleCancelTask() {
@@ -95,7 +95,7 @@ export default function TaskUser({ data, navigation }) {
         <TopHeaderView>
           <AlignView>
             <TitleView>
-              <TaskIcon name="clipboard" pastDueDate={pastDueDate()}/>
+              <TitleIcon name="clipboard" pastDueDate={pastDueDate()}/>
               <TitleText pastDueDate={pastDueDate()}>{data.name} </TitleText>
             </TitleView>
             <HrTitleLine/>
@@ -130,9 +130,12 @@ export default function TaskUser({ data, navigation }) {
             <AlignBottomView>
               <BottomHeaderView>
                 <OuterStatusView>
-                  <InnerStatusView></InnerStatusView>
+                  <InnerStatusView
+                    statusResult={statusResult}
+                    style={{ width: `${statusResult}%`}}
+                  ></InnerStatusView>
                 </OuterStatusView>
-                <StartTime>84%</StartTime>
+                <StartTime>{statusResult}%</StartTime>
               </BottomHeaderView>
             </AlignBottomView>
           </MainHeaderView>
@@ -174,7 +177,6 @@ export default function TaskUser({ data, navigation }) {
           </DescriptionView>
 
           <DatesAndButtonView>
-
             <ButtonView>
               <TouchableOpacity onPress={handleEditTask}>
                 <ConfirmButton pastDueDate={pastDueDate()}>
@@ -183,16 +185,16 @@ export default function TaskUser({ data, navigation }) {
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
-              <TouchableOpacity onPress={handleCancelTask}>
+              <TouchableOpacity onPress={handleScoreTask}>
                 <ConfirmButton pastDueDate={pastDueDate()}>
                   <TaskIcon name="meh" size={20} color="#fff" />
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
-              <TouchableOpacity onPress={handleScoreTask}>
+              <TouchableOpacity onPress={handleCancelTask}>
                 <ConfirmButton pastDueDate={pastDueDate()}>
-                  <TaskIcon name="check-circle" size={20} color="#fff" />
+                  <TaskIcon name="trash-2" size={20} color="#fff" />
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>

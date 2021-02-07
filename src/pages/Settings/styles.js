@@ -45,7 +45,6 @@ export const UserImage = styled.Image``;
 export const UserImageView = styled.View`
   height: 48px;
   width: 48px;
-  margin: 0;
   border-radius: 48px;
   border: 1px solid #ccc;
   /* background-color: #334455; */

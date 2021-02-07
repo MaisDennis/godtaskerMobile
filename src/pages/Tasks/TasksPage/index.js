@@ -16,6 +16,7 @@ import {
 export default function Dashboard({ navigation }) {
   const [tasks, setTasks] = useState([]);
   const workerName = useSelector(state => state.worker.profile.worker_name);
+  const update_tasks = useSelector(state => state.task.tasks);
   const formattedDate = fdate =>
   fdate == null
     ? '-'
@@ -25,7 +26,7 @@ export default function Dashboard({ navigation }) {
   useEffect(() => {
     loadTasks();
     // console.tron.log(tasks)
-  }, [ workerName ]);
+  }, [ update_tasks ]);
 
   async function loadTasks() {
     const response = await api.get(`tasks/unfinished`, {

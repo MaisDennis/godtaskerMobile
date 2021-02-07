@@ -1,16 +1,17 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import { format, parseISO } from 'date-fns';
 import CheckBox from '@react-native-community/checkbox';
+import Modal from 'react-native-modal';
 // -----------------------------------------------------------------------------
 import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/Feather';
 import Button from '~/components/Button';
 import {
   Container, TitleView, TaskIcon, TitleText, NameText, DescriptionView, DescriptionBorderView, DescriptionSpan,
-  DatesAndButtonView, TagView, Label, StartTimeView, StartTime, DueTimeView, DueTime,  ButtonView, HrLine, MessageButton,
-  ConfirmButton, UserView,
+  DatesAndButtonView, TagView, Label, StartTimeView, StartTime, DueTimeView, DueTime,  ButtonView, ButtonText, HrLine, MessageButton,
+  ConfirmButton, UserView, ModalView, ModalText,
   HeaderView, TopHeaderView, MiddleHeaderView, BottomHeaderView, AlignBottomView, AlignView,
   OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine
 } from './styles';
@@ -24,21 +25,28 @@ const formattedDate = fdate =>
 export default function Task({ data, navigation, position }) {
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
+  const [statusResult, setStatusResult] = useState(0);
+  const [toggleModal, setToggleModal] = useState(false);
   const today = new Date();
   const dueDate = parseISO(data.due_date);
-  console.log(pastDueDate)
+  const subTasks = data.sub_task_list
+  // console.log(pastDueDate)
+
   useEffect (() => {
-    pastDueDate()
+    // pastDueDate()
+    setStatusResult(handleStatus())
+console.log(statusResult)
+  }, [ toggleCheckBox ])
 
-  }, [])
-
-  // function pastDueDate() {
-  //   let flag = false;
-  //   if (today > dueDate) {
-  //     flag = true;
-  //   }
-  //   return flag;
-  // }
+  function handleStatus() {
+    let weige = 0;
+    subTasks.map(s => {
+      if(s.complete === true) {
+        weige = weige + s.weige_percentage
+      }
+    })
+    return Math.round(weige);
+  }
 
   const pastDueDate = () => {
     let flag = false;
@@ -71,9 +79,19 @@ export default function Task({ data, navigation, position }) {
   function handleConfirm() {
     navigation.navigate('Confirm', { task_id: data.id, taskName: data.name });
   }
+
+  function handleToggleModal() {
+    setToggleModal(!toggleModal)
+  }
+
+  function handleCancelTask() {
+    api.delete(`tasks/${data.id}`);
+  }
   // -----------------------------------------------------------------------------
   return (
-    <Container>
+    <Container
+      // toggleTask={toggleTask}
+    >
       <TouchableOpacity onPress={handleToggleTask}>
         <TopHeaderView>
           <AlignView>
@@ -114,9 +132,9 @@ export default function Task({ data, navigation, position }) {
             <AlignBottomView>
               <BottomHeaderView>
                 <OuterStatusView>
-                  <InnerStatusView></InnerStatusView>
+                  <InnerStatusView statusResult={statusResult}></InnerStatusView>
                 </OuterStatusView>
-                <StartTime>84%</StartTime>
+                <StartTime>{statusResult}%</StartTime>
               </BottomHeaderView>
             </AlignBottomView>
           </MainHeaderView>
@@ -158,7 +176,6 @@ export default function Task({ data, navigation, position }) {
           </DescriptionView>
 
           <DatesAndButtonView>
-
             <ButtonView>
               <TouchableOpacity onPress={handleMessage}>
                 <MessageButton>
@@ -174,6 +191,44 @@ export default function Task({ data, navigation, position }) {
               </TouchableOpacity>
             </ButtonView>
           </DatesAndButtonView>
+          <DatesAndButtonView>
+            <ButtonView>
+              <TouchableOpacity onPress={handleMessage}>
+                <MessageButton>
+                  <ButtonText>Aceitar</ButtonText>
+                </MessageButton>
+              </TouchableOpacity>
+            </ButtonView>
+            <ButtonView>
+              <TouchableOpacity onPress={handleToggleModal}>
+                <ConfirmButton pastDueDate={pastDueDate()}>
+                <ButtonText>Recusar</ButtonText>
+                </ConfirmButton>
+              </TouchableOpacity>
+            </ButtonView>
+          </DatesAndButtonView>
+          <Modal isVisible={toggleModal}>
+            <ModalView>
+              <ModalText>Tem certeza de que quer recusar a tarefa?</ModalText>
+              <DatesAndButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleCancelTask}>
+                    <MessageButton>
+                      <ButtonText>Sim</ButtonText>
+                    </MessageButton>
+                  </TouchableOpacity>
+                </ButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleToggleModal}>
+                    <ConfirmButton pastDueDate={pastDueDate()}>
+                    <ButtonText>Não</ButtonText>
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              </DatesAndButtonView>
+            </ModalView>
+
+          </Modal>
         </>
       )}
     </Container>

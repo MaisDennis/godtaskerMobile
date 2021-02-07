@@ -1,83 +1,101 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { View, Text, Image, Linking, TextInput, KeyboardAvoidingView } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
-import whatsappIcon from '../../../assets/whatsapplogo3.png';
-import Task from '~/components/Tasks';
 import Messages from '~/components/Messages';
 // -----------------------------------------------------------------------------
-import api from '~/services/api';
 import {
-  Container,
-  // Form, TitleView, TaskName, TaskDescriptionView,
-  // TaskDescriptionText, FormInput, SubmitButton, SubmitButtonText, WhatsappButton,
-  // WhatsappImage, WhatsappLabelText,
-  List,
-  HeaderTabView, SearchBarTextInput, Title3
+  Container, List, Header, AlignView,
+  SearchBarTextInput, Title3
 } from './styles';
-
-
+import api from '~/services/api';
 // -----------------------------------------------------------------------------
-export default function MessagesPage({ navigation, route }) {
-  const idRef = useRef();
-  const [content, setContent] = useState('');
-  const id = useSelector(state => state.worker.workerData.id);
-  const worker_name = useSelector( state => state.worker.workerData.name)
-  const userId = useSelector( state => state.worker.workerData.user_id)
-  // const { task_id, user_id, taskName, taskDescription, taskUserPhonenumber } = route.params;
+export default function MessagesPage({ navigation }) {
+  const user_id = useSelector(state => state.user.profile.id);
+  const workerName = useSelector(state => state.worker.profile.worker_name);
+  const messages_update = useSelector(state => state.message.profile);
 
   const [tasks, setTasks] = useState([]);
-  const workerName = useSelector(state => state.worker.profile.worker_name);
+  const [defaultTasks, setDefaultTasks] = useState();
+  const [inputState, setInputState] = useState();
+  const [resetTasks, setResetTasks] = useState('Hello');
 
-    useEffect(() => {
-    loadTasks();
-    // console.tron.log(tasks)
-  }, [ workerName ]);
+  useEffect(() => {
+    loadTasks('', user_id);
+  }, [ messages_update ]);
 
-  async function loadTasks() {
-    const response = await api.get(`tasks/unfinished`, {
+    async function loadTasks(workerNameFilter, userID) {
+    let response = []
+    const workerResponse = await api.get(`tasks/unfinished`, {
       params: { test: workerName },
     });
-    setTasks(response.data);
+    const userResponse = await api.get(`tasks/user/unfinished`, {
+      params: { workerNameFilter, userID }
+    })
+    response = [... workerResponse.data, ... userResponse.data]
+
+    // remove duplicates
+    const seen = new Set()
+    const filteredResponse = response.filter(a => {
+      const duplicate = seen.has(a.id)
+      seen.add(a.id)
+      return !duplicate
+    })
+    filteredResponse.sort(compare);
+    // console.tron.log(filteredResponse.length)
+
+    setTasks(filteredResponse);
+    setDefaultTasks(filteredResponse);
   }
 
-
-  async function handleMessage() {
-    await api.post(`messages/mobile/${task_id}`, {
-      worker_id: id,
-      worker_name,
-      user_id,
-      message_worker: content,
-    });
-    navigation.navigate('Tasks');
+  function compare(a, b) {
+    if (a.id > b.id) {
+      return 1;
+    }
+    if (a.id < b.id) {
+      return -1;
+    }
+    return 0;
   }
 
+  const handleUpdateInput = async (input) => {
+    const filteredList = defaultTasks.filter(t => {
+      let messageSearch = t.name + t.worker.worker_name
+      return messageSearch.toLowerCase().includes(input.toLowerCase())
+    })
+    setTasks(filteredList)
+    setInputState(input)
+  }
   // -----------------------------------------------------------------------------
   return (
-
-      <Container>
-        <HeaderTabView>
-          <SearchBarTextInput></SearchBarTextInput>
-        </HeaderTabView>
-        { tasks == ''
-          ? (
-            <Title3>Não há conversas em aberto.</Title3>
-          )
-          : (
-            <List
-              data={tasks}
-              keyExtractor={item => String(item.id)}
-              renderItem={({ item }) => (
-                <Messages
-                  key={item.id}
-                  data={item}
-                  navigation={navigation}
-                />
-              )}
-            />
-          )
-        }
-      </Container>
-
+    <Container>
+      <Header>
+        <AlignView>
+          <SearchBarTextInput
+            placeholder='Procurar mensagem'
+            onChangeText={handleUpdateInput}
+            value={inputState}
+          ></SearchBarTextInput>
+        </AlignView>
+      </Header>
+      { tasks == ''
+        ? (
+          <Title3>Não há conversas em aberto.</Title3>
+        )
+        : (
+          <List
+            data={tasks}
+            keyExtractor={item => String(item.id)}
+            renderItem={({ item, index }) => (
+              <Messages
+                key={index}
+                data={item}
+                navigation={navigation}
+                resetTasks={resetTasks}
+                setResetTasks={setResetTasks}
+              />
+            )}
+          />
+        )
+      }
+    </Container>
   );
 }

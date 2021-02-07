@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch, dispatch } from 'react-redux';
 import { View, Text, TouchableOpacity } from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
+import { parseISO, format } from 'date-fns';
 // -----------------------------------------------------------------------------
 import { Container, FormScrollView, ItemWrapperView, LabelText,
-  Input, SubTaskView, SubTaskLabelText, SubTaskInput,
-  DateInput, DateOptionsView, DateOptions, Options, TitleText,
+  Input,
+  // SubTaskView,
+  SubTaskLabelText, SubTaskInput, DateOptionsView, DateOptions, Options, TitleText,
   SubmitView, AlignView, SubmitIcon, AlignCheckBoxView, CheckBoxWrapper, CheckBoxView, DescriptionSpan,
-ModalButtonWrapper
+ModalButtonWrapper, ModalView
 } from './styles'
-import { parseISO, format } from 'date-fns';
+import { updateUserTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
 // import { ptBR } from 'date-fns/locale';
 
 
-export default function TaskCreatePage() {
+export default function TaskCreatePage({ navigation }) {
+  const dispatch = useDispatch();
   const userId = useSelector( state => state.user.profile.id)
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState();
   // const [subTaskList, setSubTaskList] = useState();
@@ -29,13 +33,12 @@ export default function TaskCreatePage() {
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const [toggleModal, setToggleModal] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+
   let editedWorkers = [];
 
   const taskAttributesArray = [ "baixa", "média", "alta", "" ]
   useEffect(() => {
     loadContacts(userId);
-    // console.tron.log(editedWorkers)
-
   }, [ userId ])
 
   async function loadContacts(userID) {
@@ -54,42 +57,40 @@ export default function TaskCreatePage() {
     editedWorker.checked = value
     editedWorkers[position] = editedWorker
     setContacts(editedWorkers)
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    console.tron.log(editedWorkers)
     return
+  }
+
+  async function createTasks(c) {
+    await api.post('/tasks', [
+      {
+        name: name,
+        description: description,
+        sub_task_list: [],
+        task_attributes: [prior, urgent, complex],
+        start_date: startDate,
+        due_date: dueDate,
+        workerphonenumber: c.phonenumber,
+      }, userId
+    ]);
+    dispatch(updateUserTasks(new Date()))
+    setToggleModal(!toggleModal)
   }
 
   function handleSubmit() {
     try {
-      contacts.map(p => {
-        if(p.checked == true) {
-          api.post('/tasks', [
-            {
-              name: name,
-              description: description,
-              sub_task_list: [],
-              task_attributes: [prior, urgent, complex],
-              start_date: startDate,
-              due_date: dueDate,
-              workerphonenumber: p.phonenumber,
-            }, userId
-          ]);
-        }
-        return p;
+      contacts.map(c => {
+        if(c.checked == true) createTasks(c)
+        return c;
       })
-      setToggleModal(!toggleModal)
-      setName("");  setDescription(""); setPrior(""); setUrgent("")
-      setComplex(""); setStartDate(new Date()); setDueDate(new Date());
     } catch(error) {
       setSubmitError(true)
     }
-
+    navigation.goBack()
   }
 
   function handleToggleModal() {
     setToggleModal(!toggleModal)
   }
-
     // ---------------------------------------------------------------------------
   return (
     <Container>
@@ -97,12 +98,12 @@ export default function TaskCreatePage() {
         <Modal isVisible={toggleModal}>
           { submitError
             ? (
-              <ItemWrapperView>
+              <ModalView>
                 <Text> Error </Text>
-              </ItemWrapperView>
+              </ModalView>
             )
             : (
-              <ItemWrapperView>
+              <ModalView>
                 <LabelText>Funcionário(s):</LabelText>
                 <CheckBoxWrapper>
                   { contacts.map((c, index) => (
@@ -121,7 +122,7 @@ export default function TaskCreatePage() {
                     </AlignCheckBoxView>
                   ))}
                 </CheckBoxWrapper>
-              </ItemWrapperView>
+              </ModalView>
             )
           }
           <ModalButtonWrapper>

@@ -6,15 +6,8 @@ import Icon from 'react-native-vector-icons/Feather'
 
 export const Container = styled.View.attrs({
 })`
-  /* top: 5px; */
   margin: 0;
-  /* width: 90%; */
-  /* height: 800px; */
-  background: #fff;
-  /* flex: 1; */
-
-  /* padding: 0; */
-  /* background: #ff5f; */
+  background: #f5f5f5;
 `;
 
 export const Header = styled.View`
@@ -27,10 +20,23 @@ background-color: #222;
 `;
 
 export const HeaderTabView = styled.View`
-
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 66px;
+  width: 100%;
+  /* background-color: #999; */
 `;
 
 export const SearchBarTextInput = styled.TextInput`
+  height: 36px;
+  width: 80%;
+  margin: auto;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+
 `;
 export const Title3 = styled.Text`
 

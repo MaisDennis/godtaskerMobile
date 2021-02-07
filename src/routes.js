@@ -17,11 +17,14 @@ import Confirm from './pages/Confirm';
 import ContactCreate from './pages/Contacts/ContactCreatePage';
 import ContactEdit from './pages/Contacts/ContactEditPage';
 import ContactTasks from './pages/Contacts/ContactTasksPage';
-
+import {
+  Header, SpaceView, ImageView, BodyView,
+  SenderView, SenderText
+} from './pages/RoutesStyles/styles'
 import MessagesConversationPage from './pages/Messages/MessagesConversationPage/index';
 
 import TabRoutes from '~/components/TabRoutes';
-import HeaderView from './components/HeaderView'
+import HeaderView from './components/HeaderRoutesView'
 // -----------------------------------------------------------------------------
 const Stack = createStackNavigator();
 // -----------------------------------------------------------------------------
@@ -40,9 +43,9 @@ export default function App() {
       <Stack.Navigator
         initialRouteName={signed === true ? 'TabRoutes' : 'SignIn'}
         screenOptions={{
-          headerStyle: { backgroundColor: '#222' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
+          // headerStyle: { backgroundColor: '#222' },
+          // headerTintColor: '#fff',
+          // headerTitleStyle: { fontWeight: 'bold' },
           headerTitleAlign: "center",
           ...TransitionPresets.ModalTransition,
         }}
@@ -79,20 +82,21 @@ export default function App() {
           options={{
             // title: 'Editar a tarefa',
             headerTitle: (props => (
-              <>
-                <HeaderView data={'Criar uma tarefa'}/>
-              </>
+              <Header>
+                {/* <SpaceView/> */}
+                  <HeaderView data={'Criar uma tarefa'}/>
+                {/* <SpaceView/> */}
+            </Header>
             )),
             headerShown: true,
             headerBackTitleVisible: false,
             headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 24,
-            },
             headerStyle: {
+              height: 66,
+              // backgroundColor: '#da321c',
+              // backgroundColor: '#f03a1f',
+              backgroundColor: '#73c479',
               backgroundColor: '#222',
-              height: 90,
             },
           }}
         />
@@ -148,9 +152,9 @@ export default function App() {
           options={{
             // title: 'Editar a tarefa',
             headerTitle: (props => (
-              <>
-                <HeaderView data={'Criar uma tarefa'}/>
-              </>
+              <Header>
+                <HeaderView data={'Adicionar um funcionário'}/>
+              </Header>
             )),
             headerShown: true,
             headerBackTitleVisible: false,
@@ -161,7 +165,7 @@ export default function App() {
             },
             headerStyle: {
               backgroundColor: '#222',
-              height: 90,
+              height: 66,
             },
           }}
         />
@@ -171,9 +175,9 @@ export default function App() {
           options={{
             // title: 'Editar o contato',
             headerTitle: (props => (
-              <>
-                <HeaderView data={'Editar o contato'}/>
-              </>
+              <Header>
+                <HeaderView data={'Editar o funcionário'}/>
+              </Header>
             )),
             headerShown: true,
             headerBackTitleVisible: false,
@@ -217,9 +221,17 @@ export default function App() {
           options={{
             // title: 'Conversa',
             headerTitle: (props => (
-              <>
-                <HeaderView data={'User 10'}/>
-              </>
+              <Header >
+                <HeaderView data={'Mensagens'}/>
+                {/* <BodyView>
+                  <ImageView>
+                    <Image/>
+                  </ImageView>
+                  <SenderView>
+                    <SenderText>{props.data}</SenderText>
+                  </SenderView>
+                </BodyView> */}
+              </Header>
             )),
             headerShown: true,
             headerBackTitleVisible: false,
@@ -230,7 +242,7 @@ export default function App() {
             },
             headerStyle: {
               backgroundColor: '#222',
-              height: 90,
+              height: 66,
             },
           }}
         />

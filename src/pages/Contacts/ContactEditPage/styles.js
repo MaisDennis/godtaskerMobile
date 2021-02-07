@@ -175,5 +175,5 @@ export const PhoneMask = styled(InputMask)`
   padding: 12px;
   border-radius: 12px;
   border: 1px solid #ccc;
-  background-color: #fff;
+  background-color: #f5f5f5;
 `;

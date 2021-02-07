@@ -1,21 +1,24 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { View, Text } from 'react-native'
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 // -----------------------------------------------------------------------------
-import { Container, List, Header, AddIcon, SpaceView, HeaderTouchable,
-  HeaderTabView, SearchBarTextInput, Title3 } from './styles'
+import {
+  Container, List, Header, AddIcon, SpaceView, HeaderTouchable,
+  HeaderTabView, SearchBarTextInput
+} from './styles'
 import HeaderView from '~/components/HeaderView'
 import Contacts from '~/components/Contacts'
 import api from '~/services/api';
 
-export default function ContactsPage({ navigation, route }) {
+export default function ContactsPage({ navigation }) {
   const userId = useSelector( state => state.user.profile.id)
+  const contacts_update = useSelector( state => state.contact.profile)
+
   const [contacts, setContacts] = useState([]);
   const [defaultContacts, setDefaultContacts] = useState([]);
-  const [ queryInput, setQueryInput ] = useState([]);
   const [inputState, setInputState] = useState('');
+
   const formattedDate = fdate =>
   fdate == null
     ? '-'
@@ -24,14 +27,25 @@ export default function ContactsPage({ navigation, route }) {
 
   useEffect(() => {
     loadContacts(userId);
-    // console.tron.log(userId)
-  }, [ userId ])
+  }, [contacts_update]);
 
   async function loadContacts(userID) {
     const response = await api.get(`users/${userID}/contact-list`, {
     })
-    setContacts(response.data)
-    setDefaultContacts(response.data)
+    // sorter
+    const sortedResponseData = response.data.sort(compare)
+    setContacts(sortedResponseData)
+    setDefaultContacts(sortedResponseData)
+  }
+
+  function compare(a, b) {
+    if (a.worker_name > b.worker_name) {
+      return 1;
+    }
+    if (a.worker_name < b.worker_name) {
+      return -1;
+    }
+    return 0;
   }
 
   const handleUpdateInput = async (input) => {
@@ -50,7 +64,7 @@ export default function ContactsPage({ navigation, route }) {
   function handleCreateContact() {
     navigation.navigate('ContactCreate')
   }
-
+  // ---------------------------------------------------------------------------
   return (
     <Container>
       <Header>
@@ -64,13 +78,13 @@ export default function ContactsPage({ navigation, route }) {
         <SearchBarTextInput
           value={inputState}
           onChangeText={handleUpdateInput}
+          placeholder='Procurar o contato'
         ></SearchBarTextInput>
       </HeaderTabView>
-
       <List
         data={contacts}
-        renderItem={renderItem}
         keyExtractor={item => String(item.id)}
+        renderItem={renderItem}
       />
     </Container>
   )

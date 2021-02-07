@@ -10,18 +10,20 @@ export const Container = styled.View`
   width: 100%;
   margin: 8px 0;
   padding: 0;
-  border-radius: 24px;
-  /* border: 1px solid #ccc; */
+  /* border-radius: 24px; */
   background: #fff;
+  /* background: ${props => props.toggleTask === true ? '#666' : '#fff'}; */
+  /* opacity: ${props => props.toggleTask === true ? '1' : '.7'}; */
   /* background: #F5F5; */
 `;
 export const TopHeaderView = styled.View`
   display: flex;
   flex-direction:row;
   width: 100%;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  background-color: #da321c;
+  /* border-top-left-radius: 24px; */
+  /* border-top-right-radius: 24px; */
+  /* background-color: #da321c; */
+  background-color: #73a6c4;
   /* background-color: #aa2a19; */
 `;
 export const HeaderView = styled.View`
@@ -67,7 +69,7 @@ export const BottomHeaderView = styled.View`
   align-items: center;
   justify-content: space-around;
   width: auto;
-  padding: 0;
+  /* padding: 0; */
   /* background-color: #f44; */
 `;
 export const AlignBottomView = styled.View`
@@ -111,13 +113,14 @@ export const OuterStatusView = styled.View`
   align-items: center;
   width: 70%;
   border-radius: 16px;
-  margin: 4px 0;
+  margin: 8px 0;
   /* margin-bottom: 8px; */
   background-color: #F5F5F5;
 `;
 export const InnerStatusView = styled.View`
   height: 16px;
-  width: 20%;
+  /* width: 20%; */
+  width: ${props => props.statusResult+'%'};
   border-radius: 16px;
   background-color: #daf1e0;
 `;
@@ -212,6 +215,30 @@ export const ButtonView = styled.View`
   text-align: center;
   margin: 8px auto;
   /* background: #f4f; */
+`;
+export const ButtonText = styled.Text`
+  font-weight: bold;
+  font-size: 14px;
+  color: #fff;
+`;
+export const ModalView = styled.View`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  margin-bottom: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: #f5f5f5;
+  /* background-color: #ff0; */
+`;
+export const ModalText = styled.Text`
+  font-weight: bold;
+  font-size: 14px;
+  margin: 12px auto;
+  color: #222;
 `;
 export const HrLine = styled.View`
 width: 100%;

@@ -24,7 +24,7 @@ export function* signIn({ payload }) {
     const worker = responseWorkers.data.find(
       w => w.phonenumber == phonenumber
     );
-    // console.tron.log(worker)
+    console.tron.log(worker)
     yield put(signInSuccess(token, user, worker));
     // history.push('/dashboard');
 

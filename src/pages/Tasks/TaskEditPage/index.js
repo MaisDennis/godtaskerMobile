@@ -1,19 +1,26 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux';
-import { View, Text, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { TouchableOpacity } from 'react-native'
+import { parseISO } from 'date-fns';
+import InputSpinner from 'react-native-input-spinner';
 // -----------------------------------------------------------------------------
 import { Container, FormScrollView, ItemWrapperView, LabelText,
-  Input, SubTaskView, SubTaskLabelText, SubTaskInput,
-  DateInput, DateOptionsView, DateOptions, Options, TitleText,
-  SubmitView, AlignView, SubmitIcon
+  Input, SubTaskView, SubTaskTitleView, SubTaskItemView, SubTaskButtonView,
+  TextWeigeView, WeigeView, WeigeTagView, WeigeText, WeigeButton,
+  SubTaskLabelText, SubTaskInput, SubTaskText, SubTaskWeigeText,
+  SubTaskIcon,
+  DateOptionsView, DateOptions, Options, TitleText,
+  SubmitView, AlignView, SubmitIcon, AddSubTaskIcon, SubTaskButton,
 } from './styles'
-import { parseISO, format } from 'date-fns';
+import NumberInput from '~/components/NumberInput'
+import SubTasks from '~/components/SubTasks'
+import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
-// import { ptBR } from 'date-fns/locale';
-
 
 export default function TaskEditPage({ navigation, route }) {
+  const dispatch = useDispatch();
   const data = route.params;
+
   const [name, setName] = useState(data.name);
   const [description, setDescription] = useState(data.description);
   const [subTaskList, setSubTaskList] = useState(data.sub_task_list);
@@ -22,14 +29,16 @@ export default function TaskEditPage({ navigation, route }) {
   const [complex, setComplex] = useState(data.task_attributes[2]);
   const [startDate, setStartDate] = useState(parseISO(data.start_date));
   const [dueDate, setDueDate] = useState(parseISO(data.due_date));
-
+  const [toggleAddSubTask, setToggleAddSubTask] = useState(false);
+  const [addSubTaskInput, setAddSubTaskInput] = useState();
+  const [editSubTaskInputValue, setEditSubTaskInputValue] = useState();
+  const [editWeigeInputValue, setEditWeigeInputValue] = useState(1);
+  const [editSubTaskIndex, setEditSubTaskIndex] = useState();
+  const [subTaskToggleEdit, setSubTaskToggleEdit] = useState();
   const taskAttributesArray = [ "baixa", "média", "alta", "" ]
 
-  function handleSubmit() {
-    console.tron.log('Submit')
-    // const parsedStartDate = parseISO(startDate);
-    // const parsedDueDate = parseISO(dueDate);
-    api.put(`tasks/${data.id}`, {
+  async function handleSubmit() {
+    await api.put(`tasks/${data.id}`, {
       name: name,
       description: description,
       // sub_task_list:
@@ -37,9 +46,54 @@ export default function TaskEditPage({ navigation, route }) {
       start_date: startDate,
       due_date: dueDate,
     });
+    dispatch(updateTasks(new Date()))
+    navigation.goBack()
   }
 
-    // ---------------------------------------------------------------------------
+  function handleAddSubTask() {
+    let editedSubTaskList = subTaskList
+    editedSubTaskList.push({
+      description: addSubTaskInput,
+      weige: editWeigeInputValue,
+      complete: false,
+      user_read: false,
+    })
+    setSubTaskList(editedSubTaskList)
+    setAddSubTaskInput();
+    console.tron.log(subTaskList)
+    navigation.navigate('TaskEdit');
+    // dispatch(updateTasks(new Date()))
+  }
+
+  function handleOpenEditSubTask(position) {
+    setEditSubTaskIndex(position)
+    setSubTaskToggleEdit(!subTaskToggleEdit)
+  }
+
+  function handleEditSubTask(position) {
+    let editedSubTaskList = subTaskList.map((s, index) => {
+      if (index === position) {
+        s.description = editSubTaskInputValue;
+        // s.weige = editWeigeInputValue;
+      }
+      return s;
+    })
+    setSubTaskList(editedSubTaskList)
+    console.tron.log(subTaskList)
+    navigation.navigate('TaskEdit',{
+      sub_task_list: subTaskList,
+    });
+  }
+
+  function handleDeleteSubTask(position) {
+    let editedSubTaskList = subTaskList
+    editedSubTaskList.splice(position, 1)
+    setSubTaskList(editedSubTaskList)
+    navigation.navigate('TaskEdit',{
+      sub_task_list: subTaskList,
+    });
+  }
+  // ---------------------------------------------------------------------------
   return (
     <Container>
       <FormScrollView contentContainerStyle={{ alignItems: 'center'}}>
@@ -57,17 +111,120 @@ export default function TaskEditPage({ navigation, route }) {
             onChangeText={setDescription}
           ></Input>
         </ItemWrapperView>
+
+        {/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */}
         <ItemWrapperView>
+          {/* <SubTasks subTaskList={subTaskList}/> */}
+          <SubTaskTitleView>
+            <LabelText>Adicionar sub-tarefa:</LabelText>
+          </SubTaskTitleView>
+          <SubTaskView>
+            <TextWeigeView>
+              <SubTaskInput
+                value={addSubTaskInput}
+                onChangeText={setAddSubTaskInput}
+                mutiline={true}
+              />
+              <WeigeView>
+                <WeigeTagView>
+                  <WeigeText>Peso:</WeigeText>
+                  <NumberInput
+                    numberInputValue={editWeigeInputValue}
+                    setNumberInputValue={setEditWeigeInputValue}
+                  />
+                </WeigeTagView>
+                <WeigeButton onPress={handleAddSubTask}>
+                  <AddSubTaskIcon name="check-circle" size={55}/>
+                </WeigeButton>
+              </WeigeView>
+            </TextWeigeView>
+
+          </SubTaskView>
           <LabelText>Sub-tarefas:</LabelText>
           { subTaskList.map((s, index) => (
             <SubTaskView key={index}>
-              <SubTaskLabelText>{index+1}</SubTaskLabelText>
-              <SubTaskInput
-              value={s.description}
-                  // onChangeText={setDescription}
-              ></SubTaskInput>
+              {
+                subTaskToggleEdit && (editSubTaskIndex === index)
+                ? (
+                  <SubTaskItemView>
+                    <SubTaskView>
+                    <SubTaskLabelText>{index+1}</SubTaskLabelText>
+                    <SubTaskText>{s.description}</SubTaskText>
+                    </SubTaskView>
+                    <WeigeView>
+                      <WeigeTagView>
+                        <WeigeText>Peso:</WeigeText>
+                        <SubTaskWeigeText>{s.weige}</SubTaskWeigeText>
+                      </WeigeTagView>
+                      <SubTaskButtonView>
+                        <SubTaskButton onPress={() => handleOpenEditSubTask(index)}>
+                          <SubTaskIcon name="edit"/>
+                        </SubTaskButton>
+                        <SubTaskButton onPress={() => handleDeleteSubTask(index)}>
+                          <SubTaskIcon name="x-circle"/>
+                        </SubTaskButton>
+                      </SubTaskButtonView>
+                    </WeigeView>
+                    <SubTaskView>
+                      <TextWeigeView>
+                        <SubTaskInput
+                          value={addSubTaskInput}
+                          onChangeText={setAddSubTaskInput}
+                          mutiline={true}
+                        />
+                        <WeigeView>
+                          <WeigeTagView>
+                            <WeigeText>Peso:</WeigeText>
+                            <NumberInput
+                              numberInputValue={editWeigeInputValue}
+                              setNumberInputValue={setEditWeigeInputValue}
+                            />
+                          </WeigeTagView>
+                          <WeigeButton onPress={handleAddSubTask}>
+                            <AddSubTaskIcon name="check-circle" size={55}/>
+                          </WeigeButton>
+                        </WeigeView>
+                      </TextWeigeView>
+                    </SubTaskView>
+                  </SubTaskItemView>
+                )
+                : (
+                  <SubTaskItemView>
+                    <SubTaskView>
+                      <SubTaskLabelText>{index+1}</SubTaskLabelText>
+                      <SubTaskText>{s.description}</SubTaskText>
+                    </SubTaskView>
+                    <WeigeView>
+                      <WeigeTagView>
+                        <WeigeText>Peso:</WeigeText>
+                        <SubTaskWeigeText>{s.weige}</SubTaskWeigeText>
+                      </WeigeTagView>
+                      <SubTaskButtonView>
+                        <SubTaskButton onPress={() => handleOpenEditSubTask(index)}>
+                          <SubTaskIcon name="edit"/>
+                        </SubTaskButton>
+                        <SubTaskButton onPress={() => handleDeleteSubTask(index)}>
+                          <SubTaskIcon name="x-circle"/>
+                        </SubTaskButton>
+                      </SubTaskButtonView>
+                    </WeigeView>
+                  </SubTaskItemView>
+                )
+              }
+
+
             </SubTaskView>
           ))}
+                    <LabelText>(não esquecer de confirmar as alterações em sub-tarefas para que sejam salvas)</LabelText>
+          {/* { toggleAddSubTask && (
+            <SubTaskView key={index}>
+            <SubTaskLabelText>{index+1}</SubTaskLabelText>
+            <SubTaskInput
+            value={s.description}
+                // onChangeText={setDescription}
+            ></SubTaskInput>
+          </SubTaskView>
+          )} */}
         </ItemWrapperView>
         <ItemWrapperView>
           <LabelText>Início:</LabelText>
@@ -101,7 +258,7 @@ export default function TaskEditPage({ navigation, route }) {
           <LabelText>Prioridades:</LabelText>
           <Options selectedValue={prior} onValueChange={setPrior}>
             { taskAttributesArray.map(t => (
-              <Options.Item label={t} value={t}/>
+              <Options.Item key={t} label={t} value={t}/>
             ))}
           </Options>
         </ItemWrapperView>
@@ -109,7 +266,7 @@ export default function TaskEditPage({ navigation, route }) {
           <LabelText>Urgência:</LabelText>
           <Options selectedValue={urgent} onValueChange={setUrgent}>
             { taskAttributesArray.map(t => (
-              <Options.Item label={t} value={t}/>
+              <Options.Item key={t} label={t} value={t}/>
             ))}
           </Options>
         </ItemWrapperView>
@@ -117,7 +274,7 @@ export default function TaskEditPage({ navigation, route }) {
           <LabelText>Complexidade:</LabelText>
           <Options selectedValue={complex} onValueChange={setComplex}>
             { taskAttributesArray.map(t => (
-              <Options.Item label={t} value={t}/>
+              <Options.Item key={t} label={t} value={t}/>
             ))}
           </Options>
         </ItemWrapperView>
