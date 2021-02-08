@@ -9,7 +9,7 @@ export default function NumberInput({ numberInputValue, setNumberInputValue }) {
       return
     }
     else {
-      let minus = numberInputValue - 1
+      let minus = parseInt(numberInputValue) - 1
       setNumberInputValue(minus)
     }
 
@@ -20,7 +20,7 @@ export default function NumberInput({ numberInputValue, setNumberInputValue }) {
       return
     }
     else {
-      let plus = numberInputValue + 1
+      let plus = parseInt(numberInputValue) + 1
       setNumberInputValue(plus)
     }
   }

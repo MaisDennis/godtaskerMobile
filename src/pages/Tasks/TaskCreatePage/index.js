@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch, dispatch } from 'react-redux';
-import { View, Text, TouchableOpacity } from 'react-native'
+import { useSelector, useDispatch } from 'react-redux';
+import { TouchableOpacity } from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
-import { parseISO, format } from 'date-fns';
 // -----------------------------------------------------------------------------
-import { Container, FormScrollView, ItemWrapperView, LabelText,
-  Input,
-  // SubTaskView,
-  SubTaskLabelText, SubTaskInput, DateOptionsView, DateOptions, Options, TitleText,
-  SubmitView, AlignView, SubmitIcon, AlignCheckBoxView, CheckBoxWrapper, CheckBoxView, DescriptionSpan,
-ModalButtonWrapper, ModalView
+import {
+  AlignView, AddSubTaskIcon, AlignCheckBoxView,
+  CheckBoxWrapper, CheckBoxView, Container,
+  DateOptionsView, DateOptions, DescriptionSpan,
+  FormScrollView,
+  ItemWrapperView, Input,
+  LabelText,
+  ModalButtonWrapper, ModalView,
+  Options,
+  SubTaskLabelText, SubTaskInput,
+  SubTaskText, SubTaskWeigeText, SubTaskIcon, SubTaskButton,
+  SubTaskView, SubTaskItemView, SubTaskButtonView,
+  SubmitView, SubmitIcon,
+  TextWeigeView,
+  WeigeView, WeigeTagView, WeigeText, WeigeButton,
 } from './styles'
-import { updateUserTasks } from '~/store/modules/task/actions';
+import NumberInput from '~/components/NumberInput'
+import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
-// import { ptBR } from 'date-fns/locale';
-
 
 export default function TaskCreatePage({ navigation }) {
   const dispatch = useDispatch();
@@ -23,7 +30,6 @@ export default function TaskCreatePage({ navigation }) {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState();
-  // const [subTaskList, setSubTaskList] = useState();
   const [prior, setPrior] = useState("");
   const [urgent, setUrgent] = useState("");
   const [complex, setComplex] = useState("");
@@ -34,9 +40,18 @@ export default function TaskCreatePage({ navigation }) {
   const [toggleModal, setToggleModal] = useState(false);
   const [submitError, setSubmitError] = useState(false);
 
-  let editedWorkers = [];
+  const [subTaskList, setSubTaskList] = useState([]);
+  const [editSubTaskIndex, setEditSubTaskIndex] = useState();
+  const [toggleAddSubTask, setToggleAddSubTask] = useState(false);
+  const [addSubTaskInputValue, setAddSubTaskInputValue] = useState();
+  const [addWeigeInputValue, setAddWeigeInputValue] = useState(1);
+  const [editSubTaskInputValue, setEditSubTaskInputValue] = useState();
+  const [editWeigeInputValue, setEditWeigeInputValue] = useState(1);
+  const [subTaskToggleEdit, setSubTaskToggleEdit] = useState(false);
 
+  let editedWorkers = [];
   const taskAttributesArray = [ "baixa", "média", "alta", "" ]
+
   useEffect(() => {
     loadContacts(userId);
   }, [ userId ])
@@ -50,6 +65,7 @@ export default function TaskCreatePage({ navigation }) {
     });
     setContacts(checkedList)
   }
+
   async function handletoggleCheckBox(value, position) {
     setToggleCheckBox(!toggleCheckBox) // this distoggles the checkbox
     editedWorkers = contacts;
@@ -60,19 +76,85 @@ export default function TaskCreatePage({ navigation }) {
     return
   }
 
+  function handleToggleModal() {
+    setToggleModal(!toggleModal)
+  }
+
+  function handleAddSubTask() {
+    let editedSubTaskList = subTaskList
+    editedSubTaskList.push({
+      description: addSubTaskInputValue,
+      weige: editWeigeInputValue,
+      complete: false,
+      user_read: true,
+      worker_read: false,
+    })
+    setSubTaskList(editedSubTaskList)
+    setAddSubTaskInputValue();
+    console.tron.log(subTaskList)
+    navigation.navigate('TaskCreate');
+    // dispatch(updateTasks(new Date()))
+  }
+
+  function handleOpenEditSubTask(position) {
+    setEditSubTaskIndex(position)
+    setSubTaskToggleEdit(!subTaskToggleEdit)
+    setEditSubTaskInputValue(subTaskList[position].description)
+    setEditWeigeInputValue(subTaskList[position].weige)
+  }
+
+  function handleEditSubTask(position) {
+    let editedSubTaskList = subTaskList.map((s, index) => {
+      if (index === position) {
+        s.description = editSubTaskInputValue;
+        s.weige = editWeigeInputValue;
+      }
+      return s;
+    })
+    setSubTaskList(editedSubTaskList)
+    setEditSubTaskIndex(null);
+    setSubTaskToggleEdit(false);
+    // navigation.navigate('TaskEdit',{
+    //   sub_task_list: subTaskList,
+    // });
+  }
+
+  function handleDeleteSubTask(position) {
+    let editedSubTaskList = subTaskList
+    editedSubTaskList.splice(position, 1)
+    setSubTaskList(editedSubTaskList)
+    navigation.navigate('TaskCreate',{
+      sub_task_list: subTaskList,
+    });
+  }
+
+  function weigeToPercentage(subTasks) {
+    let weigeSum = 0;
+    for(let i = 0; i < subTasks.length; i++) {
+      weigeSum += parseFloat(subTasks[i].weige)
+    }
+
+    for(let i = 0; i < subTasks.length; i++) {
+      subTasks[i].weige_percentage = (Math.round((parseFloat(subTasks[i].weige) / weigeSum)*1000) /10)
+    }
+    return weigeSum;
+  }
+
   async function createTasks(c) {
+    weigeToPercentage(subTaskList)
+
     await api.post('/tasks', [
       {
         name: name,
         description: description,
-        sub_task_list: [],
+        sub_task_list: subTaskList,
         task_attributes: [prior, urgent, complex],
         start_date: startDate,
         due_date: dueDate,
         workerphonenumber: c.phonenumber,
       }, userId
     ]);
-    dispatch(updateUserTasks(new Date()))
+    dispatch(updateTasks(new Date()))
     setToggleModal(!toggleModal)
   }
 
@@ -85,67 +167,13 @@ export default function TaskCreatePage({ navigation }) {
     } catch(error) {
       setSubmitError(true)
     }
+    // dispatch(updateTasks(new Date()))
     navigation.goBack()
-  }
-
-  function handleToggleModal() {
-    setToggleModal(!toggleModal)
   }
     // ---------------------------------------------------------------------------
   return (
     <Container>
       <FormScrollView contentContainerStyle={{ alignItems: 'center'}}>
-        <Modal isVisible={toggleModal}>
-          { submitError
-            ? (
-              <ModalView>
-                <Text> Error </Text>
-              </ModalView>
-            )
-            : (
-              <ModalView>
-                <LabelText>Funcionário(s):</LabelText>
-                <CheckBoxWrapper>
-                  { contacts.map((c, index) => (
-                    <AlignCheckBoxView key={index}>
-                      <CheckBoxView>
-                        <CheckBox
-                          disabled={false}
-                          // value={editedWorkers[index]}
-                          value={c.checked}
-                          onValueChange={
-                            (newValue) => handletoggleCheckBox(newValue, index)
-                          }
-                        />
-                        <DescriptionSpan type="check-box">{c.worker_name}</DescriptionSpan>
-                      </CheckBoxView>
-                    </AlignCheckBoxView>
-                  ))}
-                </CheckBoxWrapper>
-              </ModalView>
-            )
-          }
-          <ModalButtonWrapper>
-            <TouchableOpacity onPress={handleToggleModal}>
-              <ItemWrapperView>
-                <SubmitView>
-                  <AlignView>
-                    <SubmitIcon name="arrow-left" size={20} color="#fff" />
-                  </AlignView>
-                </SubmitView>
-              </ItemWrapperView>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSubmit}>
-              <ItemWrapperView>
-                <SubmitView>
-                  <AlignView>
-                    <SubmitIcon name="send" size={20} color="#fff" />
-                  </AlignView>
-                </SubmitView>
-              </ItemWrapperView>
-            </TouchableOpacity>
-          </ModalButtonWrapper>
-        </Modal>
         <ItemWrapperView>
           <LabelText>Tarefa:</LabelText>
           <Input
@@ -160,17 +188,107 @@ export default function TaskCreatePage({ navigation }) {
             onChangeText={setDescription}
           ></Input>
         </ItemWrapperView>
+        {/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */}
         <ItemWrapperView>
-          <LabelText>Sub-tarefas:</LabelText>
-          {/* { subTaskList.map((s, index) => (
-            <SubTaskView key={index}>
-              <SubTaskLabelText>{index+1}</SubTaskLabelText>
+          <LabelText>Adicionar sub-tarefa:</LabelText>
+          <SubTaskView>
+            <TextWeigeView>
               <SubTaskInput
-              value={s.description}
-                  // onChangeText={setDescription}
-              ></SubTaskInput>
+                value={addSubTaskInputValue}
+                onChangeText={setAddSubTaskInputValue}
+                mutiline={true}
+                numberOfLines={5}
+                textBreakStrategy="highQuality"
+              />
+              <WeigeView>
+                <WeigeTagView>
+                  <WeigeText>Peso:</WeigeText>
+                  <NumberInput
+                    numberInputValue={addWeigeInputValue}
+                    setNumberInputValue={setAddWeigeInputValue}
+                  />
+                </WeigeTagView>
+                <WeigeButton onPress={handleAddSubTask}>
+                  <AddSubTaskIcon name="check-circle" size={55}/>
+                </WeigeButton>
+              </WeigeView>
+            </TextWeigeView>
+
+          </SubTaskView>
+          <LabelText>Sub-tarefas:</LabelText>
+          { subTaskList.map((s, index) => (
+            <SubTaskView key={index}>
+              {
+                subTaskToggleEdit && (editSubTaskIndex === index)
+                ? (
+                  <SubTaskItemView>
+                    <SubTaskView>
+                    <SubTaskLabelText>{index+1}</SubTaskLabelText>
+                    <SubTaskText>{s.description}</SubTaskText>
+                    </SubTaskView>
+                    <WeigeView>
+                      <WeigeTagView>
+                        <WeigeText>Peso:</WeigeText>
+                        <SubTaskWeigeText>{s.weige}</SubTaskWeigeText>
+                      </WeigeTagView>
+                      <SubTaskButtonView>
+                        <SubTaskButton onPress={() => handleOpenEditSubTask(index)}>
+                          <SubTaskIcon name="edit"/>
+                        </SubTaskButton>
+                        <SubTaskButton onPress={() => handleDeleteSubTask(index)}>
+                          <SubTaskIcon name="x-circle"/>
+                        </SubTaskButton>
+                      </SubTaskButtonView>
+                    </WeigeView>
+                    <SubTaskView>
+                      <TextWeigeView>
+                        <SubTaskInput
+                          value={editSubTaskInputValue}
+                          onChangeText={setEditSubTaskInputValue}
+                          mutiline={true}
+                        />
+                        <WeigeView>
+                          <WeigeTagView>
+                            <WeigeText>Peso:</WeigeText>
+                            <NumberInput
+                              numberInputValue={editWeigeInputValue}
+                              setNumberInputValue={setEditWeigeInputValue}
+                            />
+                          </WeigeTagView>
+                          <WeigeButton onPress={() => handleEditSubTask(index)}>
+                            <AddSubTaskIcon name="check-circle" size={55}/>
+                          </WeigeButton>
+                        </WeigeView>
+                      </TextWeigeView>
+                    </SubTaskView>
+                  </SubTaskItemView>
+                )
+                : (
+                  <SubTaskItemView>
+                    <SubTaskView>
+                      <SubTaskLabelText>{index+1}</SubTaskLabelText>
+                      <SubTaskText>{s.description}</SubTaskText>
+                    </SubTaskView>
+                    <WeigeView>
+                      <WeigeTagView>
+                        <WeigeText>Peso:</WeigeText>
+                        <SubTaskWeigeText>{s.weige}</SubTaskWeigeText>
+                      </WeigeTagView>
+                      <SubTaskButtonView>
+                        <SubTaskButton onPress={() => handleOpenEditSubTask(index)}>
+                          <SubTaskIcon name="edit"/>
+                        </SubTaskButton>
+                        <SubTaskButton onPress={() => handleDeleteSubTask(index)}>
+                          <SubTaskIcon name="x-circle"/>
+                        </SubTaskButton>
+                      </SubTaskButtonView>
+                    </WeigeView>
+                  </SubTaskItemView>
+                )
+              }
             </SubTaskView>
-          ))} */}
+          ))}
+          <LabelText>(não esquecer de confirmar as alterações em sub-tarefas para que sejam salvas)</LabelText>
         </ItemWrapperView>
         <ItemWrapperView>
           <LabelText>Início:</LabelText>
@@ -233,6 +351,57 @@ export default function TaskCreatePage({ navigation }) {
             </SubmitView>
           </ItemWrapperView>
         </TouchableOpacity>
+        <Modal isVisible={toggleModal}>
+          { submitError
+            ? (
+              <ModalView>
+                <Text> Error </Text>
+              </ModalView>
+            )
+            : (
+              <ModalView>
+                <LabelText>Funcionário(s):</LabelText>
+                <CheckBoxWrapper>
+                  { contacts.map((c, index) => (
+                    <AlignCheckBoxView key={index}>
+                      <CheckBoxView>
+                        <CheckBox
+                          disabled={false}
+                          // value={editedWorkers[index]}
+                          value={c.checked}
+                          onValueChange={
+                            (newValue) => handletoggleCheckBox(newValue, index)
+                          }
+                        />
+                        <DescriptionSpan type="check-box">{c.worker_name}</DescriptionSpan>
+                      </CheckBoxView>
+                    </AlignCheckBoxView>
+                  ))}
+                </CheckBoxWrapper>
+              </ModalView>
+            )
+          }
+          <ModalButtonWrapper>
+            <TouchableOpacity onPress={handleToggleModal}>
+              <ItemWrapperView>
+                <SubmitView>
+                  <AlignView>
+                    <SubmitIcon name="arrow-left" size={20} color="#fff" />
+                  </AlignView>
+                </SubmitView>
+              </ItemWrapperView>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSubmit}>
+              <ItemWrapperView>
+                <SubmitView>
+                  <AlignView>
+                    <SubmitIcon name="send" size={20} color="#fff" />
+                  </AlignView>
+                </SubmitView>
+              </ItemWrapperView>
+            </TouchableOpacity>
+          </ModalButtonWrapper>
+        </Modal>
       </FormScrollView>
     </Container>
   )

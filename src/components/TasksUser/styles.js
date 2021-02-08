@@ -49,7 +49,8 @@ width: 10%;
 export const BellIcon = styled(Icon)`
 color: #222;
 font-size: 24px;
-color: #ccc;
+margin: 8px 0;
+color: #44ccee;
 `;
 
 export const MiddleHeaderView = styled.View`
@@ -257,4 +258,9 @@ export const AlignCheckBoxView = styled.View`
   align-items: flex-start;
   width: 100%;
   /* background-color: #ee4; */
+`;
+export const UnreadMessageCountText = styled.Text`
+  font-size: 12px;
+  margin: auto;
+  /* background-color: #f00; */
 `;

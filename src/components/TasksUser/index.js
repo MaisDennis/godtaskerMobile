@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-import CheckBox from '@react-native-community/checkbox';
+import CheckBox from '@react-native-community/checkbox'; //https://github.com/react-native-checkbox/react-native-checkbox
 // -----------------------------------------------------------------------------
 import pt from 'date-fns/locale/pt';
 import {
@@ -13,8 +14,11 @@ import {
   ConfirmButton, UserView,
   HeaderView, TopHeaderView, MiddleHeaderView, BottomHeaderView, AlignBottomView, AlignView,
   OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine,
+  UnreadMessageCountText
 } from './styles';
+import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
+
 // -----------------------------------------------------------------------------
 const formattedDate = fdate =>
   fdate == null
@@ -22,6 +26,9 @@ const formattedDate = fdate =>
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
 export default function TaskUser({ data, navigation }) {
+  const dispatch = useDispatch();
+  const updated_tasks = useSelector( state => state.task.tasks)
+
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const [statusResult, setStatusResult] = useState(0);
@@ -30,8 +37,9 @@ export default function TaskUser({ data, navigation }) {
   const subTasks = data.sub_task_list
 
   useEffect (() => {
+    // handleStatus()
     setStatusResult(handleStatus())
-  }, [ toggleCheckBox ])
+  }, [ updated_tasks ])
 
   function handleStatus() {
     let weige = 0;
@@ -49,9 +57,23 @@ export default function TaskUser({ data, navigation }) {
     return flag
   }
 
+  async function updateBell(editedSubTaskList) {
+    await api.put(`tasks/${data.id}`, {
+      sub_task_list: editedSubTaskList
+    })
+  }
+
   function handleToggleTask() {
     setToggleTask(!toggleTask)
     // console.tron.log(data)
+    if(hasUnreadSubTasks(data.sub_task_list) !== 0) {
+      const editedSubTaskList = data.sub_task_list
+      editedSubTaskList.map(e => {
+        e.user_read = true
+      })
+      updateBell(editedSubTaskList)
+    }
+    return
   }
 
   async function handletoggleCheckBox(value, position) {
@@ -78,15 +100,44 @@ export default function TaskUser({ data, navigation }) {
   }
 
   function handleCancelTask() {
-
+    api.delete(`tasks/${data.id}`);
+    dispatch(updateTasks(new Date()))
   }
 
   function handleScoreTask() {
 
   }
 
-  function handleConfirm() {
-    navigation.navigate('Confirm', { task_id: data.id, taskName: data.name });
+  // function handleConfirm() {
+  //   navigation.navigate('Confirm', { task_id: data.id, taskName: data.name });
+  // }
+
+  const hasUnreadSubTasks = (array) => {
+    try {
+      let sum = 0;
+      for(let i = 0; i < array.length; i++) {
+        if(array[i].user_read === false) {
+          sum += 1
+        }
+      }
+      return sum
+    } catch(error) {
+      return
+    }
+  }
+
+  const hasUnreadMessages = (array) => {
+    try {
+      let sum = 0;
+      for(let i = 0; i < array.length; i++) {
+        if(array[i].user_read === false) {
+          sum += 1
+        }
+      }
+      return sum
+    } catch(error) {
+      return
+    }
   }
   // -----------------------------------------------------------------------------
   return (
@@ -141,7 +192,26 @@ export default function TaskUser({ data, navigation }) {
           </MainHeaderView>
           <AsideView>
             <AlignView>
-              <BellIcon name="bell"/>
+              { (hasUnreadSubTasks(data.sub_task_list) === 0)
+                ? (
+                  null
+                )
+                : (
+                  <BellIcon name="bell">
+                    <UnreadMessageCountText>{hasUnreadSubTasks(data.sub_task_list)}</UnreadMessageCountText>
+                  </BellIcon>
+                )
+              }
+              { (hasUnreadMessages(data.messages) === 0)
+                ? (
+                  null
+                )
+                : (
+                  <BellIcon name="message-circle">
+                    <UnreadMessageCountText>{hasUnreadMessages(data.messages)}</UnreadMessageCountText>
+                  </BellIcon>
+                )
+              }
             </AlignView>
           </AsideView>
         </HeaderView>
@@ -167,6 +237,7 @@ export default function TaskUser({ data, navigation }) {
                         onValueChange={
                           (newValue) => handletoggleCheckBox(newValue, index)
                         }
+                        disabled={true}
                       />
                       <DescriptionSpan>{s.weige_percentage}%</DescriptionSpan>
                       <DescriptionSpan type="check-box">{s.description}</DescriptionSpan>
@@ -177,24 +248,31 @@ export default function TaskUser({ data, navigation }) {
           </DescriptionView>
 
           <DatesAndButtonView>
+          <ButtonView>
+              <TouchableOpacity onPress={handleEditTask}>
+                <ConfirmButton pastDueDate={pastDueDate()}>
+                  <TaskIcon name="message-circle"/>
+                </ConfirmButton>
+              </TouchableOpacity>
+            </ButtonView>
             <ButtonView>
               <TouchableOpacity onPress={handleEditTask}>
                 <ConfirmButton pastDueDate={pastDueDate()}>
-                  <TaskIcon name="edit" size={20} color="#fff" />
+                  <TaskIcon name="edit"/>
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
               <TouchableOpacity onPress={handleScoreTask}>
                 <ConfirmButton pastDueDate={pastDueDate()}>
-                  <TaskIcon name="meh" size={20} color="#fff" />
+                  <TaskIcon name="meh"/>
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
               <TouchableOpacity onPress={handleCancelTask}>
                 <ConfirmButton pastDueDate={pastDueDate()}>
-                  <TaskIcon name="trash-2" size={20} color="#fff" />
+                  <TaskIcon name="trash-2"/>
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, Text } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
@@ -13,8 +14,10 @@ import {
   DatesAndButtonView, TagView, Label, StartTimeView, StartTime, DueTimeView, DueTime,  ButtonView, ButtonText, HrLine, MessageButton,
   ConfirmButton, UserView, ModalView, ModalText,
   HeaderView, TopHeaderView, MiddleHeaderView, BottomHeaderView, AlignBottomView, AlignView,
-  OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine
+  OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine,
+  UnreadMessageCountText,
 } from './styles';
+import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
 // -----------------------------------------------------------------------------
 const formattedDate = fdate =>
@@ -23,6 +26,8 @@ const formattedDate = fdate =>
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
 export default function Task({ data, navigation, position }) {
+  const dispatch = useDispatch();
+
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const [statusResult, setStatusResult] = useState(0);
@@ -61,10 +66,14 @@ console.log(statusResult)
   async function handletoggleCheckBox(value, position) {
     setToggleCheckBox(!toggleCheckBox) // this distoggles the checkbox
     const editedSubTaskList = data.sub_task_list
+    // console.tron.log(editedSubTaskList)
+    // console.tron.log(position)
     editedSubTaskList[position].complete = value
+    editedSubTaskList[position].user_read = false
     await api.put(`tasks/${data.id}`, {
       sub_task_list: editedSubTaskList
     })
+    dispatch(updateTasks(new Date()))
     return
   }
 
@@ -86,6 +95,20 @@ console.log(statusResult)
 
   function handleCancelTask() {
     api.delete(`tasks/${data.id}`);
+  }
+
+  const hasUnread = (array) => {
+    try {
+      let sum = 0;
+      for(let i = 0; i < array.length; i++) {
+        if(array[i].worker_read === false) {
+          sum += 1
+        }
+      }
+      return sum
+    } catch(error) {
+      return
+    }
   }
   // -----------------------------------------------------------------------------
   return (
@@ -140,7 +163,26 @@ console.log(statusResult)
           </MainHeaderView>
           <AsideView>
             <AlignView>
-              <BellIcon name="bell"/>
+              { (hasUnread(data.sub_task_list) === 0)
+                ? (
+                  null
+                )
+                : (
+                  <BellIcon name="bell">
+                    <UnreadMessageCountText>{hasUnread(data.sub_task_list)}</UnreadMessageCountText>
+                  </BellIcon>
+                )
+              }
+              { (hasUnread(data.messages) === 0)
+                ? (
+                  null
+                )
+                : (
+                  <BellIcon name="message-circle">
+                    <UnreadMessageCountText>{hasUnread(data.messages)}</UnreadMessageCountText>
+                  </BellIcon>
+                )
+              }
             </AlignView>
           </AsideView>
         </HeaderView>
