@@ -5,26 +5,42 @@ import { useSelector, useDispatch } from 'react-redux';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 // -----------------------------------------------------------------------------
-import { Container, ConversationView, LineView, HrLine, AlignView,
-  MessageView, MessageText,
-  MessageTime, FooterView, SendInput, SendButton, SendButtonAlignView,
+import {
+  AlignView,
+  BodyView,
+  Container, ConversationView,
+  FooterView, FooterContainer,
+  Header, HrLine,
+  ImageView, Image,
+  LineView,
+  MessageView, MessageText, MessageContainer,
+  MessageWrapper, MessageListView, MessageListItemView,
+  MessageListItemText,  MessageTime, MessageIcon, MessageBottomView,
+  // ParsedKeyboardAvoidingView,
+  ReplyOnTopView, ReplyNameText, ReplyOnTopText,
+  SendInput, SendButton, SendButtonAlignView,
   SendIcon,
-  Header, SpaceView, ImageView, BodyView, Image,
-  SenderView, SenderText, SenderAboutText, ParsedKeyboardAvoidingView
+  SenderView, SenderText, SenderAboutText,
+  TemporaryMessageContainer, TemporaryMessageView, TemporaryMessageText,
+  TemporaryMessageIcon, TemporaryMessageIconView,
 } from './styles'
 import api from '~/services/api';
 import { updateMessagesRequest } from '~/store/modules/message/actions';
 
-export default function MessagesConversationPage({ navigation, route, loadTasks }) {
-  const user_id = useSelector(state => state.user.profile.id);
+export default function MessagesConversationPage({ route }) {
+  // const user_id = useSelector(state => state.user.profile.id);
   const [messages, setMessages] = useState(route.params.messages);
   const [replyValue, setReplyValue] = useState();
+  const [replySender, setReplySender] = useState();
   const [value, setValue] = useState();
+  const [messageDropMenu, setMessageDropMenu] = useState();
+  const [toggleDropMenu, setToggleDropMenu] = useState(false);
+  const [chatMessage, setChatMessage] = useState();
 
   const sendInputRef = useRef();
   const id = route.params.id;
   const task = route.params
-  const userName = route.params.user
+  // const userName = route.params.user
   const dispatch = useDispatch();
 
   const formattedMessageDate = fdate =>
@@ -34,16 +50,19 @@ export default function MessagesConversationPage({ navigation, route, loadTasks 
 
   async function handleSend() {
     let pushMessage
+    let formattedTimeStamp = formattedMessageDate(new Date())
+    const message_id = Math.floor(Math.random() * 1000000)
+    // const id = route.params.id
+
     if(task.messages == null) {
       pushMessage = []
     } else {
       pushMessage = task.messages
     }
 
-    let formattedTimeStamp = formattedMessageDate(new Date())
-    // const id = route.params.id
     if (replyValue) {
       pushMessage.push({
+        "id": `worker${message_id}`,
         "message": value,
         "sender": "worker",
         "user_read": false,
@@ -56,6 +75,7 @@ export default function MessagesConversationPage({ navigation, route, loadTasks 
       })
     } else {
       pushMessage.push({
+        "id": `worker${message_id}`,
         "message": value,
         "sender": "worker",
         "user_read": false,
@@ -71,32 +91,115 @@ export default function MessagesConversationPage({ navigation, route, loadTasks 
     await api.put(`tasks/messages/${id}`,
       pushMessage
     );
-    // setChatMessage();
+    setChatMessage();
     setValue();
-    sendInputRef.current.clear();
+    // sendInputRef.current.clear();
     dispatch(updateMessagesRequest(new Date()))
+  }
 
+  function handleMessageDropMenu(position) {
+    setMessageDropMenu(position)
+    setToggleDropMenu(!toggleDropMenu)
+    console.tron.log(position)
+    // console.tron.log(messageDropMenu)
+    // console.tron.log(toggleDropMenu)
+  }
+
+  function handleMessageReply(message, sender) {
+    setReplyValue(message)
+    setReplySender(sender)
+    setToggleDropMenu(false)
+  }
+
+  function handleMessageForward(message) {
+    setForwardValue(message)
+    setToggleDropMenu(false)
+  }
+
+  async function handleMessageDelete(position) {
+    const editedTaskMessages = task.messages;
+    editedTaskMessages[position].removed_message = editedTaskMessages[position].message;
+    editedTaskMessages[position].message = 'mensagem removida'
+    await api.put(`tasks/${task.id}`, {
+      messages:  editedTaskMessages
+    });
+    setTask(task)
+    setToggleDropMenu(false)
   }
 
   const renderItem = ({ item, index }) => (
-    <AlignView key={index} sender={item.sender}>
+    <AlignView key={item.id} sender={item.sender}>
       <LineView>
         { item.sender === 'user'
           ? (
             <>
               <MessageView>
                 <MessageText>{item.message}</MessageText>
+                <TouchableOpacity onPress={handleMessageDropMenu}>
+                  <MessageIcon name='chevron-down'/>
+                </TouchableOpacity>
               </MessageView>
               <MessageTime>{item.timestamp}</MessageTime>
             </>
           )
           : (
-            <>
+            <MessageContainer>
+            <MessageWrapper>
               <MessageTime>{item.timestamp}</MessageTime>
+
               <MessageView>
-                <MessageText>{item.message}</MessageText>
+              { item.reply_message && !item.removed_message
+                ? (
+                  <ReplyOnTopView>
+                    { item.reply_sender === 'worker'
+                      ? (
+                        <ReplyNameText>{task.worker_name}</ReplyNameText>
+                      )
+                      : (
+                        <ReplyNameText>{task.user_name}</ReplyNameText>
+                      )
+                    }
+                    <ReplyOnTopText>{item.reply_message}</ReplyOnTopText>
+                  </ReplyOnTopView>
+                )
+                : null
+              }
+                <MessageBottomView>
+                  <MessageText>{item.message}</MessageText>
+                  <TouchableOpacity
+                    onPress={() => handleMessageDropMenu(index)}
+                  >
+                    <MessageIcon name='chevron-down'/>
+                  </TouchableOpacity>
+                </MessageBottomView>
               </MessageView>
-            </>
+            </MessageWrapper>
+              { (messageDropMenu === index) && (toggleDropMenu === true) && (
+                <MessageListView>
+                  <TouchableOpacity
+                    onPress={() => handleMessageReply(item.message, item.sender)}
+                  >
+                    <MessageListItemView>
+                      <MessageListItemText>Responder</MessageListItemText>
+                    </MessageListItemView>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleMessageForward(item.message)}
+                  >
+                    <MessageListItemView>
+                      <MessageListItemText>Encaminhar</MessageListItemText>
+                    </MessageListItemView>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleMessageDelete(index)}
+                  >
+                    <MessageListItemView>
+                      <MessageListItemText>Deletar</MessageListItemText>
+                    </MessageListItemView>
+                  </TouchableOpacity>
+                </MessageListView>
+              )}
+            </MessageContainer>
           )
         }
       </LineView>
@@ -119,23 +222,21 @@ export default function MessagesConversationPage({ navigation, route, loadTasks 
             </SenderView>
           </BodyView>
         </Header>
+        <FooterContainer>
+            { replyValue && (
+              <TemporaryMessageContainer>
+                <TemporaryMessageView>
+                  <TemporaryMessageText>{replyValue}</TemporaryMessageText>
+                </TemporaryMessageView>
 
-        <ConversationView>
-          <FlatList
-            data={messages}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            // initialScrollIndex={messages.length-1}
-          />
-        </ConversationView>
-        <ParsedKeyboardAvoidingView
-          // keyboardVerticalOffset={10}
-          // behavior={Platform.OS === "ios" ? "padding" : "height"}
-          // behavior="height"
-          behavior="position"
-          // behavior='padding'
-        >
-          <FooterView>
+                <TemporaryMessageIconView>
+                  <TouchableOpacity onPress={() => setReplyValue()}>
+                    <TemporaryMessageIcon name='x-circle'/>
+                  </TouchableOpacity>
+                </TemporaryMessageIconView>
+              </TemporaryMessageContainer>
+            )}
+            <FooterView>
               <SendInput
                   keyboardType="default"
                   autoCorrect={false}
@@ -145,7 +246,7 @@ export default function MessagesConversationPage({ navigation, route, loadTasks 
                   returnKeyType="send"
                   value={value}
                   onChangeText={setValue}
-                  ref={sendInputRef}
+                  // ref={sendInputRef}
               />
               {/* keep "if else" below */}
               { value
@@ -163,8 +264,25 @@ export default function MessagesConversationPage({ navigation, route, loadTasks 
                   </>
                 )
               }
-          </FooterView>
-        </ParsedKeyboardAvoidingView>
+            </FooterView>
+          </FooterContainer>
+
+        <ConversationView>
+          <FlatList
+            data={messages}
+            renderItem={renderItem}
+            keyExtractor={item => String(item.id)}
+            // initialScrollIndex={messages.length-1}
+          />
+        </ConversationView>
+        {/* <ParsedKeyboardAvoidingView
+          // keyboardVerticalOffset={10}
+          // behavior={Platform.OS === "ios" ? "padding" : "height"}
+          // behavior="height"
+          behavior="position"
+          // behavior='padding'
+        > */}
+        {/* </ParsedKeyboardAvoidingView> */}
       </Container>
     </SafeAreaView>
   )

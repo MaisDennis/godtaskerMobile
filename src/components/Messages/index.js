@@ -38,8 +38,9 @@ export default function Messages({ data, navigation, resetTasks, setResetTasks }
       id: data.id,
       user_name: data.user.user_name,
       messages: data.messages,
-      resetTasks: resetTasks,
-      setResetTasks: setResetTasks,
+      worker_name: data.worker.worker_name,
+      // resetTasks: resetTasks,
+      // setResetTasks: setResetTasks,
     });
     setResetConversation();
   }

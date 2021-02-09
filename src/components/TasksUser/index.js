@@ -65,7 +65,6 @@ export default function TaskUser({ data, navigation }) {
 
   function handleToggleTask() {
     setToggleTask(!toggleTask)
-    // console.tron.log(data)
     if(hasUnreadSubTasks(data.sub_task_list) !== 0) {
       const editedSubTaskList = data.sub_task_list
       editedSubTaskList.map(e => {
