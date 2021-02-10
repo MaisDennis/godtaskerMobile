@@ -15,10 +15,16 @@ export function signFailure() {
     type: '@auth/SIGN_IN_FAILURE',
   }
 }
-export function signUpRequest(first_name, last_name, user_name, password, phonenumber, email, birth_date, gender) {
+export function signUpRequest(
+  first_name, last_name, user_name,
+  password, phonenumber, email, birth_date, gender
+) {
   return {
     type: '@auth/SIGN_UP_REQUEST',
-    payload: { first_name, last_name, user_name, password, phonenumber, email, birth_date, gender },
+    payload: {
+      first_name, last_name, user_name,
+      password, phonenumber, email, birth_date, gender
+    },
   }
 }
 export function signOut() {

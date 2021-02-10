@@ -76,16 +76,3 @@ export const TitleTask = styled.Text`
   color: #222;
   font-weight: bold;
 `;
-
-// export const Div4 = styled.View`
-//   display: flex;
-//   flex-direction: row;
-//   margin: auto ;
-// `;
-
-// export const List = styled.FlatList.attrs({
-//   showsVerticalScrollIndicator: false,
-//   contentContainerStyle: { padding: 30 },
-// })`
-//   height: 100%;
-// `;

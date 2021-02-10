@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native'
 // -----------------------------------------------------------------------------
 import {
   Container, FormScrollView, ItemWrapperView, LabelText,
-  Input,  SubmitView, AlignView, SubmitIcon,  PhoneMask
+  Input, SubmitView, AlignView, SubmitIcon, PhoneMask
 } from './styles'
 import { updateContacts } from '~/store/modules/contact/actions';
 import api from '~/services/api';

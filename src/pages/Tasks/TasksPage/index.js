@@ -15,7 +15,7 @@ import {
 // -----------------------------------------------------------------------------
 export default function Dashboard({ navigation }) {
   const [tasks, setTasks] = useState([]);
-  const workerName = useSelector(state => state.worker.profile.worker_name);
+  const workerID = useSelector(state => state.worker.profile.id);
   const update_tasks = useSelector(state => state.task.tasks);
   const formattedDate = fdate =>
   fdate == null
@@ -30,10 +30,23 @@ export default function Dashboard({ navigation }) {
 
   async function loadTasks() {
     const response = await api.get(`tasks/unfinished`, {
-      params: { test: workerName },
+      params: { workerID },
     });
     setTasks(response.data);
+  }
 
+  async function loadFinished() {
+    let response = await api.get(`tasks/finished`, {
+      params: { workerID }
+    })
+    setTasks(response.data);
+  }
+
+  async function loadCanceled() {
+    let response = await api.get(`tasks/canceled`, {
+      params: { workerID }
+    })
+    setTasks(response.data);
   }
   // -----------------------------------------------------------------------------
   return (
@@ -45,29 +58,24 @@ export default function Dashboard({ navigation }) {
       </Header>
       <HeaderTabView>
         <UpperTabView>
-          <TouchableOpacity>
+        <TouchableOpacity onPress={() => loadTasks()}>
             <UpperTabText>em aberto</UpperTabText>
           </TouchableOpacity>
         </UpperTabView>
         <UpperTabView>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => loadFinished()}>
             <UpperTabText>finalizadas</UpperTabText>
           </TouchableOpacity>
         </UpperTabView>
         <UpperTabView>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => loadCanceled()}>
             <UpperTabText>canceladas</UpperTabText>
-          </TouchableOpacity>
-        </UpperTabView>
-        <UpperTabView>
-          <TouchableOpacity>
-            <UpperTabText>todas</UpperTabText>
           </TouchableOpacity>
         </UpperTabView>
       </HeaderTabView>
       { tasks == ''
         ? (
-          <Title3>Não há tarefas em aberto.</Title3>
+          <Title3>Sem tarefas nessa condição.</Title3>
         )
         : (
           <List
@@ -76,7 +84,7 @@ export default function Dashboard({ navigation }) {
             renderItem={({ item, index }) => (
               <>
                 <Title3>{index+1}</Title3>
-                <Task data={item} navigation={navigation} position={index+1}/>
+                <Task key={item.id} data={item} navigation={navigation} position={index+1}/>
               </>
             )}
           />

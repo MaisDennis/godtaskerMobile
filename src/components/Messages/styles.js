@@ -5,15 +5,9 @@ import Icon from 'react-native-vector-icons/Feather';
 export const Container = styled.View`
   display: flex;
   flex-direction: row;
-  /* justify-content: space-between; */
   align-items: center;
   width: 100%;
   margin: 4px 0px;
-  /* border-top-left-radius: 24px; */
-  /* border-bottom-left-radius: 24px; */
-  /* padding: 4px 8px; */
-  /* border-radius: 24px; */
-  /* border: 1px solid #ccc; */
   background: #fff;
   /* background: #F5F5; */
 `;
@@ -24,7 +18,6 @@ flex-direction: row;
 align-items: center;
 height: 100%;
 width: 20%;
-/* background-color: #f00; */
 background-color: #73a6c4;
 `;
 
@@ -34,8 +27,6 @@ flex-direction: row;
 align-items: center;
 height: 100%;
 width: 20%;
-/* border-top-left-radius: 24px; */
-  /* border-bottom-left-radius: 24px; */
 background-color: #73c479;
 /* background: ${props => props.colorProp == true ? '#73a6c4' : '#73c479'}; */
 `;
@@ -134,11 +125,3 @@ export const UnreadMessageCountText = styled.Text`
   margin: auto;
   /* background-color: #f00; */
 `;
-
-// export const AlignView = styled.View`
-// display: flex;
-// flex-direction: column;
-// align-items: center;
-// `;
-
-

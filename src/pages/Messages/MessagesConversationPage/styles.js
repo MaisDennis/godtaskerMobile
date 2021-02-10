@@ -62,7 +62,22 @@ export const FooterContainer = styled.View`
   width: 100%;
   margin: 0;
   background-color: #f00;
-
+`;
+export const ForwardOnTopView = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* height: auto; */
+  width: 100%;
+  border-radius: 4px;
+  margin: 0 4px;
+  padding: 0 4px;
+  /* background-color: #f00; */
+`;
+export const ForwardText = styled.Text`
+  font-style: italic;
+  margin-left: 4px;
+  color: #666;
 `;
 
 export const Header = styled.View`
@@ -108,6 +123,9 @@ padding: 4px;
 border-radius: 8px;
 /* background-color: #4ee; */
 background-color: #73a6c4;
+background-color: ${
+  props => props.sender === 'user' ? '#44cc33' : '#73a6c4'
+};
 `;
 export const MessageBottomView = styled.View`
   display: flex;
@@ -116,7 +134,14 @@ export const MessageBottomView = styled.View`
   margin: 4px;
   /* background-color: #f5f5f5; */
 `;
-export const MessageText = styled.Text``;
+export const MessageText = styled.Text`
+font-style: ${
+  props => props.removedMessage ? 'italic' : 'normal'
+};
+color: ${
+  props => props.removedMessage ? '#666' : '#222'
+};
+`;
 export const MessageTime = styled.Text`
 font-size: 12px;
 margin: 4px;
@@ -163,7 +188,6 @@ color: #999;
 text-align: left;
 margin: 0 auto;
 `;
-
 
 export const ParsedKeyboardAvoidingView = styled.KeyboardAvoidingView`
 display: flex;
@@ -225,7 +249,8 @@ export const SendButton = styled.View`
   width: 36px;
   border-radius: 36px;
   margin: 0;
-  background-color: #4ee;
+  /* background-color: #4ee; */
+  background-color: #007f66;
 `;
 export const SendButtonAlignView = styled.View`
   display: flex;

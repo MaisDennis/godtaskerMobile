@@ -32,7 +32,6 @@ export default function SubTasks({ subTaskList }) {
         <Text>{s.description}</Text>
       ))
       }
-
     </Container>
   )
 }

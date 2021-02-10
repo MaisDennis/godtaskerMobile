@@ -7,14 +7,21 @@ import CheckBox from '@react-native-community/checkbox'; //https://github.com/re
 // -----------------------------------------------------------------------------
 import pt from 'date-fns/locale/pt';
 import {
-  Container, TitleView, TitleIcon, TaskIcon, TitleText, NameText,
+  AlignBottomView, AlignView, AsideView, AlignCheckBoxView,
+  ButtonView,
+  BottomHeaderView, BellIcon,
+  Container, ConfirmButton, CheckBoxView,
   DescriptionView, DescriptionBorderView, DescriptionSpan,
-  DatesAndButtonView, TagView, Label, StartTimeView, StartTime,
-  DueTimeView, DueTime,  ButtonView, HrLine,
-  ConfirmButton, UserView,
-  HeaderView, TopHeaderView, MiddleHeaderView, BottomHeaderView, AlignBottomView, AlignView,
-  OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine,
-  UnreadMessageCountText
+  DatesAndButtonView, DueTimeView, DueTime,
+  HeaderView, HrTitleLine, HrLine,
+  InnerStatusView,
+  Label,
+  MainHeaderView, MiddleHeaderView,
+  NameText,
+  OuterStatusView,
+  StartTimeView, StartTime,
+  TagView, TopHeaderView,  TitleView, TitleIcon, TaskIcon, TitleText,
+  UserView, UnreadMessageCountText
 } from './styles';
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
@@ -65,7 +72,7 @@ export default function TaskUser({ data, navigation }) {
 
   function handleToggleTask() {
     setToggleTask(!toggleTask)
-    if(hasUnreadSubTasks(data.sub_task_list) !== 0) {
+    if(hasUnread(data.sub_task_list) !== 0) {
       const editedSubTaskList = data.sub_task_list
       editedSubTaskList.map(e => {
         e.user_read = true
@@ -111,21 +118,7 @@ export default function TaskUser({ data, navigation }) {
   //   navigation.navigate('Confirm', { task_id: data.id, taskName: data.name });
   // }
 
-  const hasUnreadSubTasks = (array) => {
-    try {
-      let sum = 0;
-      for(let i = 0; i < array.length; i++) {
-        if(array[i].user_read === false) {
-          sum += 1
-        }
-      }
-      return sum
-    } catch(error) {
-      return
-    }
-  }
-
-  const hasUnreadMessages = (array) => {
+  const hasUnread = (array) => {
     try {
       let sum = 0;
       for(let i = 0; i < array.length; i++) {
@@ -191,23 +184,23 @@ export default function TaskUser({ data, navigation }) {
           </MainHeaderView>
           <AsideView>
             <AlignView>
-              { (hasUnreadSubTasks(data.sub_task_list) === 0)
+              { (hasUnread(data.sub_task_list) === 0)
                 ? (
                   null
                 )
                 : (
                   <BellIcon name="bell">
-                    <UnreadMessageCountText>{hasUnreadSubTasks(data.sub_task_list)}</UnreadMessageCountText>
+                    <UnreadMessageCountText>{hasUnread(data.sub_task_list)}</UnreadMessageCountText>
                   </BellIcon>
                 )
               }
-              { (hasUnreadMessages(data.messages) === 0)
+              { (hasUnread(data.messages) === 0)
                 ? (
                   null
                 )
                 : (
                   <BellIcon name="message-circle">
-                    <UnreadMessageCountText>{hasUnreadMessages(data.messages)}</UnreadMessageCountText>
+                    <UnreadMessageCountText>{hasUnread(data.messages)}</UnreadMessageCountText>
                   </BellIcon>
                 )
               }

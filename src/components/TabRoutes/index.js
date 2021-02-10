@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 // -----------------------------------------------------------------------------
 import User from '~/pages/UserPage';
 import Tasks from '~/pages/Tasks/TasksPage';
-import TasksFinished from '~/pages/Tasks/TasksFinishedPage';
+// import TasksFinished from '~/pages/Tasks/TasksFinishedPage';
 import Messages from '~/pages/Messages/MessagesPage';
 import Contacts from '~/pages/Contacts/ContactsPage';
 import Settings from '~/pages/Settings';

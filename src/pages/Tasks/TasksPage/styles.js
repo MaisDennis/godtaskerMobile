@@ -44,4 +44,6 @@ height: auto;
 /* width: 25%; */
 margin: auto;
 `;
-export const UpperTabText = styled.Text``;
+export const UpperTabText = styled.Text`
+color: #4433ee;
+`;

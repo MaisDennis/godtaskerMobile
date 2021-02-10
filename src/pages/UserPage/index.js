@@ -85,11 +85,11 @@ export default function UserPage({ navigation }) {
             <UpperTabText>canceladas</UpperTabText>
           </TouchableOpacity>
         </UpperTabView>
-        <UpperTabView>
+        {/* <UpperTabView>
           <TouchableOpacity onPress={() => loadAll('', user_id)}>
             <UpperTabText>todas</UpperTabText>
           </TouchableOpacity>
-        </UpperTabView>
+        </UpperTabView> */}
       </HeaderTabView>
       { tasks == ''
         ? (

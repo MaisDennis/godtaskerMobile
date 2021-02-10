@@ -45,10 +45,14 @@ export function setToken({payload }) {
 // -----------------------------------------------------------------------------
 export function* signUp({ payload }) {
   try {
-    const { first_name, last_name, user_name, password, phonenumber, email, birth_date, gender } = payload;
+    const {
+      first_name, last_name, user_name,
+      password, phonenumber, email, birth_date, gender
+    } = payload;
 
     yield call(api.post, 'users', {
-      first_name, last_name, user_name, password, phonenumber, email, birth_date, gender, subscriber: false
+      first_name, last_name, user_name,
+      password, phonenumber, email, birth_date, gender, subscriber: false
     })
 
     toast.success('Usuário cadastrado com sucesso!');

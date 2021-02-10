@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
-import { View, Text, KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from 'react-native'
-import { useSelector, useDispatch } from 'react-redux';
+import { KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from 'react-native'
+import { useDispatch } from 'react-redux';
 // import Icon from 'react-native-vector-icons/Feather'
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -9,7 +9,7 @@ import {
   AlignView,
   BodyView,
   Container, ConversationView,
-  FooterView, FooterContainer,
+  FooterView, FooterContainer, ForwardText, ForwardOnTopView,
   Header, HrLine,
   ImageView, Image,
   LineView,
@@ -25,19 +25,19 @@ import {
   TemporaryMessageIcon, TemporaryMessageIconView,
 } from './styles'
 import api from '~/services/api';
-import { updateMessagesRequest } from '~/store/modules/message/actions';
+import { updateMessagesRequest, updateForwardMessage } from '~/store/modules/message/actions';
 
-export default function MessagesConversationPage({ route }) {
+export default function MessagesConversationPage({ navigation, route }) {
   // const user_id = useSelector(state => state.user.profile.id);
   const [messages, setMessages] = useState(route.params.messages);
   const [replyValue, setReplyValue] = useState();
   const [replySender, setReplySender] = useState();
+
   const [value, setValue] = useState();
   const [messageDropMenu, setMessageDropMenu] = useState();
   const [toggleDropMenu, setToggleDropMenu] = useState(false);
   const [chatMessage, setChatMessage] = useState();
-
-  const sendInputRef = useRef();
+  // const sendInputRef = useRef();
   const id = route.params.id;
   const task = route.params
   // const userName = route.params.user
@@ -62,7 +62,7 @@ export default function MessagesConversationPage({ route }) {
 
     if (replyValue) {
       pushMessage.push({
-        "id": `worker${message_id}`,
+        "id": message_id,
         "message": value,
         "sender": "worker",
         "user_read": false,
@@ -75,7 +75,7 @@ export default function MessagesConversationPage({ route }) {
       })
     } else {
       pushMessage.push({
-        "id": `worker${message_id}`,
+        "id": message_id,
         "message": value,
         "sender": "worker",
         "user_read": false,
@@ -93,7 +93,7 @@ export default function MessagesConversationPage({ route }) {
     );
     setChatMessage();
     setValue();
-    // sendInputRef.current.clear();
+    setReplyValue();
     dispatch(updateMessagesRequest(new Date()))
   }
 
@@ -112,8 +112,9 @@ export default function MessagesConversationPage({ route }) {
   }
 
   function handleMessageForward(message) {
-    setForwardValue(message)
     setToggleDropMenu(false)
+    dispatch(updateForwardMessage(message))
+    navigation.goBack()
   }
 
   async function handleMessageDelete(position) {
@@ -123,31 +124,18 @@ export default function MessagesConversationPage({ route }) {
     await api.put(`tasks/${task.id}`, {
       messages:  editedTaskMessages
     });
-    setTask(task)
     setToggleDropMenu(false)
   }
-
+  // ---------------------------------------------------------------------------
   const renderItem = ({ item, index }) => (
     <AlignView key={item.id} sender={item.sender}>
       <LineView>
-        { item.sender === 'user'
-          ? (
-            <>
-              <MessageView>
-                <MessageText>{item.message}</MessageText>
-                <TouchableOpacity onPress={handleMessageDropMenu}>
-                  <MessageIcon name='chevron-down'/>
-                </TouchableOpacity>
-              </MessageView>
+        <MessageContainer>
+          <MessageWrapper>
+            { item.sender === 'worker' && (
               <MessageTime>{item.timestamp}</MessageTime>
-            </>
-          )
-          : (
-            <MessageContainer>
-            <MessageWrapper>
-              <MessageTime>{item.timestamp}</MessageTime>
-
-              <MessageView>
+            )}
+            <MessageView sender={item.sender}>
               { item.reply_message && !item.removed_message
                 ? (
                   <ReplyOnTopView>
@@ -164,49 +152,61 @@ export default function MessagesConversationPage({ route }) {
                 )
                 : null
               }
-                <MessageBottomView>
-                  <MessageText>{item.message}</MessageText>
-                  <TouchableOpacity
-                    onPress={() => handleMessageDropMenu(index)}
-                  >
-                    <MessageIcon name='chevron-down'/>
-                  </TouchableOpacity>
-                </MessageBottomView>
-              </MessageView>
-            </MessageWrapper>
-              { (messageDropMenu === index) && (toggleDropMenu === true) && (
-                <MessageListView>
-                  <TouchableOpacity
-                    onPress={() => handleMessageReply(item.message, item.sender)}
-                  >
-                    <MessageListItemView>
-                      <MessageListItemText>Responder</MessageListItemText>
-                    </MessageListItemView>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleMessageForward(item.message)}
-                  >
-                    <MessageListItemView>
-                      <MessageListItemText>Encaminhar</MessageListItemText>
-                    </MessageListItemView>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleMessageDelete(index)}
-                  >
-                    <MessageListItemView>
-                      <MessageListItemText>Deletar</MessageListItemText>
-                    </MessageListItemView>
-                  </TouchableOpacity>
-                </MessageListView>
-              )}
-            </MessageContainer>
-          )
-        }
+              { item.forward_message && !item.removed_message
+                ? (
+                  <ForwardOnTopView>
+                    <MessageIcon name='corner-down-right'/>
+                    <ForwardText>Mens. encaminhada</ForwardText>
+                  </ForwardOnTopView>
+                )
+                : (
+                  null
+                )
+
+              }
+              <MessageBottomView>
+                <MessageText removedMessage={item.removed_message}>{item.message}</MessageText>
+                <TouchableOpacity
+                  onPress={() => handleMessageDropMenu(index)}
+                >
+                  <MessageIcon name='chevron-down'/>
+                </TouchableOpacity>
+              </MessageBottomView>
+            </MessageView>
+            { item.sender === 'user' && (
+              <MessageTime>{item.timestamp}</MessageTime>
+            )}
+          </MessageWrapper>
+          { (messageDropMenu === index) && (toggleDropMenu === true) && (
+            <MessageListView>
+              <TouchableOpacity
+                onPress={() => handleMessageReply(item.message, item.sender)}
+              >
+                <MessageListItemView>
+                  <MessageListItemText>Responder</MessageListItemText>
+                </MessageListItemView>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleMessageForward(item.message)}
+              >
+                <MessageListItemView>
+                  <MessageListItemText>Encaminhar</MessageListItemText>
+                </MessageListItemView>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleMessageDelete(index)}
+              >
+                <MessageListItemView>
+                  <MessageListItemText>Deletar</MessageListItemText>
+                </MessageListItemView>
+              </TouchableOpacity>
+            </MessageListView>
+          )}
+        </MessageContainer>
       </LineView>
       <HrLine/>
     </AlignView>
   );
-
   // ---------------------------------------------------------------------------
   return (
     <SafeAreaView>
@@ -246,7 +246,7 @@ export default function MessagesConversationPage({ route }) {
                   returnKeyType="send"
                   value={value}
                   onChangeText={setValue}
-                  // ref={sendInputRef}
+                  placeholder="Escrever a sua mensagem"
               />
               {/* keep "if else" below */}
               { value

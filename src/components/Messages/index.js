@@ -1,29 +1,56 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { TouchableOpacity } from 'react-native'
-// import { getDay, parseISO } from 'date-fns'
-import { Container, LeftDoubleView, LeftView, ImageView, AlignView, Image, BodyView, MainView, TitleView,
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+// -----------------------------------------------------------------------------
+import {
+  Container, LeftDoubleView, LeftView, ImageView,
+  AlignView, Image, BodyView, MainView, TitleView,
   TitleText, SenderText, LastMessageView, LastMessageText, RightView,
   LastMessageTimeView, LastMessageTimeText,
-  UnreadMessageCountView, MessageIcon, UnreadMessageCountText, HrLine
+  // UnreadMessageCountView,
+  MessageIcon, UnreadMessageCountText,
+  // HrLine,
 } from './styles'
+import { updateForwardMessage } from '~/store/modules/message/actions';
 import api from '~/services/api';
 
-export default function Messages({ data, navigation, resetTasks, setResetTasks }) {
-  const user_id = useSelector(state => state.user.profile.id);
+export default function Messages({ data, navigation }) {
   const worker_id = useSelector(state => state.worker.profile.id);
+  const forwardValue = useSelector(state => state.message.forward_message.message);
+  const dispatch = useDispatch();
+
   const [resetConversation, setResetConversation] = useState();
 
   const senderUserName = data.user.user_name;
   const senderWorkerName = data.worker.worker_name
-
   const messageArrayLength = data.messages.length;
   const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
   const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
-
   let editedMessages = data.messages;
 
+  const formattedMessageDate = fdate =>
+  fdate == null
+    ? ''
+    : format(fdate, "dd'/'MMM'/'yyyy HH:mm", { locale: ptBR });
+
   function handleMessageConversation() {
+    const message_id = Math.floor(Math.random() * 1000000)
+
+    if (forwardValue) {
+      editedMessages.push({
+        "id": message_id,
+        "message": forwardValue,
+        "sender": `${worker_id === data.worker_id ? 'worker' : 'user'}`,
+        "user_read": `${worker_id === data.worker_id ? false : true }`,
+        "worker_read": `${worker_id === data.worker_id ? true : false }`,
+        "timestamp": formattedMessageDate(new Date()),
+        "forward_message": true,
+      })
+      dispatch(updateForwardMessage(null));
+    }
+
     editedMessages.map((m) => {
       if(m.worker_read === false) {
         m.worker_read = true;
@@ -39,8 +66,6 @@ export default function Messages({ data, navigation, resetTasks, setResetTasks }
       user_name: data.user.user_name,
       messages: data.messages,
       worker_name: data.worker.worker_name,
-      // resetTasks: resetTasks,
-      // setResetTasks: setResetTasks,
     });
     setResetConversation();
   }
@@ -54,9 +79,8 @@ export default function Messages({ data, navigation, resetTasks, setResetTasks }
         }
       }
       return sum
-    } catch(error) {
-      return
     }
+    catch(error) { return }
   }
   // ---------------------------------------------------------------------------
   return (
@@ -67,27 +91,22 @@ export default function Messages({ data, navigation, resetTasks, setResetTasks }
             ? (
               <LeftDoubleView>
                 <AlignView>
-                  <ImageView>
-                    <Image/>
-                  </ImageView>
+                  <ImageView><Image/></ImageView>
                 </AlignView>
               </LeftDoubleView>
             )
             : (
               <LeftView>
                 <AlignView>
-                  <ImageView>
-                    <Image/>
-                  </ImageView>
+                  <ImageView><Image/></ImageView>
                 </AlignView>
               </LeftView>
             )
           }
-
           <BodyView>
             <MainView>
               <TitleView>
-                <TitleText colorProp={worker_id == data.worker_id}>{data.id}</TitleText>
+                <TitleText colorProp={worker_id === data.worker_id}>{data.name}</TitleText>
                 { (worker_id === data.worker_id)
                   ? (
                     <SenderText>{senderUserName}</SenderText>

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 // -----------------------------------------------------------------------------
-import Task from '~/components/Tasks';
+// import Task from '~/components/Tasks';
 import TaskUser from '~/components/TasksUser';
-import { workerCheckIn, signOut } from '~/store/modules/worker/actions';
 import api from '~/services/api';
 import {
   Container, List, Title3,
@@ -13,7 +12,6 @@ import {
 export default function ContactsTasksPage({ navigation, route }) {
   const [tasks, setTasks] = useState([]);
   const user_id = useSelector(state => state.user.profile.id);
-  // console.tron.log(route.params.worker_name)
   // console.tron.log(user_id)
 
   useEffect(() => {

@@ -4,3 +4,9 @@ export function updateMessagesRequest(data) {
     payload: { data },
   };
 }
+export function updateForwardMessage(message) {
+  return {
+    type: '@message/UPDATE_FORWARD_MESSAGE',
+    payload: { message },
+  };
+}

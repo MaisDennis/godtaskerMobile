@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import CheckBox from '@react-native-community/checkbox';
@@ -8,14 +8,22 @@ import Modal from 'react-native-modal';
 // -----------------------------------------------------------------------------
 import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/Feather';
-import Button from '~/components/Button';
+// import Button from '~/components/Button';
 import {
-  Container, TitleView, TaskIcon, TitleText, NameText, DescriptionView, DescriptionBorderView, DescriptionSpan,
-  DatesAndButtonView, TagView, Label, StartTimeView, StartTime, DueTimeView, DueTime,  ButtonView, ButtonText, HrLine, MessageButton,
-  ConfirmButton, UserView, ModalView, ModalText,
-  HeaderView, TopHeaderView, MiddleHeaderView, BottomHeaderView, AlignBottomView, AlignView,
-  OuterStatusView, InnerStatusView, AsideView, MainHeaderView, BellIcon, CheckBoxView, AlignCheckBoxView, HrTitleLine,
-  UnreadMessageCountText,
+  AsideView, AlignBottomView, AlignView, AlignCheckBoxView,
+  ButtonView, ButtonText, BottomHeaderView, BellIcon,
+  ConfirmButton, CheckBoxView, Container,
+  DescriptionView, DescriptionBorderView, DescriptionSpan,
+  DatesAndButtonView, DueTimeView, DueTime,
+  HeaderView, HrLine, HrTitleLine,
+  InnerStatusView,
+  Label,
+  ModalView, ModalText, MessageButton, MiddleHeaderView, MainHeaderView,
+  NameText,
+  OuterStatusView,
+  StartTimeView, StartTime,
+  TopHeaderView, TagView, TitleView, TaskIcon, TitleText,
+  UnreadMessageCountText, UserView,
 } from './styles';
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
@@ -25,22 +33,20 @@ const formattedDate = fdate =>
     ? '-'
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
-export default function Task({ data, navigation, position }) {
+export default function Task({ data, navigation }) {
   const dispatch = useDispatch();
 
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const [statusResult, setStatusResult] = useState(0);
   const [toggleModal, setToggleModal] = useState(false);
+
   const today = new Date();
   const dueDate = parseISO(data.due_date);
   const subTasks = data.sub_task_list
-  // console.log(pastDueDate)
 
   useEffect (() => {
-    // pastDueDate()
     setStatusResult(handleStatus())
-console.log(statusResult)
   }, [ toggleCheckBox ])
 
   function handleStatus() {
@@ -66,8 +72,6 @@ console.log(statusResult)
   async function handletoggleCheckBox(value, position) {
     setToggleCheckBox(!toggleCheckBox) // this distoggles the checkbox
     const editedSubTaskList = data.sub_task_list
-    // console.tron.log(editedSubTaskList)
-    // console.tron.log(position)
     editedSubTaskList[position].complete = value
     editedSubTaskList[position].user_read = false
     await api.put(`tasks/${data.id}`, {

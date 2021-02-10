@@ -8,16 +8,16 @@ import {
 } from './styles';
 import api from '~/services/api';
 // -----------------------------------------------------------------------------
-export default function MessagesPage({ navigation }) {
+export default function MessagesPage({ navigation, route }) {
   const user_id = useSelector(state => state.user.profile.id);
-  const workerName = useSelector(state => state.worker.profile.worker_name);
+  const workerID = useSelector(state => state.worker.profile.id);
   const messages_update = useSelector(state => state.message.profile);
 
   const [tasks, setTasks] = useState([]);
   const [defaultTasks, setDefaultTasks] = useState();
   const [inputState, setInputState] = useState();
   const [resetTasks, setResetTasks] = useState('Hello');
-
+  console.tron.log(route)
   useEffect(() => {
     loadTasks('', user_id);
   }, [ messages_update ]);
@@ -25,7 +25,7 @@ export default function MessagesPage({ navigation }) {
     async function loadTasks(workerNameFilter, userID) {
     let response = []
     const workerResponse = await api.get(`tasks/unfinished`, {
-      params: { test: workerName },
+      params: { workerID },
     });
     const userResponse = await api.get(`tasks/user/unfinished`, {
       params: { workerNameFilter, userID }

@@ -42,7 +42,9 @@ height: auto;
 /* width: 25%; */
 margin: auto;
 `;
-export const UpperTabText = styled.Text``;
+export const UpperTabText = styled.Text`
+color: #4433ee;
+`;
 
 export const AddIcon = styled(Icon)`
 /* margin: 12px; */

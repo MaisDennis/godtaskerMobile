@@ -40,7 +40,6 @@ export default function ContactCreatePage({ navigation }) {
     dispatch(updateContacts(new Date()))
     navigation.goBack()
   }
-
     // ---------------------------------------------------------------------------
   return (
     <Container>
