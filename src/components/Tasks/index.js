@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Feather';
 // import Button from '~/components/Button';
 import {
   AsideView, AlignBottomView, AlignView, AlignCheckBoxView,
-  ButtonView, ButtonText, BottomHeaderView, BellIcon,
+  ButtonView, ButtonText, BottomHeaderView, BellIcon, ButtonIcon,
   ConfirmButton, CheckBoxView, Container,
   DescriptionView, DescriptionBorderView, DescriptionSpan,
   DatesAndButtonView, DueTimeView, DueTime,
@@ -37,7 +37,8 @@ export default function Task({ data, navigation }) {
   const dispatch = useDispatch();
 
   const [toggleTask, setToggleTask] = useState();
-  const [toggleCheckBox, setToggleCheckBox] = useState(false)
+  const [toggleCheckBox, setToggleCheckBox] = useState(false);
+  const [toggleAccept, setToggleAccept] = useState(false);
   const [statusResult, setStatusResult] = useState(0);
   const [toggleModal, setToggleModal] = useState(false);
 
@@ -67,6 +68,10 @@ export default function Task({ data, navigation }) {
 
   function handleToggleTask() {
     setToggleTask(!toggleTask)
+  }
+
+  function handleToggleAccept() {
+    setToggleAccept(!toggleAccept)
   }
 
   async function handletoggleCheckBox(value, position) {
@@ -220,39 +225,44 @@ export default function Task({ data, navigation }) {
               ))}
             </DescriptionBorderView>
           </DescriptionView>
-
-          <DatesAndButtonView>
-            <ButtonView>
-              <TouchableOpacity onPress={handleMessage}>
-                <MessageButton>
-                  <Icon name="message-square" size={20} color="#fff" />
-                </MessageButton>
-              </TouchableOpacity>
-            </ButtonView>
-            <ButtonView>
-              <TouchableOpacity onPress={handleConfirm}>
-                <ConfirmButton pastDueDate={pastDueDate()}>
-                  <Icon name="check-circle" size={20} color="#fff" />
-                </ConfirmButton>
-              </TouchableOpacity>
-            </ButtonView>
-          </DatesAndButtonView>
-          <DatesAndButtonView>
-            <ButtonView>
-              <TouchableOpacity onPress={handleMessage}>
-                <MessageButton>
-                  <ButtonText>Aceitar</ButtonText>
-                </MessageButton>
-              </TouchableOpacity>
-            </ButtonView>
-            <ButtonView>
-              <TouchableOpacity onPress={handleToggleModal}>
-                <ConfirmButton pastDueDate={pastDueDate()}>
-                <ButtonText>Recusar</ButtonText>
-                </ConfirmButton>
-              </TouchableOpacity>
-            </ButtonView>
-          </DatesAndButtonView>
+          { toggleAccept
+            ? (
+              <DatesAndButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleMessage}>
+                    <ConfirmButton>
+                      <ButtonIcon name="message-circle" size={20} color="#fff" />
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleConfirm}>
+                    <ConfirmButton>
+                      <ButtonIcon name="check-circle" size={20} color="#fff" />
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              </DatesAndButtonView>
+            )
+            : (
+              <DatesAndButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleToggleAccept}>
+                    <MessageButton>
+                      <ButtonText>Aceitar</ButtonText>
+                    </MessageButton>
+                  </TouchableOpacity>
+                </ButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleToggleAccept}>
+                    <MessageButton>
+                    <ButtonText>Recusar</ButtonText>
+                    </MessageButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              </DatesAndButtonView>
+            )
+          }
           <Modal isVisible={toggleModal}>
             <ModalView>
               <ModalText>Tem certeza de que quer recusar a tarefa?</ModalText>
@@ -266,7 +276,7 @@ export default function Task({ data, navigation }) {
                 </ButtonView>
                 <ButtonView>
                   <TouchableOpacity onPress={handleToggleModal}>
-                    <ConfirmButton pastDueDate={pastDueDate()}>
+                    <ConfirmButton>
                     <ButtonText>Não</ButtonText>
                     </ConfirmButton>
                   </TouchableOpacity>

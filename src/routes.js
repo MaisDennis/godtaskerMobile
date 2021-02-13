@@ -3,28 +3,27 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, HeaderStyleInterpolators, TransitionPresets } from '@react-navigation/stack';
-import { Text, Image } from 'react-native';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
-import { Icon } from 'react-native-vector-icons/Feather'
 // -----------------------------------------------------------------------------
-import SignIn from './pages/SignIn';
-// import SignUp from './pages/SignUp';
-// import Messages from './pages/Messages';
-import TaskCreate from './pages/Tasks/TaskCreatePage';
-import TaskEdit from './pages/Tasks/TaskEditPage';
-import Confirm from './pages/Confirm';
 import ContactCreate from './pages/Contacts/ContactCreatePage';
 import ContactEdit from './pages/Contacts/ContactEditPage';
 import ContactTasks from './pages/Contacts/ContactTasksPage';
-import {
-  Header, SpaceView, ImageView, BodyView,
-  SenderView, SenderText
-} from './pages/RoutesStyles/styles'
+
 import MessagesConversationPage from './pages/Messages/MessagesConversationPage/index';
+
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import UpdateProfile from './pages/UpdateProfile';
+
+import TaskCreate from './pages/Tasks/TaskCreatePage';
+import TaskEdit from './pages/Tasks/TaskEditPage';
+import Confirm from './pages/Confirm';
 
 import TabRoutes from '~/components/TabRoutes';
 import HeaderView from './components/HeaderRoutesView'
+
+import { Header } from './pages/RoutesStyles/styles'
 // -----------------------------------------------------------------------------
 const Stack = createStackNavigator();
 // -----------------------------------------------------------------------------
@@ -35,17 +34,13 @@ export default function App() {
   fdate == null
     ? '-'
     : format(fdate, "dd 'de' MMMM',' yyyy", { locale: pt });
-  const todayDate = formattedDate(new Date())
+  // const todayDate = formattedDate(new Date())
   // -----------------------------------------------------------------------------
-
   return (
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName={signed === true ? 'TabRoutes' : 'SignIn'}
         screenOptions={{
-          // headerStyle: { backgroundColor: '#222' },
-          // headerTintColor: '#fff',
-          // headerTitleStyle: { fontWeight: 'bold' },
           headerTitleAlign: "center",
           ...TransitionPresets.ModalTransition,
         }}
@@ -54,6 +49,44 @@ export default function App() {
           options={{
             title: 'Entrar',
             headerShown: false,
+          }}
+        />
+        <Stack.Screen name="SignUp" component={SignUp}
+          options={{
+            headerTitle: (() => (
+              <Header>
+                {/* <SpaceView/> */}
+                  <HeaderView data={'Cadastro de usuário'}/>
+                {/* <SpaceView/> */}
+              </Header>
+            )),
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerTintColor: '#fff',
+            headerStyle: {
+              height: 66,
+              backgroundColor: '#73c479',
+              backgroundColor: '#222',
+            },
+          }}
+        />
+        <Stack.Screen name="UpdateProfile" component={UpdateProfile}
+          options={{
+            headerTitle: (() => (
+              <Header>
+                {/* <SpaceView/> */}
+                  <HeaderView data={'Atualizar o cadastro'}/>
+                {/* <SpaceView/> */}
+              </Header>
+            )),
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerTintColor: '#fff',
+            headerStyle: {
+              height: 66,
+              backgroundColor: '#73c479',
+              backgroundColor: '#222',
+            },
           }}
         />
         <Stack.Screen
@@ -80,21 +113,16 @@ export default function App() {
           name="TaskCreate"
           component={TaskCreate}
           options={{
-            // title: 'Editar a tarefa',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <Header>
-                {/* <SpaceView/> */}
-                  <HeaderView data={'Criar uma tarefa'}/>
-                {/* <SpaceView/> */}
-            </Header>
+                <HeaderView data={'Criar uma tarefa'}/>
+              </Header>
             )),
             headerShown: true,
             headerBackTitleVisible: false,
             headerTintColor: '#fff',
             headerStyle: {
               height: 66,
-              // backgroundColor: '#da321c',
-              // backgroundColor: '#f03a1f',
               backgroundColor: '#73c479',
               backgroundColor: '#222',
             },
@@ -104,8 +132,7 @@ export default function App() {
           name="TaskEdit"
           component={TaskEdit}
           options={{
-            // title: 'Editar a tarefa',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <>
                 <HeaderView data={'Editar a tarefa'}/>
               </>
@@ -127,8 +154,7 @@ export default function App() {
           name="Confirm"
           component={Confirm}
           options={{
-            // title: 'Finalizar a tarefa',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <>
                 <HeaderView data={'Finalizar a tarefa'}/>
               </>
@@ -150,8 +176,7 @@ export default function App() {
           name="ContactCreate"
           component={ContactCreate}
           options={{
-            // title: 'Editar a tarefa',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <Header>
                 <HeaderView data={'Adicionar um funcionário'}/>
               </Header>
@@ -173,8 +198,7 @@ export default function App() {
           name="ContactEdit"
           component={ContactEdit}
           options={{
-            // title: 'Editar o contato',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <Header>
                 <HeaderView data={'Editar o funcionário'}/>
               </Header>
@@ -196,8 +220,7 @@ export default function App() {
           name="ContactTasks"
           component={ContactTasks}
           options={{
-            // title: 'Tarefas do contato',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <>
                 <HeaderView data={'Tarefas do contato'}/>
               </>
@@ -219,8 +242,7 @@ export default function App() {
           name="MessagesConversationPage"
           component={MessagesConversationPage}
           options={{
-            // title: 'Conversa',
-            headerTitle: (props => (
+            headerTitle: (() => (
               <Header >
                 <HeaderView data={'Mensagens'}/>
                 {/* <BodyView>

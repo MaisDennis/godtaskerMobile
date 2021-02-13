@@ -32,10 +32,14 @@ width: 10%;
 `;
 
 export const BellIcon = styled(Icon)`
-color: #222;
 font-size: 24px;
 margin: 4px 0;
 color: #ccc;
+`;
+export const ButtonIcon = styled(Icon)`
+font-size: 24px;
+margin: 4px 0;
+color: #222;
 `;
 export const BottomHeaderView = styled.View`
   display: flex;
@@ -54,7 +58,7 @@ export const ButtonView = styled.View`
 export const ButtonText = styled.Text`
   font-weight: bold;
   font-size: 14px;
-  color: #fff;
+  color: #222;
 `;
 
 export const CheckBoxView = styled.View`
@@ -77,8 +81,10 @@ export const Container = styled.View`
   background-color: #fff;
   /* background-color: #F5F5; */
 `;
-export const ConfirmButton = styled(Button)`
-background: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'};
+export const ConfirmButton = styled.View`
+  display: flex;
+  align-items: center;
+/* background: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */
 `;
 
 export const DescriptionView = styled.View`

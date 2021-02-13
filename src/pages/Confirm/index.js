@@ -3,12 +3,20 @@ import { Alert } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import Icon from 'react-native-vector-icons/Feather';
 // -----------------------------------------------------------------------------
-import { Container, TitleView, TaskName, CameraButton, CameraView, StyledScrollView } from './styles';
+import {
+  Container, TitleView, TaskName,
+  CameraButton, CameraView, CameraReverseButton, CameraRollButton,
+  FlashButton, FooterView,
+  // StyledScrollView,
+  StyledRNCamera,
+} from './styles';
 import api from '~/services/api';
 import { updateImageRequest } from '~/store/modules/image/actions';
 // -----------------------------------------------------------------------------
 export default function Confirm({ route }) {
   const { task_id, taskName } = route.params;
+  const [toggleFlash, setToggleFlash] = useState(true);
+  const [toggleCameraReverse, setToggleCameraReverse] = useState(true);
   const camera = useRef(null);
 
   async function takePicture() {
@@ -90,34 +98,50 @@ export default function Confirm({ route }) {
   // -----------------------------------------------------------------------------
   return (
     <>
-    <StyledScrollView>
+    {/* <StyledScrollView> */}
       <Container>
         <TitleView>
           <Icon name="clipboard" size={20} style={{ color: '#222'}}/>
           <TaskName>{taskName}</TaskName>
         </TitleView>
-<CameraView>
-        <RNCamera
-          ref={camera}
-          style={{
-            top: 40,
-            height: 360,
-            width: 320,
-            marginTop: 0,
-            marginBottom: 0,
-            marginLeft: 10,
-            marginRight: 10,
-            // height: 200,
-            // width: 350,
-          }}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
-          captureAudio={false}
-        />
-</CameraView>
-        <CameraButton onPress={() => takePicture()}><Icon name='camera' size={20} color='#fff'/></CameraButton>
+        {/* <CameraView> */}
+          <StyledRNCamera
+            ref={camera}
+            type={ toggleCameraReverse
+              ? RNCamera.Constants.Type.back
+              : RNCamera.Constants.Type.front
+            }
+            flashMode={ toggleFlash
+              ? RNCamera.Constants.FlashMode.off
+              : RNCamera.Constants.FlashMode.on
+            }
+            captureAudio={false}
+          />
+        {/* </CameraView> */}
+        <FlashButton onPress={() => setToggleFlash(!toggleFlash)}>
+          { toggleFlash
+            ? (
+              <Icon name='zap' size={24} color='#fff'/>
+            )
+            : (
+              <Icon name='zap-off' size={24} color='#fff'/>
+            )
+          }
+        </FlashButton>
+        <FooterView>
+
+        <CameraRollButton>
+        <Icon name='codepen' size={24} color='#fff'/>
+        </CameraRollButton>
+        <CameraButton onPress={() => takePicture()}>
+          <Icon name='camera' size={24} color='#fff'/>
+        </CameraButton>
+        <CameraReverseButton onPress={() => setToggleCameraReverse(!toggleCameraReverse)}>
+          <Icon name='users' size={24} color='#fff'/>
+        </CameraReverseButton>
+        </FooterView>
       </Container>
-      </StyledScrollView>
+      {/* </StyledScrollView> */}
     </>
   );
 }

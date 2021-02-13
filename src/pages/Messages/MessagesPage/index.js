@@ -17,7 +17,7 @@ export default function MessagesPage({ navigation, route }) {
   const [defaultTasks, setDefaultTasks] = useState();
   const [inputState, setInputState] = useState();
   const [resetTasks, setResetTasks] = useState('Hello');
-  console.tron.log(route)
+  // console.tron.log(route)
   useEffect(() => {
     loadTasks('', user_id);
   }, [ messages_update ]);
@@ -32,6 +32,10 @@ export default function MessagesPage({ navigation, route }) {
     })
     response = [... workerResponse.data, ... userResponse.data]
 
+    // response.map(r => {
+    //   getPhoto(r.phonenumber)
+    // })
+
     // remove duplicates
     const seen = new Set()
     const filteredResponse = response.filter(a => {
@@ -44,6 +48,14 @@ export default function MessagesPage({ navigation, route }) {
 
     setTasks(filteredResponse);
     setDefaultTasks(filteredResponse);
+  }
+
+  async function getPhoto(phonenumber) {
+    const worker = await api.get('workers/individual', {
+      params: {phonenumber: phonenumber},
+    })
+    setWorkerData(worker.data)
+    console.tron.log('worker')
   }
 
   function compare(a, b) {

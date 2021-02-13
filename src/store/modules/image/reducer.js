@@ -1,7 +1,7 @@
 import produce from 'immer';
 // -----------------------------------------------------------------------------
 const INITIAL_STATE = {
-  image: null,
+  image: {},
 };
 // -----------------------------------------------------------------------------
 export default function (state= INITIAL_STATE, action) {
@@ -20,7 +20,7 @@ export default function (state= INITIAL_STATE, action) {
         break;
       }
       case '@auth/SIGN_OUT' : {
-        draft.image = null;
+        draft.image = {};
         break;
       }
       default:

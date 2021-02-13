@@ -92,6 +92,14 @@ export default function TaskUser({ data, navigation }) {
     return
   }
 
+  function handleMessage() {
+    navigation.navigate('MessagesConversationPage', {
+      id: data.id,
+      user_name: data.user.user_name,
+      messages: data.messages
+    });
+  }
+
   function handleEditTask() {
     navigation.navigate('TaskEdit', {
       id: data.id,
@@ -241,29 +249,29 @@ export default function TaskUser({ data, navigation }) {
 
           <DatesAndButtonView>
           <ButtonView>
-              <TouchableOpacity onPress={handleEditTask}>
-                <ConfirmButton pastDueDate={pastDueDate()}>
+              <TouchableOpacity onPress={handleMessage}>
+                <ConfirmButton>
                   <TaskIcon name="message-circle"/>
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
               <TouchableOpacity onPress={handleEditTask}>
-                <ConfirmButton pastDueDate={pastDueDate()}>
+                <ConfirmButton>
                   <TaskIcon name="edit"/>
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
               <TouchableOpacity onPress={handleScoreTask}>
-                <ConfirmButton pastDueDate={pastDueDate()}>
+                <ConfirmButton>
                   <TaskIcon name="meh"/>
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
             <ButtonView>
               <TouchableOpacity onPress={handleCancelTask}>
-                <ConfirmButton pastDueDate={pastDueDate()}>
+                <ConfirmButton>
                   <TaskIcon name="trash-2"/>
                 </ConfirmButton>
               </TouchableOpacity>

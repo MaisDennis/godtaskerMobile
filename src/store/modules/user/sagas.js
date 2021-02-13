@@ -5,26 +5,58 @@ import api from '~/services/api';
 import { updateProfileSuccess, updateProfileFailure } from './actions';
 // -----------------------------------------------------------------------------
 export function* updateProfile({ payload }) {
+
   try {
-    const { name, email, avatar_id, ...rest } = payload.data;
+    const {
+      first_name, last_name, user_name,
+      oldPassword, password, confirmPassword,
+      phonenumber, birth_date, gender,
+      image,
+    } = payload;
+    console.tron.log(payload)
 
-    const profile = Object.assign(
-      { name, email, avatar_id },
-      rest.oldPassword ? rest : {});
+    let response = null
+    if (!image) {
+      response = yield call(api.put, 'users/no-photo', {
+        first_name,
+        last_name,
+        user_name,
+        oldPassword,
+        password,
+        confirmPassword,
+        phonenumber,
+        birth_date,
+        gender,
+        // avatar_id
+      });
+    } else {
+      const imageResponse = yield call(api.get, 'files', {
+        params: { image },
+      })
+      const avatar_id = imageResponse.data[0].id
+      response = yield call(api.put, 'users', {
+        first_name,
+        last_name,
+        user_name,
+        oldPassword,
+        password,
+        confirmPassword,
+        phonenumber,
+        birth_date,
+        gender,
+        avatar_id
+      });
+    }
 
-    const response = yield call(api.put, 'users', profile);
     // toast.success('Perfil atualizado com sucesso!');
-    Alert.alert('Sucesso', 'Perfil atualizado com sucesso');
+    console.log(response.data);
     yield put(updateProfileSuccess(response.data));
 
-  } catch (err) {
-
+  } catch (error) {
+    // toast.error(error.response.data.error);
+    console.tron.log(error.response.data.error);
     // toast.error('Erro ao atualizar perfil, confira os seus dados!');
-    Alert.alert(
-      'Falha na atualização',
-      'Houve um erro na atualização do perfil, verifique seus dados'
-    );
-    yield put(updateProfileFailure());
+    // yield put(updateProfileFailure());
   }
 }
 // -----------------------------------------------------------------------------

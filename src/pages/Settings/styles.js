@@ -41,7 +41,11 @@ height: 72px;
 padding: 12px;
 background-color: #f5f5f5;
 `;
-export const UserImage = styled.Image``;
+export const UserImage = styled.Image`
+  height: 48px;
+  width: 48px;
+  border-radius: 48px;
+`;
 export const UserImageView = styled.View`
   height: 48px;
   width: 48px;

@@ -105,7 +105,12 @@ export const ImageView = styled.View`
   border: 1px solid #ccc;
   background-color: #fff;
 `;
-export const Image = styled.Image``;
+export const Image = styled.Image`
+height: 48px;
+width: 48px;
+border-radius: 48px;
+
+`;
 
 export const LineView = styled.View`
 display: flex;

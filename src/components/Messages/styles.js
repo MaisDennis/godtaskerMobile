@@ -48,7 +48,9 @@ export const ImageView = styled.View`
   background-color: #fff;
 `;
 export const Image = styled.Image`
-
+  height: 48px;
+  width: 48px;
+  border-radius: 48px;
 `;
 export const BodyView = styled.View`
 display: flex;

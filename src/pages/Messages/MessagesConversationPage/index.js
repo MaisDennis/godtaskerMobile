@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from 'react-native'
 import { useDispatch } from 'react-redux';
 // import Icon from 'react-native-vector-icons/Feather'
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import insert from '~/assets/insert_photo-24px.svg';
 // -----------------------------------------------------------------------------
 import {
   AlignView,
@@ -37,9 +38,11 @@ export default function MessagesConversationPage({ navigation, route }) {
   const [messageDropMenu, setMessageDropMenu] = useState();
   const [toggleDropMenu, setToggleDropMenu] = useState(false);
   const [chatMessage, setChatMessage] = useState();
+  const [workerData, setWorkerData] = useState();
   // const sendInputRef = useRef();
   const id = route.params.id;
   const task = route.params
+  const worker_phonenumber = route.params.worker_phonenumber
   // const userName = route.params.user
   const dispatch = useDispatch();
 
@@ -47,6 +50,20 @@ export default function MessagesConversationPage({ navigation, route }) {
   fdate == null
     ? ''
     : format(fdate, "dd'/'MMM'/'yyyy HH:mm", { locale: ptBR });
+
+  useEffect(() => {
+    console.tron.log(route.params)
+    getPhoto(worker_phonenumber)
+    // console.log(taskMessages)
+  }, [task]);
+
+  async function getPhoto(phonenumber) {
+    const worker = await api.get('workers/individual', {
+      params: {phonenumber: phonenumber},
+    })
+    setWorkerData(worker.data)
+    // console.tron.log(worker.data)
+  }
 
   async function handleSend() {
     let pushMessage
@@ -213,9 +230,23 @@ export default function MessagesConversationPage({ navigation, route }) {
       <Container>
         <Header >
           <BodyView>
-            <ImageView>
-              <Image/>
-            </ImageView>
+            {/* <ImageView> */}
+              { workerData === undefined || workerData.avatar === null
+                ? (
+                  <>
+                    {/* <Image
+                      source={require('~/assets/insert_photo-24px.svg')}
+                    /> */}
+                    <SenderText>n/a</SenderText>
+                  </>
+                )
+                : (
+                  <Image
+                    source={{ uri: workerData.avatar.url }}
+                  />
+                )
+              }
+            {/* </ImageView> */}
             <SenderView>
               <SenderText>{route.params.user_name}</SenderText>
               <SenderAboutText>Busy</SenderAboutText>

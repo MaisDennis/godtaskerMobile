@@ -55,7 +55,7 @@ export function* signUp({ payload }) {
       password, phonenumber, email, birth_date, gender, subscriber: false
     })
 
-    toast.success('Usuário cadastrado com sucesso!');
+    console.tron.log('OK')
 
     yield call(api.post, 'workers', {
       first_name,
@@ -69,11 +69,8 @@ export function* signUp({ payload }) {
       subscriber: false
     })
 
-    toast.success('Funcionário cadastrado com sucesso!');
-
   } catch (error) {
-    toast.error(error.response.data.error);
-    // console.log(error.response.data.error);
+
   }
 }
 

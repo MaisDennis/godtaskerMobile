@@ -9,7 +9,7 @@ import {
   Container, ImageLogo, ImageGodtaskerFont,
   Title, Div1, Div2,
   FormWorker,
-  SubmitButton, ButtonText,
+  SubmitButton, ButtonText, SignUpTouchable, SignUpText,
   FormInputWorkerPassword, PhoneMask, StyledScrollView
 } from './styles';
 // -----------------------------------------------------------------------------
@@ -30,6 +30,10 @@ export default function SignIn({ navigation }) {
         unmaskedPhoneNumber(phonenumber), password
       )
     );
+  }
+
+  function handleSignUp() {
+    navigation.navigate('SignUp')
   }
 
   if (signed) {
@@ -59,20 +63,23 @@ export default function SignIn({ navigation }) {
                   returnKeyType="next"
                   value={phonenumber}
                   onChangeText={setPhonenumber}
-                  placeholderTextColor={'#999'}
+                  placeholderTextColor={'#ccc'}
                 />
                 <FormInputWorkerPassword
                   icon="unlock"
+                  secureTextEntry={true}
                   placeholder="Senha"
                   returnKeyType="send"
                   onSubmitEditing={handleSubmit}
                   value={password}
                   onChangeText={setPassword}
-                  placeholderTextColor={'#999'}
                 />
                 <SubmitButton loading={loading} onPress={handleSubmit}>
                   <ButtonText>Entrar</ButtonText>
                 </SubmitButton>
+                <SignUpTouchable onPress={handleSignUp}>
+                  <SignUpText>Junte-se a godtasker aqui!</SignUpText>
+                </SignUpTouchable>
               </FormWorker>
             </Div2>
           </Div1>

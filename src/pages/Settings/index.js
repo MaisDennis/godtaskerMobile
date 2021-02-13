@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+// -----------------------------------------------------------------------------
 import { Container, Header, SpaceView,
   UserProfileView, UserImageView, UserImage, UserInfoView, UserText,
   UserAboutText,
@@ -10,14 +11,22 @@ import { Container, Header, SpaceView,
 } from './styles';
 import HeaderView from '~/components/HeaderView'
 import { signOut } from '../../store/modules/auth/actions';
+import insert from '~/assets/insert_photo-24px.svg';
 
-export default function SettingsPage() {
+export default function SettingsPage({ navigation }) {
   const dispatch = useDispatch();
+  let userData = useSelector(state => state.user.profile)
+
+  console.tron.log(userData)
+
+  function handleUpdateProfile() {
+    navigation.navigate('UpdateProfile')
+  }
 
   function handleSignOut() {
     dispatch(signOut())
   }
-
+  // ---------------------------------------------------------------------------
   return (
     <Container>
       <Header>
@@ -26,11 +35,25 @@ export default function SettingsPage() {
         <SpaceView/>
       </Header>
       <UserProfileView>
-        <UserImageView>
-          <UserImage></UserImage>
-        </UserImageView>
+        {/* <UserImageView> */}
+          { userData === undefined || userData.avatar === null
+            ? (
+              <>
+                {/* <Image
+                  source={require('~/assets/insert_photo-24px.svg')}
+                /> */}
+                <UserText>n/a</UserText>
+              </>
+            )
+            : (
+              <UserImage
+                source={{ uri: userData.avatar.url }}
+              />
+            )
+          }
+        {/* </UserImageView> */}
         <UserInfoView>
-          <UserText>Dennis</UserText>
+          <UserText>{userData.user_name}</UserText>
           <UserAboutText>At the gym</UserAboutText>
         </UserInfoView>
       </UserProfileView>
@@ -48,7 +71,9 @@ export default function SettingsPage() {
           </SettignsLeftView>
           <AlignView>
             <SettingsRightView>
-              <NextIcon name="arrow-right" size={16}></NextIcon>
+              <TouchableOpacity onPress={handleUpdateProfile}>
+                <NextIcon name="arrow-right" size={16}></NextIcon>
+              </TouchableOpacity>
             </SettingsRightView>
           </AlignView>
         </SettingsItemView>

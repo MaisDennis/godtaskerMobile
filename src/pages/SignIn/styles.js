@@ -1,4 +1,4 @@
-import { Platform, KeyboardAvoidingView } from 'react-native';
+import { Platform, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { TextInputMask as InputMask } from 'react-native-masked-text'
 // -----------------------------------------------------------------------------
@@ -12,7 +12,6 @@ export const Container = styled.KeyboardAvoidingView.attrs({
   flex: 1;
   justify-content: center;
   align-items: center;
-  padding: 0 30px;
 `;
 
 export const StyledScrollView = styled.ScrollView`
@@ -20,10 +19,10 @@ export const StyledScrollView = styled.ScrollView`
 `;
 
 export const ImageLogo = styled.Image`
-  width: 150px;
-  height: 150px;
-  border-radius: 24px;
-  margin: 120px auto 6px;
+  width: 148px;
+  height: 148px;
+  /* border-radius: 24px; */
+  margin: 120px auto 4px;
 `;
 
 export const ImageGodtaskerFont = styled.Image`
@@ -34,9 +33,9 @@ export const ImageGodtaskerFont = styled.Image`
 `;
 
 export const Title = styled.Text`
-font-size: 20px;
+font-size: 21px;
 font-weight: bold;
-margin: 14px auto;
+margin: 16px auto 8px;
 /* background: #999; */
 color: #58595B;
 `;
@@ -54,13 +53,6 @@ margin: auto;
 /* background: #fff; */
 `;
 
-export const FormUser = styled.View`
-width: 100%;
-height: auto;
-margin: 0 auto;
-/* background: #c4ce3b; */
-`;
-
 export const FormWorker = styled.View`
   width: 100%;
   height: auto;
@@ -68,45 +60,27 @@ export const FormWorker = styled.View`
   /* background: #c4ce3b; */
 `;
 
-export const FormInputUserEmail = styled(Input)`
-  background: rgba(0,0,0,0.3);
-  margin: 4px auto;
-  width: 90%;
-  padding-left: 10px;
-`;
-
-export const FormInputWorkerId = styled(Input)`
-  background: rgba(0,0,0,0.3);
-  margin: 4px auto;
-  width: 90%;
-  padding-left: 10px;
-`;
-
 export const PhoneMask = styled(InputMask)`
   color: #fff;
   background: rgba(0,0,0,0.3);
   margin: 4px auto;
   width: 90%;
-  padding-left: 10px;
+  border-radius: 4px;
+  padding-left: 12px;
   height: 46px;
 `;
-
-export const FormInputUserPassword = styled(Input)`
-  background: rgba(0,0,0,0.3);
-  margin: 4px auto;
-  width: 90%;
-  padding-left: 10px;
-`;
-
 export const FormInputWorkerPassword = styled(Input)`
   background: rgba(0,0,0,0.3);
   margin: 4px auto;
   width: 90%;
-  padding-left: 10px;
+  /* background: #c4ce3b; */
 `;
 
 export const SubmitButton = styled(Button)`
-  margin: 14px auto;
+  width: 50%;
+  margin: 16px auto;
+  width: 148px;
+  /* width: 50%; */
 `;
 
 export const ButtonText = styled.Text`
@@ -119,4 +93,15 @@ color: #fff;
 export const StyledKeyboardAvoiding = styled(KeyboardAvoidingView)`
   /* background: #58595B; */
   width: 100%;
+`;
+
+export const SignUpTouchable = styled(TouchableOpacity)`
+display: flex;
+align-items: center;
+margin-top: 12px;
+
+`;
+
+export const SignUpText = styled.Text`
+  color: #44ccee;
 `;

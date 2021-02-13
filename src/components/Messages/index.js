@@ -24,7 +24,8 @@ export default function Messages({ data, navigation }) {
   const [resetConversation, setResetConversation] = useState();
 
   const senderUserName = data.user.user_name;
-  const senderWorkerName = data.worker.worker_name
+  const senderWorkerName = data.worker.worker_name;
+  const workerData = data.worker
   const messageArrayLength = data.messages.length;
   const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
   const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
@@ -34,6 +35,8 @@ export default function Messages({ data, navigation }) {
   fdate == null
     ? ''
     : format(fdate, "dd'/'MMM'/'yyyy HH:mm", { locale: ptBR });
+
+  // console.tron.log(workerData)
 
   function handleMessageConversation() {
     const message_id = Math.floor(Math.random() * 1000000)
@@ -66,6 +69,7 @@ export default function Messages({ data, navigation }) {
       user_name: data.user.user_name,
       messages: data.messages,
       worker_name: data.worker.worker_name,
+      worker_phonenumber: data.workerphonenumber,
     });
     setResetConversation();
   }
@@ -91,14 +95,26 @@ export default function Messages({ data, navigation }) {
             ? (
               <LeftDoubleView>
                 <AlignView>
-                  <ImageView><Image/></ImageView>
+                  { workerData === undefined || workerData.avatar === null
+                    ? (
+                      <>
+                        {/* <Image
+                          source={require('~/assets/insert_photo-24px.svg')}
+                        /> */}
+                        <TitleText>n/a</TitleText>
+                      </>
+                    )
+                    : (
+                      <Image source={{ uri: workerData.avatar.url }}/>
+                    )
+                  }
                 </AlignView>
               </LeftDoubleView>
             )
             : (
               <LeftView>
                 <AlignView>
-                  <ImageView><Image/></ImageView>
+                  <Image/>
                 </AlignView>
               </LeftView>
             )
@@ -106,7 +122,7 @@ export default function Messages({ data, navigation }) {
           <BodyView>
             <MainView>
               <TitleView>
-                <TitleText colorProp={worker_id === data.worker_id}>{data.name}</TitleText>
+                <TitleText colorProp={worker_id === data.worker_id}>{data.id}</TitleText>
                 { (worker_id === data.worker_id)
                   ? (
                     <SenderText>{senderUserName}</SenderText>
