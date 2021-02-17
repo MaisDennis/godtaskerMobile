@@ -41,19 +41,21 @@ export default function MessagesConversationPage({ navigation, route }) {
   const [workerData, setWorkerData] = useState();
   // const sendInputRef = useRef();
   const id = route.params.id;
+  const messageId = route.params.message_id;
   const task = route.params
   const worker_phonenumber = route.params.worker_phonenumber
   // const userName = route.params.user
   const dispatch = useDispatch();
-
+  // console.tron.log(messages)
   const formattedMessageDate = fdate =>
   fdate == null
     ? ''
     : format(fdate, "dd'/'MMM'/'yyyy HH:mm", { locale: ptBR });
 
   useEffect(() => {
-    console.tron.log(route.params)
+    // console.tron.log(route.params)
     getPhoto(worker_phonenumber)
+    setMessages(route.params.messages)
     // console.log(taskMessages)
   }, [task]);
 
@@ -66,19 +68,19 @@ export default function MessagesConversationPage({ navigation, route }) {
   }
 
   async function handleSend() {
-    let pushMessage
+    let newMessage = null
     let formattedTimeStamp = formattedMessageDate(new Date())
     const message_id = Math.floor(Math.random() * 1000000)
     // const id = route.params.id
 
-    if(task.messages == null) {
-      pushMessage = []
-    } else {
-      pushMessage = task.messages
-    }
+    // if(task.messages == null) {
+    //   pushMessage = []
+    // } else {
+    //   pushMessage = task.messages
+    // }
 
     if (replyValue) {
-      pushMessage.push({
+      newMessage = {
         "id": message_id,
         "message": value,
         "sender": "worker",
@@ -89,9 +91,9 @@ export default function MessagesConversationPage({ navigation, route }) {
         "reply_sender": replySender,
         "forward_message": false,
         "visible": true,
-      })
+      }
     } else {
-      pushMessage.push({
+      newMessage = {
         "id": message_id,
         "message": value,
         "sender": "worker",
@@ -102,12 +104,12 @@ export default function MessagesConversationPage({ navigation, route }) {
         "reply_sender": '',
         "forward_message": false,
         "visible": true,
-      })
+      }
     }
     // console.tron.log(pushMessage)
-    await api.put(`tasks/messages/${id}`,
-      pushMessage
-    );
+    await api.put(`messages/${messageId}`, {
+      messages: newMessage,
+    });
     setChatMessage();
     setValue();
     setReplyValue();
@@ -117,7 +119,7 @@ export default function MessagesConversationPage({ navigation, route }) {
   function handleMessageDropMenu(position) {
     setMessageDropMenu(position)
     setToggleDropMenu(!toggleDropMenu)
-    console.tron.log(position)
+    // console.tron.log(position)
     // console.tron.log(messageDropMenu)
     // console.tron.log(toggleDropMenu)
   }

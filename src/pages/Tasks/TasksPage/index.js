@@ -15,6 +15,8 @@ import {
 // -----------------------------------------------------------------------------
 export default function Dashboard({ navigation }) {
   const [tasks, setTasks] = useState([]);
+  const [taskConditionIndex, setTaskConditionIndex] = useState();
+
   const workerID = useSelector(state => state.worker.profile.id);
   const update_tasks = useSelector(state => state.task.tasks);
   const formattedDate = fdate =>
@@ -28,11 +30,14 @@ export default function Dashboard({ navigation }) {
     // console.tron.log(tasks)
   }, [ update_tasks ]);
 
+  // console.tron.log(taskConditionIndex)
+
   async function loadTasks() {
-    const response = await api.get(`tasks/unfinished`, {
+    let response = await api.get(`tasks/unfinished`, {
       params: { workerID },
     });
     setTasks(response.data);
+    setTaskConditionIndex(1);
   }
 
   async function loadFinished() {
@@ -40,6 +45,7 @@ export default function Dashboard({ navigation }) {
       params: { workerID }
     })
     setTasks(response.data);
+    setTaskConditionIndex(2);
   }
 
   async function loadCanceled() {
@@ -47,6 +53,7 @@ export default function Dashboard({ navigation }) {
       params: { workerID }
     })
     setTasks(response.data);
+    setTaskConditionIndex(3);
   }
   // -----------------------------------------------------------------------------
   return (
@@ -84,7 +91,13 @@ export default function Dashboard({ navigation }) {
             renderItem={({ item, index }) => (
               <>
                 <Title3>{index+1}</Title3>
-                <Task key={item.id} data={item} navigation={navigation} position={index+1}/>
+                <Task
+                  key={item.id}
+                  data={item}
+                  navigation={navigation}
+                  // position={index+1}
+                  taskConditionIndex={taskConditionIndex}
+                />
               </>
             )}
           />

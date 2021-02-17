@@ -14,6 +14,7 @@ import {
 // -----------------------------------------------------------------------------
 export default function UserPage({ navigation }) {
   const [tasks, setTasks] = useState([]);
+  const [taskConditionIndex, setTaskConditionIndex] = useState();
   const user_id = useSelector(state => state.user.profile.id);
   const update_tasks = useSelector(state => state.task.tasks);
 
@@ -32,6 +33,7 @@ export default function UserPage({ navigation }) {
       params: { workerNameFilter, userID }
     })
     setTasks(response.data);
+    setTaskConditionIndex(1);
   }
 
   async function loadFinished(workerNameFilter, userID) {
@@ -39,6 +41,7 @@ export default function UserPage({ navigation }) {
       params: { workerNameFilter, userID }
     })
     setTasks(response.data);
+    setTaskConditionIndex(2);
   }
 
   async function loadCanceled(workerNameFilter, userID) {
@@ -46,14 +49,15 @@ export default function UserPage({ navigation }) {
       params: { workerNameFilter, userID }
     })
     setTasks(response.data);
+    setTaskConditionIndex(3);
   }
 
-  async function loadAll(workerNameFilter, userID) {
-    let response = await api.get(`tasks`, {
-      params: { workerNameFilter, userID }
-    })
-    setTasks(response.data);
-  }
+  // async function loadAll(workerNameFilter, userID) {
+  //   let response = await api.get(`tasks`, {
+  //     params: { workerNameFilter, userID }
+  //   })
+  //   setTasks(response.data);
+  // }
 
   function handleCreateTaskPage() {
     navigation.navigate('TaskCreate')
@@ -102,7 +106,7 @@ export default function UserPage({ navigation }) {
             renderItem={({ item, index }) => (
               <>
                 <Title3>{index+1}</Title3>
-                <TaskUser key={item.id} data={item} navigation={navigation} />
+                <TaskUser key={item.id} data={item} navigation={navigation} taskConditionIndex={taskConditionIndex}/>
               </>
             )}
           />

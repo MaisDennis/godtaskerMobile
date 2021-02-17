@@ -62,9 +62,8 @@ export const CheckBoxView = styled.View`
   margin: 4px 0;
 `;
 export const ConfirmButton = styled.View`
-display: flex;
-align-items: center;
-/* background: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */
+  display: flex;
+  align-items: center;
 `;
 export const Container = styled.View`
   display: flex;
@@ -76,7 +75,8 @@ export const Container = styled.View`
   padding: 0;
   /* border-radius: 4px; */
   /* border: 1px solid #ccc; */
-  background: #fff;
+  /* background-color: #fff; */
+  background-color: ${props => props.taskConditionIndex === 1 ? '#fff' : '#E0E4E2'};
   /* background: #F5F5; */
 `;
 
@@ -155,11 +155,12 @@ margin: 0 auto;
 `;
 
 export const InnerStatusView = styled.View`
-  height: 16px;
+  height: 8px;
   width: 50%;
   /* width: ${props => props.statusResult+'%'}; */
   border-radius: 16px;
-  background-color: #daf1e0;
+  background-color: #f3c775;
+  /* background-color: #6ee57b; */
   /* color: ${props => props.pastDueDate === true ? '#f64C75' : '#009966'}; */
 `;
 
@@ -167,7 +168,7 @@ export const Label = styled.Text`
   font-weight: normal;
   font-size: 14px;
   margin-right: 4px;
-  padding: 4px 0;
+  /* padding: 4px 0; */
   color: #888;
 `;
 
@@ -226,11 +227,13 @@ color: #fff;
 /* color: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */
 `;
 export const TaskIcon = styled(Icon)`
-font-size: 24px;
+font-size: 21px;
 padding: 4px;
 /* font-weight: 800; */
 /* color: #0077b3; */
-color: #222;
+/* color: #222;
+color: #0ddcef; */
+color: #4433ee;
 /* color: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */
 `;
 export const TitleText = styled.Text`
@@ -260,7 +263,10 @@ export const TopHeaderView = styled.View`
   /* border-top-left-radius: 4px; */
   /* border-top-right-radius: 4px; */
   /* background-color: #f03a1f; */
-  background-color: #73c479;
+  /* background-color: #73c479; */
+  background-color: #009966;
+  /* background-color: #2dba2d; */
+  /* background-color: ${props => props.taskConditionIndex === 1 ? '#009966' : '#666'}; */
 `;
 
 export const UserView = styled.View`

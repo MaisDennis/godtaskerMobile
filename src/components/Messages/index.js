@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { TouchableOpacity } from 'react-native'
 import { format } from 'date-fns';
@@ -13,7 +13,7 @@ import {
   MessageIcon, UnreadMessageCountText,
   // HrLine,
 } from './styles'
-import { updateForwardMessage } from '~/store/modules/message/actions';
+import { updateForwardMessage, updateMessagesRequest } from '~/store/modules/message/actions';
 import api from '~/services/api';
 
 export default function Messages({ data, navigation }) {
@@ -22,21 +22,50 @@ export default function Messages({ data, navigation }) {
   const dispatch = useDispatch();
 
   const [resetConversation, setResetConversation] = useState();
+  const [message, setMessage] = useState();
+  const [lastMessage, setLastMessage] = useState();
+  const [lastMessageTime, setLastMessageTime] = useState();
 
   const senderUserName = data.user.user_name;
   const senderWorkerName = data.worker.worker_name;
   const workerData = data.worker
-  const messageArrayLength = data.messages.length;
-  const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
-  const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
+  const userData = data.user
+  // const messageArrayLength = data.messages.length;
+  // const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
+  // const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
   let editedMessages = data.messages;
+
+  useEffect(() => {
+    getMessages()
+    // console.tron.log(userData)
+  }, [updateMessagesRequest])
+
+  const messageId = data.message_id;
 
   const formattedMessageDate = fdate =>
   fdate == null
     ? ''
     : format(fdate, "dd'/'MMM'/'yyyy HH:mm", { locale: ptBR });
 
-  // console.tron.log(workerData)
+
+
+  async function getMessages() {
+    const messageResponse = await api.get(`messages/${messageId}`)
+    setMessage(messageResponse.data)
+
+    const messagesLength = messageResponse.data.messages.length
+    // console.tron.log(messagesLength)
+
+    const last_message = messageResponse.data.messages[0]
+      ? messageResponse.data.messages[messagesLength-1].message
+      : null
+    setLastMessage(last_message)
+
+    const last_message_time = messageResponse.data.messages[0]
+    ? messageResponse.data.messages[messagesLength-1].timestamp
+    : null
+    setLastMessageTime(last_message_time)
+  }
 
   function handleMessageConversation() {
     const message_id = Math.floor(Math.random() * 1000000)
@@ -66,9 +95,10 @@ export default function Messages({ data, navigation }) {
 
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
-      user_name: data.user.user_name,
-      messages: data.messages,
-      worker_name: data.worker.worker_name,
+      user_name: message.user_name,
+      message_id: data.message_id,
+      messages: message.messages,
+      worker_name: message.worker_name,
       worker_phonenumber: data.workerphonenumber,
     });
     setResetConversation();
@@ -95,17 +125,13 @@ export default function Messages({ data, navigation }) {
             ? (
               <LeftDoubleView>
                 <AlignView>
-                  { workerData === undefined || workerData.avatar === null
+                  { userData === undefined || userData.avatar === null
                     ? (
-                      <>
-                        {/* <Image
-                          source={require('~/assets/insert_photo-24px.svg')}
-                        /> */}
-                        <TitleText>n/a</TitleText>
-                      </>
+                      <Image/>
+                      // <SenderText>Hi</SenderText>
                     )
                     : (
-                      <Image source={{ uri: workerData.avatar.url }}/>
+                      <Image source={{ uri: userData.avatar.url }}/>
                     )
                   }
                 </AlignView>
@@ -114,7 +140,15 @@ export default function Messages({ data, navigation }) {
             : (
               <LeftView>
                 <AlignView>
-                  <Image/>
+                  { workerData === undefined || workerData.avatar === null
+                    ? (
+                      <Image/>
+                      // <SenderText>Hello</SenderText>
+                    )
+                    : (
+                      <Image source={{ uri: workerData.avatar.url }}/>
+                    )
+                  }
                 </AlignView>
               </LeftView>
             )
@@ -133,13 +167,18 @@ export default function Messages({ data, navigation }) {
                 }
               </TitleView>
               <LastMessageView>
-                <LastMessageText>{lastMessage}</LastMessageText>
+                { lastMessage && (
+                  <LastMessageText>{lastMessage}</LastMessageText>
+                )}
               </LastMessageView>
             </MainView>
             <RightView>
               <AlignView>
                 <LastMessageTimeView>
-                  <LastMessageTimeText>{lastMessageTime}</LastMessageTimeText>
+                  { lastMessageTime && (
+                    <LastMessageTimeText>{lastMessageTime}</LastMessageTimeText>
+                  )}
+
                 </LastMessageTimeView>
                 {/* <UnreadMessageCountView> */}
                 { (hasUnread(data.messages) === 0)

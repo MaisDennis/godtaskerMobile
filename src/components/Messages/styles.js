@@ -51,6 +51,7 @@ export const Image = styled.Image`
   height: 48px;
   width: 48px;
   border-radius: 48px;
+  background-color: #f5f5f5;
 `;
 export const BodyView = styled.View`
 display: flex;

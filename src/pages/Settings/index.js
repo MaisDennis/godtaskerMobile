@@ -17,13 +17,15 @@ export default function SettingsPage({ navigation }) {
   const dispatch = useDispatch();
   let userData = useSelector(state => state.user.profile)
 
-  console.tron.log(userData)
+  // console.tron.log(userData)
 
   function handleUpdateProfile() {
     navigation.navigate('UpdateProfile')
   }
 
   function handleSignOut() {
+    // userData.avatar.url = insert
+    // console.tron.log(userData.avatar)
     dispatch(signOut())
   }
   // ---------------------------------------------------------------------------
@@ -39,15 +41,19 @@ export default function SettingsPage({ navigation }) {
           { userData === undefined || userData.avatar === null
             ? (
               <>
-                {/* <Image
+                <UserImage
                   source={require('~/assets/insert_photo-24px.svg')}
-                /> */}
-                <UserText>n/a</UserText>
+                />
+                {/* <UserText>n/a</UserText> */}
               </>
             )
             : (
               <UserImage
-                source={{ uri: userData.avatar.url }}
+                source={
+                  userData.avatar.url
+                    ? { uri: userData.avatar.url }
+                    : insert
+                }
               />
             )
           }

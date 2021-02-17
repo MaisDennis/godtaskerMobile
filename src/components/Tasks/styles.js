@@ -37,9 +37,9 @@ margin: 4px 0;
 color: #ccc;
 `;
 export const ButtonIcon = styled(Icon)`
-font-size: 24px;
-margin: 4px 0;
-color: #222;
+font-size: 21px;
+padding: 4px;
+color: #4433ee;
 `;
 export const BottomHeaderView = styled.View`
   display: flex;
@@ -77,8 +77,7 @@ export const Container = styled.View`
   width: 100%;
   margin: 8px 0;
   padding: 0;
-  /* border-radius: 24px; */
-  background-color: #fff;
+  background-color: ${props => props.taskConditionIndex === 1 ? '#fff' : '#E0E4E2'};
   /* background-color: #F5F5; */
 `;
 export const ConfirmButton = styled.View`
@@ -158,11 +157,11 @@ margin: 0 auto;
 `;
 
 export const InnerStatusView = styled.View`
-  height: 16px;
+  height: 8px;
   /* width: 20%; */
   width: ${props => props.statusResult+'%'};
   border-radius: 16px;
-  background-color: #daf1e0;
+  background-color: #f3c775;
 `;
 
 export const Label = styled.Text`
@@ -257,8 +256,8 @@ export const TopHeaderView = styled.View`
   /* border-top-left-radius: 24px; */
   /* border-top-right-radius: 24px; */
   /* background-color: #da321c; */
-  background-color: #73a6c4;
-  /* background-color: #aa2a19; */
+  /* background-color: #73a6c4; */
+  background-color: #334466;
 `;
 export const TitleView = styled.View`
   display: flex;
@@ -270,7 +269,7 @@ export const TitleView = styled.View`
 `;
 export const TaskIcon = styled(Icon)`
 color: #222;
-font-size: 20px;
+font-size: 21px;
 margin-right: 8px;
 color: #fff;
 /* color: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */

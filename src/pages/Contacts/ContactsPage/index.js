@@ -33,9 +33,12 @@ export default function ContactsPage({ navigation }) {
     const response = await api.get(`users/${userID}/contact-list`, {
     })
     // sorter
-    const sortedResponseData = response.data.sort(compare)
-    setContacts(sortedResponseData)
-    setDefaultContacts(sortedResponseData)
+    if(response.data) {
+      const sortedResponseData = response.data.sort(compare)
+      setContacts(sortedResponseData)
+      setDefaultContacts(sortedResponseData)
+    }
+
   }
 
   function compare(a, b) {
@@ -57,9 +60,9 @@ export default function ContactsPage({ navigation }) {
     setInputState(input)
   }
 
-  const renderItem = ({ item, index }) => (
-    <Contacts key={index} data={item} navigation={navigation}/>
-  );
+  // const renderItem = ({ item, index }) => (
+  //   <Contacts key={index} data={item} navigation={navigation}/>
+  // );
 
   function handleCreateContact() {
     navigation.navigate('ContactCreate')
@@ -83,8 +86,14 @@ export default function ContactsPage({ navigation }) {
       </HeaderTabView>
       <List
         data={contacts}
-        keyExtractor={item => String(item.id)}
-        renderItem={renderItem}
+        keyExtractor={item => String(item.worker_id)}
+        renderItem={({ item }) => (
+          <Contacts
+            key={item.worker_id}
+            data={item}
+            navigation={navigation}
+          />
+        )}
       />
     </Container>
   )

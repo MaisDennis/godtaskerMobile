@@ -33,7 +33,7 @@ const formattedDate = fdate =>
     ? '-'
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
-export default function Task({ data, navigation }) {
+export default function Task({ data, navigation, taskConditionIndex }) {
   const dispatch = useDispatch();
 
   const [toggleTask, setToggleTask] = useState();
@@ -122,10 +122,11 @@ export default function Task({ data, navigation }) {
   // -----------------------------------------------------------------------------
   return (
     <Container
+      taskConditionIndex={taskConditionIndex}
       // toggleTask={toggleTask}
     >
       <TouchableOpacity onPress={handleToggleTask}>
-        <TopHeaderView>
+        <TopHeaderView taskConditionIndex={taskConditionIndex}>
           <AlignView>
             <TitleView>
               {/* <TitleText>{position}</TitleText> */}
@@ -154,8 +155,8 @@ export default function Task({ data, navigation }) {
                   </TagView>
                   <TagView>
                     <Label>Prazo:</Label>
-                    <DueTimeView>
-                      <DueTime pastDueDate={pastDueDate()}>{formattedDate(data.due_date)}</DueTime>
+                    <DueTimeView pastDueDate={pastDueDate()}>
+                      <DueTime>{formattedDate(data.due_date)}</DueTime>
                     </DueTimeView>
                   </TagView>
                 </DatesAndButtonView>
@@ -231,35 +232,74 @@ export default function Task({ data, navigation }) {
                 <ButtonView>
                   <TouchableOpacity onPress={handleMessage}>
                     <ConfirmButton>
-                      <ButtonIcon name="message-circle" size={20} color="#fff" />
+                      <ButtonIcon name="message-circle"/>
                     </ConfirmButton>
                   </TouchableOpacity>
                 </ButtonView>
-                <ButtonView>
-                  <TouchableOpacity onPress={handleConfirm}>
-                    <ConfirmButton>
-                      <ButtonIcon name="check-circle" size={20} color="#fff" />
-                    </ConfirmButton>
-                  </TouchableOpacity>
-                </ButtonView>
+                { taskConditionIndex === 2
+                  ? (
+                    <ButtonView>
+                      <TouchableOpacity onPress={handleConfirm}>
+                        <ConfirmButton>
+                          <ButtonIcon name="meh"/>
+                        </ConfirmButton>
+                      </TouchableOpacity>
+                    </ButtonView>
+                  )
+                  : (
+                    null
+                  )
+
+                }
+                { taskConditionIndex === 1
+                  ? (
+                    <ButtonView>
+                      <TouchableOpacity onPress={handleConfirm}>
+                        <ConfirmButton>
+                          <ButtonIcon name="check-circle"/>
+                        </ConfirmButton>
+                      </TouchableOpacity>
+                    </ButtonView>
+                  )
+                  : (
+                    <ButtonView>
+                      <TouchableOpacity onPress={handleConfirm}>
+                        <ConfirmButton>
+                          <ButtonIcon name="trash-2"/>
+                        </ConfirmButton>
+                      </TouchableOpacity>
+                    </ButtonView>
+                  )
+
+                }
               </DatesAndButtonView>
             )
             : (
               <DatesAndButtonView>
-                <ButtonView>
-                  <TouchableOpacity onPress={handleToggleAccept}>
-                    <MessageButton>
-                      <ButtonText>Aceitar</ButtonText>
-                    </MessageButton>
-                  </TouchableOpacity>
-                </ButtonView>
-                <ButtonView>
-                  <TouchableOpacity onPress={handleToggleAccept}>
-                    <MessageButton>
-                    <ButtonText>Recusar</ButtonText>
-                    </MessageButton>
-                  </TouchableOpacity>
-                </ButtonView>
+                { taskConditionIndex === 1
+                  ? (
+                    <>
+                      <ButtonView>
+                        <TouchableOpacity onPress={handleToggleAccept}>
+                          <MessageButton>
+                            <ButtonText>Aceitar</ButtonText>
+                          </MessageButton>
+                        </TouchableOpacity>
+                      </ButtonView>
+                      <ButtonView>
+                        <TouchableOpacity onPress={handleToggleAccept}>
+                          <MessageButton>
+                          <ButtonText>Recusar</ButtonText>
+                          </MessageButton>
+                        </TouchableOpacity>
+                      </ButtonView>
+                    </>
+                  )
+                  : (
+                    null
+                  )
+                }
+
               </DatesAndButtonView>
             )
           }

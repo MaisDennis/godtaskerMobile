@@ -32,7 +32,7 @@ const formattedDate = fdate =>
     ? '-'
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
-export default function TaskUser({ data, navigation }) {
+export default function TaskUser({ data, navigation, taskConditionIndex }) {
   const dispatch = useDispatch();
   const updated_tasks = useSelector( state => state.task.tasks)
 
@@ -113,9 +113,16 @@ export default function TaskUser({ data, navigation }) {
     });
   }
 
+  function handleReviveTask() {
+    api.put(`tasks/${data.id}`);
+    setToggleTask(!toggleTask)
+    dispatch(updateTasks(new Date()));
+  }
+
   function handleCancelTask() {
     api.delete(`tasks/${data.id}`);
-    dispatch(updateTasks(new Date()))
+    setToggleTask(!toggleTask)
+    dispatch(updateTasks(new Date()));
   }
 
   function handleScoreTask() {
@@ -141,9 +148,9 @@ export default function TaskUser({ data, navigation }) {
   }
   // -----------------------------------------------------------------------------
   return (
-    <Container>
+    <Container taskConditionIndex={taskConditionIndex}>
       <TouchableOpacity onPress={handleToggleTask}>
-        <TopHeaderView>
+        <TopHeaderView taskConditionIndex={taskConditionIndex}>
           <AlignView>
             <TitleView>
               <TitleIcon name="clipboard" pastDueDate={pastDueDate()}/>
@@ -255,20 +262,48 @@ export default function TaskUser({ data, navigation }) {
                 </ConfirmButton>
               </TouchableOpacity>
             </ButtonView>
-            <ButtonView>
-              <TouchableOpacity onPress={handleEditTask}>
-                <ConfirmButton>
-                  <TaskIcon name="edit"/>
-                </ConfirmButton>
-              </TouchableOpacity>
-            </ButtonView>
-            <ButtonView>
-              <TouchableOpacity onPress={handleScoreTask}>
-                <ConfirmButton>
-                  <TaskIcon name="meh"/>
-                </ConfirmButton>
-              </TouchableOpacity>
-            </ButtonView>
+            { taskConditionIndex === 1
+              ? (
+                <ButtonView>
+                  <TouchableOpacity onPress={handleEditTask}>
+                    <ConfirmButton>
+                      <TaskIcon name="edit"/>
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              )
+              : (
+                null
+              )
+            }
+            { taskConditionIndex === 2
+              ? (
+                <ButtonView>
+                  <TouchableOpacity onPress={handleScoreTask}>
+                    <ConfirmButton>
+                      <TaskIcon name="meh"/>
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              )
+              : (
+                null
+              )
+            }
+            { taskConditionIndex === 3
+              ? (
+                <ButtonView>
+                  <TouchableOpacity onPress={handleReviveTask}>
+                    <ConfirmButton>
+                      <TaskIcon name="activity"/>
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              )
+              : (
+                null
+              )
+            }
             <ButtonView>
               <TouchableOpacity onPress={handleCancelTask}>
                 <ConfirmButton>

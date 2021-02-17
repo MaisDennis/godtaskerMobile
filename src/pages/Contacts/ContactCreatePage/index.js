@@ -34,11 +34,13 @@ export default function ContactCreatePage({ navigation }) {
         department: department,
         phonenumber: unmaskedPhoneNumber,
       })
+      dispatch(updateContacts(new Date()))
+      navigation.navigate('Contacts')
     } catch(error) {
       console.tron.log(error);
     }
-    dispatch(updateContacts(new Date()))
-    navigation.goBack()
+
+
   }
     // ---------------------------------------------------------------------------
   return (

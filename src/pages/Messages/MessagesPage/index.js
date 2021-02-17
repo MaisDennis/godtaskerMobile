@@ -14,6 +14,8 @@ export default function MessagesPage({ navigation, route }) {
   const messages_update = useSelector(state => state.message.profile);
 
   const [tasks, setTasks] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [defaultMessages, setDefaultMessages] = useState();
   const [defaultTasks, setDefaultTasks] = useState();
   const [inputState, setInputState] = useState();
   const [resetTasks, setResetTasks] = useState('Hello');
@@ -31,7 +33,7 @@ export default function MessagesPage({ navigation, route }) {
       params: { workerNameFilter, userID }
     })
     response = [... workerResponse.data, ... userResponse.data]
-
+    console.tron.log(response)
     // response.map(r => {
     //   getPhoto(r.phonenumber)
     // })

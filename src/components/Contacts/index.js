@@ -16,8 +16,22 @@ import api from '~/services/api';
 export default function Contacts({ navigation, data }) {
   const userId = useSelector( state => state.user.profile.id)
   const [toggleContact, setToggleContact] = useState();
+  const [workerData, setWorkerData] = useState();
   const dispatch = useDispatch();
-  // console.tron.log(data)
+
+  useEffect(() => {
+    getPhoto(data.phonenumber)
+  }, [userId])
+  // console.tron.log(workerData)
+
+  async function getPhoto(phonenumber) {
+    const worker = await api.get('workers/individual', {
+      params: {phonenumber: phonenumber},
+    })
+    setWorkerData(worker.data)
+    // console.tron.log('worker')
+    return worker
+  }
 
   function handleToggleContact() {
     setToggleContact(!toggleContact)
@@ -47,7 +61,7 @@ export default function Contacts({ navigation, data }) {
 
   async function handleRemoveContact() {
     const phonenumber = data.phonenumber
-    console.tron.log(phonenumber)
+    // console.tron.log(phonenumber)
     await api.put(`/users/${userId}/remove-contact`, {
       phonenumber: phonenumber,
     })
@@ -60,9 +74,16 @@ export default function Contacts({ navigation, data }) {
       <Body>
         <TabView/>
         <UserInfoView>
-          <ImageView>
-            <Image/>
-          </ImageView>
+          {/* <ImageView> */}
+          { workerData === undefined || workerData.avatar === null
+                    ? (
+                      <Image/>
+                    )
+                    : (
+                      <Image source={{ uri: workerData.avatar.url }}/>
+                    )
+                  }
+          {/* </ImageView> */}
           <ContactText>{data.worker_name}</ContactText>
         </UserInfoView>
       <OthersView>

@@ -44,6 +44,7 @@ margin: auto;
 `;
 export const UpperTabText = styled.Text`
 color: #4433ee;
+/* color: #0000FF; */
 `;
 
 export const AddIcon = styled(Icon)`

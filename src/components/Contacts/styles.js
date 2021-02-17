@@ -89,6 +89,8 @@ export const ImageView = styled.View`
 export const Image = styled.Image`
   height: 36px;
   width: 36px;
+  border-radius: 36px;
+  background-color: #f5f5f5;
 `;
 
 export const ContactText = styled.Text`
