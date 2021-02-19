@@ -225,6 +225,17 @@ export const OuterStatusView = styled.View`
   background-color: #F5F5F5;
 `;
 
+export const RejectTaskInput = styled.TextInput`
+  display: flex;
+  height: auto;
+  width: 95%;
+  padding: 12px;
+  margin: 12px auto;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+`;
+
 export const StartTimeView = styled.View`
 padding: 0 4px;
 border-radius: 12px;

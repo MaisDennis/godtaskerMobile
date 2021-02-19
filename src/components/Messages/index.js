@@ -19,10 +19,13 @@ import api from '~/services/api';
 export default function Messages({ data, navigation }) {
   const worker_id = useSelector(state => state.worker.profile.id);
   const forwardValue = useSelector(state => state.message.forward_message.message);
+  const updatedMessage = useSelector(state => state.message.profile)
   const dispatch = useDispatch();
+  const userIsWorker = worker_id === data.worker_id;
 
   const [resetConversation, setResetConversation] = useState();
   const [message, setMessage] = useState();
+  const [messageBell, setMessageBell] = useState();
   const [lastMessage, setLastMessage] = useState();
   const [lastMessageTime, setLastMessageTime] = useState();
 
@@ -33,13 +36,12 @@ export default function Messages({ data, navigation }) {
   // const messageArrayLength = data.messages.length;
   // const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
   // const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
-  let editedMessages = data.messages;
+
 
   useEffect(() => {
     getMessages()
-    // console.tron.log(userData)
-  }, [updateMessagesRequest])
-
+  }, [updatedMessage])
+  // console.tron.log(message)
   const messageId = data.message_id;
 
   const formattedMessageDate = fdate =>
@@ -52,6 +54,7 @@ export default function Messages({ data, navigation }) {
   async function getMessages() {
     const messageResponse = await api.get(`messages/${messageId}`)
     setMessage(messageResponse.data)
+    setMessageBell(messageResponse.data.messages)
 
     const messagesLength = messageResponse.data.messages.length
     // console.tron.log(messagesLength)
@@ -62,46 +65,66 @@ export default function Messages({ data, navigation }) {
     setLastMessage(last_message)
 
     const last_message_time = messageResponse.data.messages[0]
-    ? messageResponse.data.messages[messagesLength-1].timestamp
-    : null
+      ? messageResponse.data.messages[messagesLength-1].timestamp
+      : null
     setLastMessageTime(last_message_time)
   }
 
-  function handleMessageConversation() {
-    const message_id = Math.floor(Math.random() * 1000000)
+
+
+  async function handleMessageConversation() {
+
+    let editedMessages = messageBell;
 
     if (forwardValue) {
+      const message_id = Math.floor(Math.random() * 1000000)
       editedMessages.push({
         "id": message_id,
         "message": forwardValue,
-        "sender": `${worker_id === data.worker_id ? 'worker' : 'user'}`,
-        "user_read": `${worker_id === data.worker_id ? false : true }`,
-        "worker_read": `${worker_id === data.worker_id ? true : false }`,
+        "sender": `${userIsWorker ? 'worker' : 'user'}`,
+        "user_read": `${userIsWorker ? false : true }`,
+        "worker_read": `${userIsWorker ? true : false }`,
         "timestamp": formattedMessageDate(new Date()),
         "forward_message": true,
       })
       dispatch(updateForwardMessage(null));
     }
 
-    editedMessages.map((m) => {
-      if(m.worker_read === false) {
-        m.worker_read = true;
-      }
-      return m
-    })
-    api.put(`tasks/${data.id}`, {
+    if (userIsWorker) {
+      editedMessages.map((m) => {
+        if(m.worker_read === false) {
+          m.worker_read = true;
+        }
+        return m
+      })
+    } else {
+      editedMessages.map((m) => {
+        if(m.user_read === false) {
+          m.user_read = true;
+        }
+        return m
+      })
+    }
+    console.tron.log(editedMessages)
+
+
+    await api.put(`messages/update/${data.message_id}`, {
       messages: editedMessages,
     })
+    dispatch(updateMessagesRequest(new Date()))
 
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
       user_name: message.user_name,
-      message_id: data.message_id,
-      messages: message.messages,
+      worker_id: message.worker_id,
       worker_name: message.worker_name,
       worker_phonenumber: data.workerphonenumber,
+      message_id: data.message_id,
+      messages: messageBell,
+
     });
     setResetConversation();
+
   }
 
   const hasUnread = (array) => {
@@ -116,12 +139,25 @@ export default function Messages({ data, navigation }) {
     }
     catch(error) { return }
   }
+
+  const hasUnreadUser = (array) => {
+    try {
+      let sum = 0;
+      for(let i = 0; i < array.length; i++) {
+        if(array[i].user_read === false) {
+          sum += 1
+        }
+      }
+      return sum
+    }
+    catch(error) { return }
+  }
   // ---------------------------------------------------------------------------
   return (
     <>
       <TouchableOpacity onPress={handleMessageConversation}>
         <Container>
-          { (worker_id === data.worker_id)
+          { (userIsWorker)
             ? (
               <LeftDoubleView>
                 <AlignView>
@@ -156,7 +192,7 @@ export default function Messages({ data, navigation }) {
           <BodyView>
             <MainView>
               <TitleView>
-                <TitleText colorProp={worker_id === data.worker_id}>{data.id}</TitleText>
+                <TitleText colorProp={worker_id === data.worker_id}>{data.name}</TitleText>
                 { (worker_id === data.worker_id)
                   ? (
                     <SenderText>{senderUserName}</SenderText>
@@ -178,20 +214,30 @@ export default function Messages({ data, navigation }) {
                   { lastMessageTime && (
                     <LastMessageTimeText>{lastMessageTime}</LastMessageTimeText>
                   )}
-
                 </LastMessageTimeView>
-                {/* <UnreadMessageCountView> */}
-                { (hasUnread(data.messages) === 0)
-                  ? (
-                    null
+                {/* UnreadMessageCountView */}
+                {(userIsWorker)
+                  ? ((hasUnread(messageBell) === 0)
+                    ? (
+                      null
+                    )
+                    : (
+                      <MessageIcon name="message-circle">
+                        <UnreadMessageCountText>{hasUnread(messageBell)}</UnreadMessageCountText>
+                      </MessageIcon>
+                    )
                   )
-                  : (
-                    <MessageIcon name="message-circle">
-                      <UnreadMessageCountText>{hasUnread(data.messages)}</UnreadMessageCountText>
-                    </MessageIcon>
+                  : ((hasUnreadUser(messageBell) === 0)
+                    ? (
+                      null
+                    )
+                    : (
+                      <MessageIcon name="message-circle">
+                        <UnreadMessageCountText>{hasUnreadUser(messageBell)}</UnreadMessageCountText>
+                      </MessageIcon>
+                    )
                   )
                 }
-                {/* </UnreadMessageCountView> */}
               </AlignView>
             </RightView>
             {/* <HrLine/> */}

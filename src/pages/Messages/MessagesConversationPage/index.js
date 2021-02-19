@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from 'react-native'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import Icon from 'react-native-vector-icons/Feather'
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -12,7 +12,8 @@ import {
   Container, ConversationView,
   FooterView, FooterContainer, ForwardText, ForwardOnTopView,
   Header, HrLine,
-  ImageView, Image,
+  // ImageView,
+  Image,
   LineView,
   MessageView, MessageText, MessageContainer,
   MessageWrapper, MessageListView, MessageListItemView,
@@ -27,36 +28,36 @@ import {
 } from './styles'
 import api from '~/services/api';
 import { updateMessagesRequest, updateForwardMessage } from '~/store/modules/message/actions';
+import user from '../../../store/modules/user/reducer';
 
 export default function MessagesConversationPage({ navigation, route }) {
-  // const user_id = useSelector(state => state.user.profile.id);
+  const messageUserId = useSelector(state => state.user.profile.id);
+  const messageWorkerId = route.params.worker_id;
+  const userIsWorker = messageUserId === messageWorkerId;
+
+  const dispatch = useDispatch();
+
   const [messages, setMessages] = useState(route.params.messages);
   const [replyValue, setReplyValue] = useState();
   const [replySender, setReplySender] = useState();
-
   const [value, setValue] = useState();
   const [messageDropMenu, setMessageDropMenu] = useState();
   const [toggleDropMenu, setToggleDropMenu] = useState(false);
-  const [chatMessage, setChatMessage] = useState();
   const [workerData, setWorkerData] = useState();
-  // const sendInputRef = useRef();
-  const id = route.params.id;
+
   const messageId = route.params.message_id;
-  const task = route.params
+  const task = route.params;
   const worker_phonenumber = route.params.worker_phonenumber
-  // const userName = route.params.user
-  const dispatch = useDispatch();
-  // console.tron.log(messages)
+
+  // console.tron.log(userIsWorker)
   const formattedMessageDate = fdate =>
   fdate == null
     ? ''
     : format(fdate, "dd'/'MMM'/'yyyy HH:mm", { locale: ptBR });
 
   useEffect(() => {
-    // console.tron.log(route.params)
     getPhoto(worker_phonenumber)
     setMessages(route.params.messages)
-    // console.log(taskMessages)
   }, [task]);
 
   async function getPhoto(phonenumber) {
@@ -71,20 +72,12 @@ export default function MessagesConversationPage({ navigation, route }) {
     let newMessage = null
     let formattedTimeStamp = formattedMessageDate(new Date())
     const message_id = Math.floor(Math.random() * 1000000)
-    // const id = route.params.id
-
-    // if(task.messages == null) {
-    //   pushMessage = []
-    // } else {
-    //   pushMessage = task.messages
-    // }
-
     if (replyValue) {
       newMessage = {
         "id": message_id,
         "message": value,
-        "sender": "worker",
-        "user_read": false,
+        "sender": `${userIsWorker ? "worker" : "user"}`,
+        "user_read": `${userIsWorker ? false : true}`,
         "worker_read": false,
         "timestamp": formattedTimeStamp,
         "reply_message": replyValue,
@@ -96,8 +89,8 @@ export default function MessagesConversationPage({ navigation, route }) {
       newMessage = {
         "id": message_id,
         "message": value,
-        "sender": "worker",
-        "user_read": false,
+        "sender": `${userIsWorker ? "worker" : "user"}`,
+        "user_read": `${userIsWorker ? false : true}`,
         "worker_read": false,
         "timestamp": formattedTimeStamp,
         "reply_message": '',
@@ -106,11 +99,10 @@ export default function MessagesConversationPage({ navigation, route }) {
         "visible": true,
       }
     }
-    // console.tron.log(pushMessage)
-    await api.put(`messages/${messageId}`, {
+    const response = await api.put(`messages/${messageId}`, {
       messages: newMessage,
     });
-    setChatMessage();
+    setMessages(response.data.messages)
     setValue();
     setReplyValue();
     dispatch(updateMessagesRequest(new Date()))
@@ -119,9 +111,6 @@ export default function MessagesConversationPage({ navigation, route }) {
   function handleMessageDropMenu(position) {
     setMessageDropMenu(position)
     setToggleDropMenu(!toggleDropMenu)
-    // console.tron.log(position)
-    // console.tron.log(messageDropMenu)
-    // console.tron.log(toggleDropMenu)
   }
 
   function handleMessageReply(message, sender) {
@@ -147,55 +136,108 @@ export default function MessagesConversationPage({ navigation, route }) {
   }
   // ---------------------------------------------------------------------------
   const renderItem = ({ item, index }) => (
-    <AlignView key={item.id} sender={item.sender}>
+    <AlignView key={item.id} sender={item.sender} userIsWorker={userIsWorker}>
       <LineView>
         <MessageContainer>
-          <MessageWrapper>
-            { item.sender === 'worker' && (
-              <MessageTime>{item.timestamp}</MessageTime>
-            )}
-            <MessageView sender={item.sender}>
-              { item.reply_message && !item.removed_message
-                ? (
-                  <ReplyOnTopView>
-                    { item.reply_sender === 'worker'
-                      ? (
-                        <ReplyNameText>{task.worker_name}</ReplyNameText>
-                      )
-                      : (
-                        <ReplyNameText>{task.user_name}</ReplyNameText>
-                      )
-                    }
-                    <ReplyOnTopText>{item.reply_message}</ReplyOnTopText>
-                  </ReplyOnTopView>
-                )
-                : null
-              }
-              { item.forward_message && !item.removed_message
-                ? (
-                  <ForwardOnTopView>
-                    <MessageIcon name='corner-down-right'/>
-                    <ForwardText>Mens. encaminhada</ForwardText>
-                  </ForwardOnTopView>
-                )
-                : (
-                  null
-                )
+          { userIsWorker
+            ? (
+              <MessageWrapper>
+              { item.sender === 'worker' && (
+                <MessageTime>{item.timestamp}</MessageTime>
+              )}
+              <MessageView sender={item.sender}>
+                { item.reply_message && !item.removed_message
+                  ? (
+                    <ReplyOnTopView>
+                      { item.reply_sender === 'worker'
+                        ? (
+                          <ReplyNameText>{task.worker_name}</ReplyNameText>
+                        )
+                        : (
+                          <ReplyNameText>{task.user_name}</ReplyNameText>
+                        )
+                      }
+                      <ReplyOnTopText>{item.reply_message}</ReplyOnTopText>
+                    </ReplyOnTopView>
+                  )
+                  : null
+                }
+                { item.forward_message && !item.removed_message
+                  ? (
+                    <ForwardOnTopView>
+                      <MessageIcon name='corner-down-right'/>
+                      <ForwardText>Mens. encaminhada</ForwardText>
+                    </ForwardOnTopView>
+                  )
+                  : (
+                    null
+                  )
 
-              }
-              <MessageBottomView>
-                <MessageText removedMessage={item.removed_message}>{item.message}</MessageText>
-                <TouchableOpacity
-                  onPress={() => handleMessageDropMenu(index)}
-                >
-                  <MessageIcon name='chevron-down'/>
-                </TouchableOpacity>
-              </MessageBottomView>
-            </MessageView>
-            { item.sender === 'user' && (
-              <MessageTime>{item.timestamp}</MessageTime>
-            )}
-          </MessageWrapper>
+                }
+                <MessageBottomView>
+                  <MessageText removedMessage={item.removed_message}>{item.message}</MessageText>
+                  <TouchableOpacity
+                    onPress={() => handleMessageDropMenu(index)}
+                  >
+                    <MessageIcon name='chevron-down'/>
+                  </TouchableOpacity>
+                </MessageBottomView>
+              </MessageView>
+              { item.sender === 'user' && (
+                <MessageTime>{item.timestamp}</MessageTime>
+              )}
+            </MessageWrapper>
+            )
+            : (
+              <MessageWrapper>
+              { item.sender === 'user' && (
+                <MessageTime>{item.timestamp}</MessageTime>
+              )}
+              <MessageView sender={item.sender}>
+                { item.reply_message && !item.removed_message
+                  ? (
+                    <ReplyOnTopView>
+                      { item.reply_sender === 'user'
+                        ? (
+                          <ReplyNameText>{task.worker_name}</ReplyNameText>
+                        )
+                        : (
+                          <ReplyNameText>{task.user_name}</ReplyNameText>
+                        )
+                      }
+                      <ReplyOnTopText>{item.reply_message}</ReplyOnTopText>
+                    </ReplyOnTopView>
+                  )
+                  : null
+                }
+                { item.forward_message && !item.removed_message
+                  ? (
+                    <ForwardOnTopView>
+                      <MessageIcon name='corner-down-right'/>
+                      <ForwardText>Mens. encaminhada</ForwardText>
+                    </ForwardOnTopView>
+                  )
+                  : (
+                    null
+                  )
+
+                }
+                <MessageBottomView>
+                  <MessageText removedMessage={item.removed_message}>{item.message}</MessageText>
+                  <TouchableOpacity
+                    onPress={() => handleMessageDropMenu(index)}
+                  >
+                    <MessageIcon name='chevron-down'/>
+                  </TouchableOpacity>
+                </MessageBottomView>
+              </MessageView>
+              { item.sender === 'worker' && (
+                <MessageTime>{item.timestamp}</MessageTime>
+              )}
+            </MessageWrapper>
+            )
+          }
+
           { (messageDropMenu === index) && (toggleDropMenu === true) && (
             <MessageListView>
               <TouchableOpacity

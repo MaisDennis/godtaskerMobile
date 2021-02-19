@@ -82,7 +82,9 @@ export default function TaskCreatePage({ navigation }) {
 
   function handleAddSubTask() {
     let editedSubTaskList = subTaskList
+    const sub_task_id = Math.floor(Math.random() * 1000000)
     editedSubTaskList.push({
+      id: sub_task_id,
       description: addSubTaskInputValue,
       weige: editWeigeInputValue,
       complete: false,
@@ -149,6 +151,10 @@ export default function TaskCreatePage({ navigation }) {
         description: description,
         sub_task_list: subTaskList,
         task_attributes: [prior, urgent, complex],
+        status: {
+          status: 1,
+          comment: new Date(),
+        },
         start_date: startDate,
         due_date: dueDate,
         workerphonenumber: c.phonenumber,

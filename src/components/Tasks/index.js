@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
@@ -21,12 +21,14 @@ import {
   ModalView, ModalText, MessageButton, MiddleHeaderView, MainHeaderView,
   NameText,
   OuterStatusView,
+  RejectTaskInput,
   StartTimeView, StartTime,
   TopHeaderView, TagView, TitleView, TaskIcon, TitleText,
   UnreadMessageCountText, UserView,
 } from './styles';
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
+import message from '../../store/modules/message/reducer';
 // -----------------------------------------------------------------------------
 const formattedDate = fdate =>
   fdate == null
@@ -37,27 +39,45 @@ export default function Task({ data, navigation, taskConditionIndex }) {
   const dispatch = useDispatch();
 
   const [toggleTask, setToggleTask] = useState();
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
-  const [toggleAccept, setToggleAccept] = useState(false);
-  const [statusResult, setStatusResult] = useState(0);
   const [toggleModal, setToggleModal] = useState(false);
+  const [rejectTaskInputValue, setRejectTaskInputValue] = useState();
+  const [updateStatus, setUpdateStatus] = useState();
+  const [messageBell, setMessageBell] = useState();
+
+  const[statusBar, setStatusBar] = useState(data.status_bar);
 
   const today = new Date();
   const dueDate = parseISO(data.due_date);
   const subTasks = data.sub_task_list
 
   useEffect (() => {
-    setStatusResult(handleStatus())
-  }, [ toggleCheckBox ])
+    handleMessageBell()
+  }, [data])
 
-  function handleStatus() {
+  useMemo(() => {
+    return handleStatus()
+  }, [updateStatus]);
+
+  async function handleMessageBell() {
+    const response = await api.get(`messages/${data.message_id}`)
+    setMessageBell(response.data.messages)
+  }
+
+  async function handleStatus() {
     let weige = 0;
     subTasks.map(s => {
       if(s.complete === true) {
         weige = weige + s.weige_percentage
       }
     })
-    return Math.round(weige);
+
+    const response = await api.put(`tasks/${data.id}`, {
+      status_bar: Math.round(weige)
+    })
+    setStatusBar(response.data.status_bar)
+    // return Math.round(weige);
+
+    return;
   }
 
   const pastDueDate = () => {
@@ -66,24 +86,33 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     return flag
   }
 
-  function handleToggleTask() {
-    setToggleTask(!toggleTask)
-  }
-
-  function handleToggleAccept() {
-    setToggleAccept(!toggleAccept)
-  }
-
-  async function handletoggleCheckBox(value, position) {
-    setToggleCheckBox(!toggleCheckBox) // this distoggles the checkbox
-    const editedSubTaskList = data.sub_task_list
-    editedSubTaskList[position].complete = value
-    editedSubTaskList[position].user_read = false
+  async function updateBell(editedSubTaskList) {
     await api.put(`tasks/${data.id}`, {
       sub_task_list: editedSubTaskList
     })
+  }
+
+  function handleToggleTask() {
+    setToggleTask(!toggleTask)
+    if(hasUnread(data.sub_task_list) !== 0) {
+      const editedSubTaskList = data.sub_task_list
+      editedSubTaskList.map(e => {
+        e.worker_read = true
+      })
+      updateBell(editedSubTaskList)
+    }
+  }
+
+  async function handletoggleCheckBox(value, position) {
+    const editedSubTaskList = data.sub_task_list
+    editedSubTaskList[position].complete = value
+    editedSubTaskList[position].user_read = false
+
+    await api.put(`tasks/${data.id}`, {
+      sub_task_list: editedSubTaskList,
+    })
     dispatch(updateTasks(new Date()))
-    return
+    setUpdateStatus(new Date())
   }
 
   function handleMessage() {
@@ -95,15 +124,34 @@ export default function Task({ data, navigation, taskConditionIndex }) {
   }
 
   function handleConfirm() {
-    navigation.navigate('Confirm', { task_id: data.id, taskName: data.name });
+    navigation.navigate('Confirm', {
+      task_id: data.id, taskName: data.name
+    });
   }
 
-  function handleToggleModal() {
+  async function handleToggleAccept() {
+    // setToggleAccept(!toggleAccept)
+    await api.put(`tasks/${data.id}`, {
+      status: {
+        status: 2,
+        comment: new Date(),
+      },
+      initiated_at: new Date(),
+    })
+    dispatch(updateTasks(new Date()))
+  }
+
+  async function handleCancelTask() {
+    await api.put(`tasks/${data.id}`, {
+      status: {
+        status: 4,
+        canceled_by: "worker",
+        comment: `${rejectTaskInputValue}`,
+      },
+      canceled_at: new Date(),
+    });
     setToggleModal(!toggleModal)
-  }
-
-  function handleCancelTask() {
-    api.delete(`tasks/${data.id}`);
+    dispatch(updateTasks(new Date()))
   }
 
   const hasUnread = (array) => {
@@ -165,9 +213,9 @@ export default function Task({ data, navigation, taskConditionIndex }) {
             <AlignBottomView>
               <BottomHeaderView>
                 <OuterStatusView>
-                  <InnerStatusView statusResult={statusResult}></InnerStatusView>
+                  <InnerStatusView statusResult={statusBar}></InnerStatusView>
                 </OuterStatusView>
-                <StartTime>{statusResult}%</StartTime>
+                <StartTime>{statusBar}%</StartTime>
               </BottomHeaderView>
             </AlignBottomView>
           </MainHeaderView>
@@ -183,13 +231,13 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                   </BellIcon>
                 )
               }
-              { (hasUnread(data.messages) === 0)
+              { (hasUnread(messageBell) === 0)
                 ? (
                   null
                 )
                 : (
                   <BellIcon name="message-circle">
-                    <UnreadMessageCountText>{hasUnread(data.messages)}</UnreadMessageCountText>
+                    <UnreadMessageCountText>{hasUnread(messageBell)}</UnreadMessageCountText>
                   </BellIcon>
                 )
               }
@@ -212,6 +260,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
               { data.sub_task_list.map((s, index) => (
                 <AlignCheckBoxView key={s.id}>
                   <CheckBoxView>
+                    { data.status && data.status.status !== 1 && (
                       <CheckBox
                         disabled={false}
                         value={s.complete}
@@ -219,14 +268,15 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                           (newValue) => handletoggleCheckBox(newValue, index)
                         }
                       />
-                      <DescriptionSpan>{s.weige_percentage}%</DescriptionSpan>
-                      <DescriptionSpan type="check-box">{s.description}</DescriptionSpan>
+                    )}
+                    <DescriptionSpan>{s.weige_percentage}%</DescriptionSpan>
+                    <DescriptionSpan type="check-box">{s.description}</DescriptionSpan>
                   </CheckBoxView>
                 </AlignCheckBoxView>
               ))}
             </DescriptionBorderView>
           </DescriptionView>
-          { toggleAccept
+          { data.status && data.status.status !== 1
             ? (
               <DatesAndButtonView>
                 <ButtonView>
@@ -287,7 +337,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                         </TouchableOpacity>
                       </ButtonView>
                       <ButtonView>
-                        <TouchableOpacity onPress={handleToggleAccept}>
+                        <TouchableOpacity onPress={() => setToggleModal(!toggleModal)}>
                           <MessageButton>
                           <ButtonText>Recusar</ButtonText>
                           </MessageButton>
@@ -306,7 +356,18 @@ export default function Task({ data, navigation, taskConditionIndex }) {
           <Modal isVisible={toggleModal}>
             <ModalView>
               <ModalText>Tem certeza de que quer recusar a tarefa?</ModalText>
+                {/* <DescriptionBorderView pastDueDate={pastDueDate()}> */}
+                  <RejectTaskInput
+                    placeholder="Comentário"
+                    value={rejectTaskInputValue}
+                    onChangeText={setRejectTaskInputValue}
+                    mutiline={true}
+                    // numberOfLines={5}
+                  />
+                {/* </DescriptionBorderView> */}
               <DatesAndButtonView>
+
+
                 <ButtonView>
                   <TouchableOpacity onPress={handleCancelTask}>
                     <MessageButton>
@@ -315,10 +376,10 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                   </TouchableOpacity>
                 </ButtonView>
                 <ButtonView>
-                  <TouchableOpacity onPress={handleToggleModal}>
-                    <ConfirmButton>
-                    <ButtonText>Não</ButtonText>
-                    </ConfirmButton>
+                  <TouchableOpacity onPress={() => setToggleModal(!toggleModal)}>
+                    <MessageButton>
+                    <ButtonText>Voltar</ButtonText>
+                    </MessageButton>
                   </TouchableOpacity>
                 </ButtonView>
               </DatesAndButtonView>

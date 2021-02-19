@@ -7,10 +7,18 @@ import { ScrollView, FlatList, KeyboardAvoidingView, SafeAreaView } from 'react-
 export const AlignView = styled.View`
 display: flex;
 flex-direction: column;
-align-items: ${
-  props => props.sender === 'user' ? 'flex-start' : 'flex-end'
+align-items: ${ props => props.userIsWorker
+  ? (
+    (props.sender === 'user') ? 'flex-start' : 'flex-end'
+  )
+  : (
+    (props.sender === 'user') ? 'flex-end' : 'flex-start'
+  )
 };
 width: 100%;
+/* background-color: ${
+  props => props.sender === 'user' ? '#44cc33' : '#73a6c4'
+} */
 /* background-color: #665544; */
 `;
 
@@ -30,13 +38,13 @@ export const Container = styled.SafeAreaView`
   align-items: center;
   height: 100%;
   width: 100%;
-  background: #fff;
+  background: #f5f5f5;
   /* background: #F5F5; */
 `;
 export const ConversationView = styled.View`
 display: flex;
 flex-direction: column;
-height: auto;
+height: 80%;
 width: 100%;
 overflow: scroll;
 margin-bottom: 40%;
@@ -52,7 +60,8 @@ align-items: center;
 width: 100%;
 padding: 8px;
 margin: 0;
-background-color: #222;
+background-color: #73a6c4;
+
 `;
 export const FooterContainer = styled.View`
   display: flex;
@@ -89,12 +98,12 @@ justify-content: space-between;
 height: auto;
 width: 100%;
 background-color: #f5f5f5;
-/* background-color: #73a6c4; */
+background-color: #73a6c4;
 `;
 
 export const HrLine = styled.View`
 width: 90%;
-border: 1px #f5f5f5;
+border: 1px #f0f0f0;
 margin: 0 auto;
 `;
 
@@ -288,6 +297,7 @@ export const TemporaryMessageView = styled.View`
   height: 36px;
   width: 90%;
   background-color: #f5f5f5;
+  /* background-color: #f00; */
 `;
 export const TemporaryMessageText = styled.Text`
 color: #999;

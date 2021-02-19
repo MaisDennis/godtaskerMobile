@@ -49,7 +49,9 @@ export default function TaskEditPage({ navigation, route }) {
 
   function handleAddSubTask() {
     let editedSubTaskList = subTaskList
+    const sub_task_id = Math.floor(Math.random() * 1000000)
     editedSubTaskList.push({
+      id: sub_task_id,
       description: addSubTaskInputValue,
       weige: editWeigeInputValue,
       complete: false,
@@ -57,7 +59,7 @@ export default function TaskEditPage({ navigation, route }) {
     })
     setSubTaskList(editedSubTaskList)
     setAddSubTaskInputValue();
-    console.tron.log(subTaskList)
+    // console.tron.log(subTaskList)
     navigation.navigate('TaskEdit');
     // dispatch(updateTasks(new Date()))
   }
@@ -118,9 +120,7 @@ export default function TaskEditPage({ navigation, route }) {
       due_date: dueDate,
     });
     dispatch(updateTasks(new Date()))
-    navigation.goBack({
-      sub_task_list: subTaskList,
-    });
+    navigation.goBack();
   }
   // ---------------------------------------------------------------------------
   return (
