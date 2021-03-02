@@ -24,10 +24,11 @@ export default function SignIn({ navigation }) {
     const unmaskedPhoneNumber = (
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )
-
+    const parsedUnmaskedPhoneNumber = '+55'+unmaskedPhoneNumber(phonenumber)
+    // console.tron.log(parsedUnmaskedPhoneNumber)
     dispatch(
       signInRequest(
-        unmaskedPhoneNumber(phonenumber), password
+        parsedUnmaskedPhoneNumber, password
       )
     );
   }

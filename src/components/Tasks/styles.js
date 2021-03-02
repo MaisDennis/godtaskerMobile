@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
+import LinearGradient from 'react-native-linear-gradient';
 import Button from '~/components/Button';
 
 export const AlignBottomView = styled.View`
@@ -156,12 +157,10 @@ box-shadow: 2px 2px 2px #ccc;
 margin: 0 auto;
 `;
 
-export const InnerStatusView = styled.View`
+export const InnerStatusView = styled(LinearGradient)`
   height: 8px;
-  /* width: 20%; */
-  width: ${props => props.statusResult+'%'};
   border-radius: 16px;
-  background-color: #f3c775;
+  /* background-color: #f3c775; */
 `;
 
 export const Label = styled.Text`

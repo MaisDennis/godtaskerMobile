@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 export const Container = styled.SafeAreaView`
   height: 100%;
 `;
+
 export const Header = styled.View`
 display: flex;
 flex-direction: row;

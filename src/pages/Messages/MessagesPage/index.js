@@ -33,7 +33,7 @@ export default function MessagesPage({ navigation, route }) {
       params: { workerNameFilter, userID }
     })
     response = [... workerResponse.data, ... userResponse.data]
-    console.tron.log(response)
+    // console.tron.log(response)
     // response.map(r => {
     //   getPhoto(r.phonenumber)
     // })
@@ -57,7 +57,7 @@ export default function MessagesPage({ navigation, route }) {
       params: {phonenumber: phonenumber},
     })
     setWorkerData(worker.data)
-    console.tron.log('worker')
+    // console.tron.log('worker')
   }
 
   function compare(a, b) {

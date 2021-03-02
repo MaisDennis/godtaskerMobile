@@ -61,14 +61,30 @@ export const FormWorker = styled.View`
 `;
 
 export const PhoneMask = styled(InputMask)`
-  color: #fff;
-  background: rgba(0,0,0,0.3);
-  margin: 4px auto;
-  width: 90%;
+  height: 48px;
+  width: 80%;
   border-radius: 4px;
   padding-left: 12px;
-  height: 46px;
+  margin: 16px auto;
+  color: #fff;
+  background: rgba(0,0,0,0.3);
 `;
+
+export const OtpMask = styled(InputMask)`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  font-size: 21px;
+  height: 48px;
+  width: 50%;
+  padding: 0 12px;
+  border-radius: 4px;
+  margin: 16px auto;
+  color: #fff;
+  background: rgba(0,0,0,0.3);
+`;
+
 export const FormInputWorkerPassword = styled(Input)`
   background: rgba(0,0,0,0.3);
   margin: 4px auto;
@@ -76,10 +92,18 @@ export const FormInputWorkerPassword = styled(Input)`
   /* background: #c4ce3b; */
 `;
 
+export const OtpInput = styled(Input)`
+  background: rgba(0,0,0,0.3);
+  margin: 4px auto;
+  width: 50%;
+  /* background: #c4ce3b; */
+`;
+
 export const SubmitButton = styled(Button)`
   width: 50%;
-  margin: 16px auto;
+  margin: 0 auto;
   /* width: 148px; */
+  background-color: #4433ee;
   /* width: 50%; */
 `;
 

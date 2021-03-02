@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import Button from '~/components/Button';
 
@@ -154,15 +155,21 @@ box-shadow: 2px 2px 2px #ccc;
 margin: 0 auto;
 `;
 
-export const InnerStatusView = styled.View`
+export const InnerStatusView = styled(LinearGradient)`
   height: 8px;
-  width: 50%;
-  /* width: ${props => props.statusResult+'%'}; */
+  /* width: 50%; */
   border-radius: 16px;
-  background-color: #f3c775;
-  /* background-color: #6ee57b; */
-  /* color: ${props => props.pastDueDate === true ? '#f64C75' : '#009966'}; */
 `;
+
+// export const InnerStatusView = styled.View`
+//   height: 8px;
+//   width: 50%;
+//   /* width: ${props => props.statusResult+'%'}; */
+//   border-radius: 16px;
+//   background-color: #f3c775;
+//   /* background-color: #6ee57b; */
+//   /* color: ${props => props.pastDueDate === true ? '#f64C75' : '#009966'}; */
+// `;
 
 export const Label = styled.Text`
   font-weight: normal;

@@ -60,7 +60,7 @@ align-items: center;
 width: 100%;
 padding: 8px;
 margin: 0;
-background-color: #73a6c4;
+background-color: #222;
 
 `;
 export const FooterContainer = styled.View`
@@ -98,7 +98,7 @@ justify-content: space-between;
 height: auto;
 width: 100%;
 background-color: #f5f5f5;
-background-color: #73a6c4;
+background-color: #334466;
 `;
 
 export const HrLine = styled.View`
@@ -118,6 +118,7 @@ export const Image = styled.Image`
 height: 48px;
 width: 48px;
 border-radius: 48px;
+background-color: #f5f5f5;
 
 `;
 
@@ -138,7 +139,7 @@ border-radius: 8px;
 /* background-color: #4ee; */
 background-color: #73a6c4;
 background-color: ${
-  props => props.sender === 'user' ? '#44cc33' : '#73a6c4'
+  props => props.sender === 'user' ? '#daf1e0' : '#b4c7db'
 };
 `;
 export const MessageBottomView = styled.View`
@@ -240,8 +241,10 @@ export const SenderView = styled.View`
 export const SenderText = styled.Text`
   font-weight: 700;
   padding: 4px 0;
+  color: #fff;
 `;
 export const SenderAboutText = styled.Text`
+  color: #ccc;
 `;
 
 export const SendInput = styled.TextInput`
@@ -264,7 +267,8 @@ export const SendButton = styled.View`
   border-radius: 36px;
   margin: 0;
   /* background-color: #4ee; */
-  background-color: #007f66;
+  /* background-color: #007f66; */
+  background-color: #4433ee;
 `;
 export const SendButtonAlignView = styled.View`
   display: flex;

@@ -13,7 +13,7 @@ export function* updateProfile({ payload }) {
       phonenumber, birth_date, gender,
       image,
     } = payload;
-    console.tron.log(payload)
+    // console.tron.log(payload)
 
     let response = null
     if (!image) {
@@ -49,7 +49,7 @@ export function* updateProfile({ payload }) {
     }
 
     // toast.success('Perfil atualizado com sucesso!');
-    console.log(response.data);
+    // console.log(response.data);
     yield put(updateProfileSuccess(response.data));
 
   } catch (error) {

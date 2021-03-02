@@ -31,7 +31,7 @@ export const Body = styled.View`
 export const TabView = styled.View`
   height: 100%;
   width: 5%;
-  background-color: #73a6c4;
+  background-color: #334466;
 
 `;
 export const UserInfoView = styled.View`

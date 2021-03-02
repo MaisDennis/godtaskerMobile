@@ -18,7 +18,7 @@ flex-direction: row;
 align-items: center;
 height: 100%;
 width: 20%;
-background-color: #73a6c4;
+background-color: #334466;
 `;
 
 export const LeftView = styled.View`
@@ -27,8 +27,8 @@ flex-direction: row;
 align-items: center;
 height: 100%;
 width: 20%;
-background-color: #73c479;
-/* background: ${props => props.colorProp == true ? '#73a6c4' : '#73c479'}; */
+background-color: #009966;
+/* background: ${props => props.colorProp == true ? '#334466' : '#73c479'}; */
 `;
 export const AlignView = styled.View`
   display: flex;
@@ -74,7 +74,7 @@ export const TitleText = styled.Text`
   color: #4433ee;
   font-weight: 700;
   padding: 4px;
-  color: ${props => props.colorProp == true ? '#73a6c4' : '#73c479'};
+  color: ${props => props.colorProp == true ? '#334466' : '#009966'};
 `;
 export const SenderText = styled.Text`
   font-weight: 700;

@@ -1,5 +1,5 @@
 import { takeLatest, call, put, all} from 'redux-saga/effects';
-// import { toast } from 'react-toastify';
+import { Alert } from 'react-native';
 // -----------------------------------------------------------------------------
 // import history from '~/services/history';
 import api from '~/services/api';
@@ -24,13 +24,14 @@ export function* signIn({ payload }) {
     const worker = responseWorkers.data.find(
       w => w.phonenumber == phonenumber
     );
-    console.tron.log(worker)
+    // console.tron.log(worker)
     yield put(signInSuccess(token, user, worker));
     // history.push('/dashboard');
 
   } catch (error) {
     yield put(signFailure());
     console.tron.log(error)
+    Alert.alert('Dados inválidos')
     // toast.error('Falha na autenticação, verifique seus dados');
   }
 }
@@ -54,8 +55,6 @@ export function* signUp({ payload }) {
       first_name, last_name, user_name,
       password, phonenumber, email, birth_date, gender, subscriber: false
     })
-
-    console.tron.log('OK')
 
     yield call(api.post, 'workers', {
       first_name,

@@ -4,10 +4,8 @@ import Button from '~/components/Button';
 import { RectButton } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather'
 
-export const Container = styled.View.attrs({
-})`
-  margin: 0;
-  background: #f5f5f5;
+export const Container = styled.SafeAreaView`
+  height: 100%;
 `;
 
 export const Header = styled.View`

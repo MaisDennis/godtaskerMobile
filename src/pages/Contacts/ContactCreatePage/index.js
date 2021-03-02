@@ -24,6 +24,7 @@ export default function ContactCreatePage({ navigation }) {
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )
     const unmaskedPhoneNumber = unmaskPhoneNumber(phonenumber)
+    const parsedUnmaskedPhoneNumber = '+55'+unmaskedPhoneNumber
     const id = Math.floor(Math.random() * 1000000)
     try {
       api.post(`users/${userId}/contact-list`, {
@@ -32,7 +33,7 @@ export default function ContactCreatePage({ navigation }) {
         last_name: lastName,
         worker_name: workerName,
         department: department,
-        phonenumber: unmaskedPhoneNumber,
+        phonenumber: parsedUnmaskedPhoneNumber,
       })
       dispatch(updateContacts(new Date()))
       navigation.navigate('Contacts')

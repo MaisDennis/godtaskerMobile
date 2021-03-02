@@ -190,6 +190,8 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
                 <OuterStatusView>
                   <InnerStatusView
                     statusResult={statusResult}
+                    colors={['#ffdd33', '#ff892e']}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
                     style={{ width: `${statusResult}%`}}
                   ></InnerStatusView>
                 </OuterStatusView>

@@ -1,10 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-// import Icon from 'react-native-vector-icons/Feather'
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import insert from '~/assets/insert_photo-24px.svg';
+
+// import * as firebase from 'firebase'
+import firebase from '~/services/firebase'
+// import '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
+import firestore from '@react-native-firebase/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore'
 // -----------------------------------------------------------------------------
 import {
   AlignView,
@@ -29,15 +35,21 @@ import {
 import api from '~/services/api';
 import { updateMessagesRequest, updateForwardMessage } from '~/store/modules/message/actions';
 import user from '../../../store/modules/user/reducer';
+// import firebase from '../../../services/firebase';
 
 export default function MessagesConversationPage({ navigation, route }) {
   const messageUserId = useSelector(state => state.user.profile.id);
   const messageWorkerId = route.params.worker_id;
+  const avatar = route.params.avatar;
   const userIsWorker = messageUserId === messageWorkerId;
 
   const dispatch = useDispatch();
 
-  const [messages, setMessages] = useState(route.params.messages);
+  // const [messages, setMessages] = useState(route.params.messages);
+  // const [defaultMessages, setDefaultMessages] = useState(route.params.messages);
+  const [messages, setMessages] = useState();
+  const [defaultMessages, setDefaultMessages] = useState();
+
   const [replyValue, setReplyValue] = useState();
   const [replySender, setReplySender] = useState();
   const [value, setValue] = useState();
@@ -49,7 +61,13 @@ export default function MessagesConversationPage({ navigation, route }) {
   const task = route.params;
   const worker_phonenumber = route.params.worker_phonenumber
 
-  // console.tron.log(userIsWorker)
+
+
+  const messagesRef = firestore()
+  .collection(`messages`)
+  // .doc(`messages for task ${task.id}`)
+  // .collection('messages');
+
   const formattedMessageDate = fdate =>
   fdate == null
     ? ''
@@ -57,15 +75,64 @@ export default function MessagesConversationPage({ navigation, route }) {
 
   useEffect(() => {
     getPhoto(worker_phonenumber)
-    setMessages(route.params.messages)
+    // setMessages(route.params.messages)
+    getMessages()
+
+    // const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    // });
   }, [task]);
+
+  async function getMessages() {
+    const response = await api.get(`messages/${task.message_id}`)
+    // setMessages(response.data.messages)
+    // setDefaultMessages(response.data.messages)
+
+    // const query = messagesRef.orderBy('timestamp').limit(25);
+    // const [messagesTest] = useCollectionData(query, { idField: 'id' });
+    // console.tron.log(messagesTest)
+
+    let messagesArray= [];
+
+    const unsubscribe = await firebase.firestore()
+      .collection(`messages`)
+      // .doc(`messages for task ${task.id}`)
+      // .collection('messages').orderBy('timestamp')
+      .onSnapshot((querySnapshot) => {
+        // querySnapshot.forEach((doc) => {
+        //   messagesArray.push(doc.data())
+        // })
+
+        const data = querySnapshot.docs.map(d => ({
+          ...d.data(),
+        }));
+        console.log(data)
+        setMessages(data)
+
+        // console.log(doc.data())
+      })
+      return unsubscribe;
+
+      // function onResult(QuerySnapshot) {
+      //   console.tron.log('Got Users collection result.');
+      //   QuerySnapshot.forEach((doc) => {
+      //   messagesArray.push(doc.data())
+      //   });
+      // }
+
+      // function onError(error) {
+      //   console.tron.error('Hi');
+      // }
+
+    // setMessages(messagesArray)
+    // setDefaultMessages(messagesArray)
+  }
 
   async function getPhoto(phonenumber) {
     const worker = await api.get('workers/individual', {
       params: {phonenumber: phonenumber},
     })
     setWorkerData(worker.data)
-    // console.tron.log(worker.data)
   }
 
   async function handleSend() {
@@ -74,35 +141,48 @@ export default function MessagesConversationPage({ navigation, route }) {
     const message_id = Math.floor(Math.random() * 1000000)
     if (replyValue) {
       newMessage = {
-        "id": message_id,
-        "message": value,
-        "sender": `${userIsWorker ? "worker" : "user"}`,
-        "user_read": `${userIsWorker ? false : true}`,
-        "worker_read": false,
-        "timestamp": formattedTimeStamp,
-        "reply_message": replyValue,
-        "reply_sender": replySender,
-        "forward_message": false,
-        "visible": true,
+        id: message_id,
+        message: value,
+        sender: `${userIsWorker ? "worker" : "user"}`,
+        user_read: `${userIsWorker ? false : true}`,
+        worker_read: false,
+        timestamp: formattedTimeStamp,
+        reply_message: replyValue,
+        reply_sender: replySender,
+        forward_message: false,
+        visible: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       }
     } else {
       newMessage = {
-        "id": message_id,
-        "message": value,
-        "sender": `${userIsWorker ? "worker" : "user"}`,
-        "user_read": `${userIsWorker ? false : true}`,
-        "worker_read": false,
-        "timestamp": formattedTimeStamp,
-        "reply_message": '',
-        "reply_sender": '',
-        "forward_message": false,
-        "visible": true,
+        id: message_id,
+        message: value,
+        sender: `${userIsWorker ? "worker" : "user"}`,
+        user_read: `${userIsWorker ? false : true}`,
+        worker_read: false,
+        timestamp: formattedTimeStamp,
+        reply_message: '',
+        reply_sender: '',
+        forward_message: false,
+        visible: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       }
     }
     const response = await api.put(`messages/${messageId}`, {
       messages: newMessage,
     });
-    setMessages(response.data.messages)
+
+    // Firebase Messaging ******************************************************
+    await messagesRef.add(newMessage)
+    .then(() => {
+      console.tron.log(`task ${task.id}`);
+    })
+    .catch((error) => {
+      console.tron.log("Error writing document: ", error);
+    });
+
+    // setMessages(response.data.messages)
+    // setMessages(messagesRef)
     setValue();
     setReplyValue();
     dispatch(updateMessagesRequest(new Date()))
@@ -275,7 +355,7 @@ export default function MessagesConversationPage({ navigation, route }) {
         <Header >
           <BodyView>
             {/* <ImageView> */}
-              { workerData === undefined || workerData.avatar === null
+              { route.params === undefined || route.params.avatar === null
                 ? (
                   <>
                     {/* <Image
@@ -286,7 +366,7 @@ export default function MessagesConversationPage({ navigation, route }) {
                 )
                 : (
                   <Image
-                    source={{ uri: workerData.avatar.url }}
+                    source={{ uri: route.params.avatar.url }}
                   />
                 )
               }

@@ -1,4 +1,6 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 
@@ -83,6 +85,8 @@ project.ext.react = [
 
 apply from: "../../node_modules/react-native/react.gradle"
 // apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
+
+
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -206,6 +210,17 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     implementation 'com.android.support:multidex:1.0.3'
+
+    // Import the Firebase BoM
+    // implementation platform('com.google.firebase:firebase-bom:26.5.0')
+
+    // Declare the dependency for the Firebase SDK for Google Analytics
+    // implementation 'com.google.firebase:firebase-analytics'
+
+    // Declare the dependencies for any other desired Firebase products
+    // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
+    // implementation 'com.google.firebase:firebase-auth'
+    // implementation 'com.google.firebase:firebase-firestore'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

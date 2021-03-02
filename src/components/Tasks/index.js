@@ -44,7 +44,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
   const [updateStatus, setUpdateStatus] = useState();
   const [messageBell, setMessageBell] = useState();
 
-  const[statusBar, setStatusBar] = useState(data.status_bar);
+  const[statusResult, setStatusResult] = useState(0);
 
   const today = new Date();
   const dueDate = parseISO(data.due_date);
@@ -74,7 +74,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     const response = await api.put(`tasks/${data.id}`, {
       status_bar: Math.round(weige)
     })
-    setStatusBar(response.data.status_bar)
+    setStatusResult(response.data.status_bar)
     // return Math.round(weige);
 
     return;
@@ -213,9 +213,14 @@ export default function Task({ data, navigation, taskConditionIndex }) {
             <AlignBottomView>
               <BottomHeaderView>
                 <OuterStatusView>
-                  <InnerStatusView statusResult={statusBar}></InnerStatusView>
+                  <InnerStatusView
+                    statusResult={statusResult}
+                    colors={['#ffdd33', '#ff892e']}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                    style={{ width: `${statusResult}%`}}
+                  ></InnerStatusView>
                 </OuterStatusView>
-                <StartTime>{statusBar}%</StartTime>
+                <StartTime>{statusResult}%</StartTime>
               </BottomHeaderView>
             </AlignBottomView>
           </MainHeaderView>

@@ -3,21 +3,8 @@ import { TextInput, Text, Image, KeyboardAvoidingView, ScrollView } from 'react-
 import Button from '~/components/Button';
 import { RectButton } from 'react-native-gesture-handler';
 
-export const Container = styled.View.attrs({
-})`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  /* top: 5px; */
-  margin: 0;
-  /* width: 90%; */
-  /* height: 800px; */
-  background: #f5f5f5;
-  /* flex: 1; */
-
-  /* padding: 0; */
-  /* background: #ff5f; */
+export const Container = styled.SafeAreaView`
+  height: 100%;
 `;
 
 export const Header = styled.View`

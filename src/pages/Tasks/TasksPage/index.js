@@ -27,10 +27,7 @@ export default function Dashboard({ navigation }) {
 
   useEffect(() => {
     loadTasks();
-    // console.tron.log(tasks)
   }, [ update_tasks ]);
-
-  // console.tron.log(taskConditionIndex)
 
   async function loadTasks() {
     let response = await api.get(`tasks/unfinished`, {

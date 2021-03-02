@@ -105,7 +105,7 @@ export default function Messages({ data, navigation }) {
         return m
       })
     }
-    console.tron.log(editedMessages)
+    // console.tron.log(editedMessages)
 
 
     await api.put(`messages/update/${data.message_id}`, {
@@ -121,6 +121,7 @@ export default function Messages({ data, navigation }) {
       worker_phonenumber: data.workerphonenumber,
       message_id: data.message_id,
       messages: messageBell,
+      avatar: workerData.avatar,
 
     });
     setResetConversation();
