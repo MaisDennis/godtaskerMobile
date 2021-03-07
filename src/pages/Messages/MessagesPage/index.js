@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import Messages from '~/components/Messages';
+import firestore from '@react-native-firebase/firestore';
 // -----------------------------------------------------------------------------
 import {
   Container, List, Header, AlignView,
   SearchBarTextInput, Title3
 } from './styles';
+import Messages from '~/components/Messages';
 import api from '~/services/api';
+import firebase from '~/services/firebase'
 // -----------------------------------------------------------------------------
 export default function MessagesPage({ navigation, route }) {
   const user_id = useSelector(state => state.user.profile.id);
@@ -61,11 +63,11 @@ export default function MessagesPage({ navigation, route }) {
   }
 
   function compare(a, b) {
-    if (a.id > b.id) {
-      return 1;
-    }
-    if (a.id < b.id) {
+    if (a.messaged_at > b.messaged_at) {
       return -1;
+    }
+    if (a.messaged_at < b.messaged_at) {
+      return 1;
     }
     return 0;
   }

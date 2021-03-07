@@ -24,7 +24,7 @@ export default function SignIn({ navigation }) {
     const unmaskedPhoneNumber = (
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )
-    const parsedUnmaskedPhoneNumber = '+55'+unmaskedPhoneNumber(phonenumber)
+    const parsedUnmaskedPhoneNumber = unmaskedPhoneNumber(phonenumber)
     // console.tron.log(parsedUnmaskedPhoneNumber)
     dispatch(
       signInRequest(

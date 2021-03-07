@@ -67,9 +67,10 @@ export function* signUp({ payload }) {
       gender,
       subscriber: false
     })
+    Alert.alert('Usuário cadastrado com sucesso!')
 
   } catch (error) {
-
+    Alert.alert('Falha ao cadastrar usuário.')
   }
 }
 

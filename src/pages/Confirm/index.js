@@ -129,16 +129,15 @@ export default function Confirm({ route }) {
           }
         </FlashButton>
         <FooterView>
-
-        <CameraRollButton>
-        <Icon name='codepen' size={24} color='#fff'/>
-        </CameraRollButton>
-        <CameraButton onPress={() => takePicture()}>
-          <Icon name='camera' size={24} color='#fff'/>
-        </CameraButton>
-        <CameraReverseButton onPress={() => setToggleCameraReverse(!toggleCameraReverse)}>
-          <Icon name='users' size={24} color='#fff'/>
-        </CameraReverseButton>
+          <CameraRollButton>
+            <Icon name='codepen' size={24} color='#fff'/>
+          </CameraRollButton>
+          <CameraButton onPress={() => takePicture()}>
+            <Icon name='camera' size={24} color='#fff'/>
+          </CameraButton>
+          <CameraReverseButton onPress={() => setToggleCameraReverse(!toggleCameraReverse)}>
+            <Icon name='users' size={24} color='#fff'/>
+          </CameraReverseButton>
         </FooterView>
       </Container>
       {/* </StyledScrollView> */}

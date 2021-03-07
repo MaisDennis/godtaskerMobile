@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { TouchableOpacity } from 'react-native'
+import { Alert, TouchableOpacity } from 'react-native'
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
 // -----------------------------------------------------------------------------
@@ -22,6 +22,7 @@ import {
 } from './styles'
 import NumberInput from '~/components/NumberInput'
 import { updateTasks } from '~/store/modules/task/actions';
+import { updateMessagesRequest } from '~/store/modules/message/actions';
 import api from '~/services/api';
 
 export default function TaskCreatePage({ navigation }) {
@@ -30,9 +31,10 @@ export default function TaskCreatePage({ navigation }) {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState();
-  const [prior, setPrior] = useState("");
-  const [urgent, setUrgent] = useState("");
-  const [complex, setComplex] = useState("");
+  const [prior, setPrior] = useState(4);
+  const [urgent, setUrgent] = useState(4);
+  const [complex, setComplex] = useState(4);
+  const [confirmPhoto, setConfirmPhoto] = useState(1);
   const [startDate, setStartDate] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
   const [contacts, setContacts] = useState([]);
@@ -50,7 +52,17 @@ export default function TaskCreatePage({ navigation }) {
   const [subTaskToggleEdit, setSubTaskToggleEdit] = useState(false);
 
   let editedWorkers = [];
-  const taskAttributesArray = [ "baixa", "média", "alta", "" ]
+  const taskAttributesArray = [
+    { id: 1, tag: 'baixa'},
+    { id: 2, tag: 'média'},
+    { id: 3, tag: 'alta'},
+    { id: 4, tag: ''},
+  ]
+
+  const confirmPhotoArray = [
+    { id: true, tag: 'Sim'},
+    { id: false, tag: 'Não'}
+  ]
 
   useEffect(() => {
     loadContacts(userId);
@@ -155,12 +167,15 @@ export default function TaskCreatePage({ navigation }) {
           status: 1,
           comment: new Date(),
         },
+        confirm_photo: confirmPhoto,
         start_date: startDate,
         due_date: dueDate,
+        messaged_at: new Date(),
         workerphonenumber: c.phonenumber,
       }, userId
     ]);
     dispatch(updateTasks(new Date()))
+    dispatch(updateMessagesRequest(new Date()))
     setToggleModal(!toggleModal)
   }
 
@@ -170,13 +185,15 @@ export default function TaskCreatePage({ navigation }) {
         if(c.checked == true) createTasks(c)
         return c;
       })
+      Alert.alert('Tarefa cadastrada com sucesso!')
     } catch(error) {
       setSubmitError(true)
+      Alert.alert('Erro ao cadastrar a tarefa.')
     }
     // dispatch(updateTasks(new Date()))
     navigation.goBack()
   }
-    // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   return (
     <Container>
       <FormScrollView contentContainerStyle={{ alignItems: 'center'}}>
@@ -328,7 +345,7 @@ export default function TaskCreatePage({ navigation }) {
           <LabelText>Prioridades:</LabelText>
           <Options selectedValue={prior} onValueChange={setPrior}>
             { taskAttributesArray.map(t => (
-              <Options.Item key={t} label={t} value={t}/>
+              <Options.Item key={t.id} label={t.tag} value={t.id}/>
             ))}
           </Options>
         </ItemWrapperView>
@@ -336,7 +353,7 @@ export default function TaskCreatePage({ navigation }) {
           <LabelText>Urgência:</LabelText>
           <Options selectedValue={urgent} onValueChange={setUrgent}>
             { taskAttributesArray.map(t => (
-              <Options.Item key={t} label={t} value={t}/>
+              <Options.Item key={t.id} label={t.tag} value={t.id}/>
             ))}
           </Options>
         </ItemWrapperView>
@@ -344,7 +361,15 @@ export default function TaskCreatePage({ navigation }) {
           <LabelText>Complexidade:</LabelText>
           <Options selectedValue={complex} onValueChange={setComplex}>
             { taskAttributesArray.map(t => (
-              <Options.Item key={t} label={t} value={t}/>
+              <Options.Item key={t.id} label={t.tag} value={t.id}/>
+            ))}
+          </Options>
+        </ItemWrapperView>
+        <ItemWrapperView>
+          <LabelText>Requer foto de confirmação ao completar a tarefa?</LabelText>
+          <Options selectedValue={confirmPhoto} onValueChange={setConfirmPhoto}>
+            { confirmPhotoArray.map(t => (
+              <Options.Item key={t.id} label={t.tag} value={t.id}/>
             ))}
           </Options>
         </ItemWrapperView>

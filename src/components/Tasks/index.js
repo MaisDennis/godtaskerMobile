@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
+import firestore from '@react-native-firebase/firestore';
 // -----------------------------------------------------------------------------
 import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/Feather';
@@ -16,7 +17,7 @@ import {
   DescriptionView, DescriptionBorderView, DescriptionSpan,
   DatesAndButtonView, DueTimeView, DueTime,
   HeaderView, HrLine, HrTitleLine,
-  InnerStatusView,
+  Image, ImageView, ImageWrapper, InnerStatusView,
   Label,
   ModalView, ModalText, MessageButton, MiddleHeaderView, MainHeaderView,
   NameText,
@@ -29,6 +30,7 @@ import {
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
 import message from '../../store/modules/message/reducer';
+import firebase from '~/services/firebase'
 // -----------------------------------------------------------------------------
 const formattedDate = fdate =>
   fdate == null
@@ -40,13 +42,13 @@ export default function Task({ data, navigation, taskConditionIndex }) {
 
   const [toggleTask, setToggleTask] = useState();
   const [toggleModal, setToggleModal] = useState(false);
+  const [toggleConfirmModal, setToggleConfirmModal] = useState(false);
   const [rejectTaskInputValue, setRejectTaskInputValue] = useState();
   const [updateStatus, setUpdateStatus] = useState();
   const [messageBell, setMessageBell] = useState();
 
   const[statusResult, setStatusResult] = useState(0);
 
-  const today = new Date();
   const dueDate = parseISO(data.due_date);
   const subTasks = data.sub_task_list
 
@@ -60,7 +62,20 @@ export default function Task({ data, navigation, taskConditionIndex }) {
 
   async function handleMessageBell() {
     const response = await api.get(`messages/${data.message_id}`)
-    setMessageBell(response.data.messages)
+    // setMessageBell(response.data.messages)
+
+    const unsubscribe = firestore()
+      .collection(`messagesTask${data.id}`)
+      .orderBy('createdAt')
+      .onSnapshot((querySnapshot) => {
+        const data = querySnapshot.docs.map(d => ({
+          ...d.data(),
+        }));
+        // console.tron.log(data)
+        // lastMessageRef.current.scrollToEnd({ animated: false })
+        setMessageBell(data)
+      })
+    return unsubscribe;
   }
 
   async function handleStatus() {
@@ -76,13 +91,12 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     })
     setStatusResult(response.data.status_bar)
     // return Math.round(weige);
-
     return;
   }
 
   const pastDueDate = () => {
     let flag = false;
-    today > dueDate ? flag = true : flag = false
+    new Date() > dueDate ? flag = true : flag = false
     return flag
   }
 
@@ -119,14 +133,24 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
       user_name: data.user.user_name,
-      messages: data.messages
+      worker_id: data.worker.id,
+      worker_name: data.worker.worker_name,
+      worker_phonenumber: data.workerphonenumber,
+      message_id: data.message_id,
+      messages: data.messages,
+      avatar: data.user.avatar,
     });
   }
 
   function handleConfirm() {
-    navigation.navigate('Confirm', {
-      task_id: data.id, taskName: data.name
-    });
+    if(data.confirm_photo) {
+      navigation.navigate('Confirm', {
+        task_id: data.id, taskName: data.name
+      });
+    } else {
+      setToggleConfirmModal(!toggleConfirmModal)
+    }
+
   }
 
   async function handleToggleAccept() {
@@ -138,6 +162,12 @@ export default function Task({ data, navigation, taskConditionIndex }) {
       },
       initiated_at: new Date(),
     })
+    dispatch(updateTasks(new Date()))
+  }
+
+  async function handleConfirmWithoutPhoto() {
+    await api.put(`tasks/confirm/${data.id}`);
+    setToggleConfirmModal(!toggleConfirmModal)
     dispatch(updateTasks(new Date()))
   }
 
@@ -281,6 +311,15 @@ export default function Task({ data, navigation, taskConditionIndex }) {
               ))}
             </DescriptionBorderView>
           </DescriptionView>
+                <DatesAndButtonView>
+                  <UserView>
+                    <Label>Confirmação com foto?</Label>
+                    { data.confirm_photo
+                      ? <NameText>Sim</NameText>
+                      : <NameText>Não</NameText>
+                    }
+                  </UserView>
+                </DatesAndButtonView>
           { data.status && data.status.status !== 1
             ? (
               <DatesAndButtonView>
@@ -358,6 +397,14 @@ export default function Task({ data, navigation, taskConditionIndex }) {
               </DatesAndButtonView>
             )
           }
+          { data.signature &&
+            <ImageWrapper>
+              <Label>Foto de confirmação:</Label>
+              <ImageView>
+                <Image source={{ uri: data.signature.url }}/>
+              </ImageView>
+            </ImageWrapper>
+          }
           <Modal isVisible={toggleModal}>
             <ModalView>
               <ModalText>Tem certeza de que quer recusar a tarefa?</ModalText>
@@ -382,6 +429,30 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                 </ButtonView>
                 <ButtonView>
                   <TouchableOpacity onPress={() => setToggleModal(!toggleModal)}>
+                    <MessageButton>
+                    <ButtonText>Voltar</ButtonText>
+                    </MessageButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              </DatesAndButtonView>
+            </ModalView>
+
+          </Modal>
+          <Modal isVisible={toggleConfirmModal}>
+            <ModalView>
+              <ModalText>Tem certeza de que deseja confirmar e finalizar a tarefa?</ModalText>
+                {/* <DescriptionBorderView pastDueDate={pastDueDate()}> */}
+                {/* </DescriptionBorderView> */}
+              <DatesAndButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={handleConfirmWithoutPhoto}>
+                    <MessageButton>
+                      <ButtonText>Sim</ButtonText>
+                    </MessageButton>
+                  </TouchableOpacity>
+                </ButtonView>
+                <ButtonView>
+                  <TouchableOpacity onPress={() => setToggleConfirmModal(!toggleConfirmModal)}>
                     <MessageButton>
                     <ButtonText>Voltar</ButtonText>
                     </MessageButton>

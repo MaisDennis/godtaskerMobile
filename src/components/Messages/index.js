@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TouchableOpacity } from 'react-native'
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import firestore from '@react-native-firebase/firestore';
 // -----------------------------------------------------------------------------
 import {
   Container, LeftDoubleView, LeftView, ImageView,
@@ -15,6 +16,7 @@ import {
 } from './styles'
 import { updateForwardMessage, updateMessagesRequest } from '~/store/modules/message/actions';
 import api from '~/services/api';
+import firebase from '~/services/firebase'
 
 export default function Messages({ data, navigation }) {
   const worker_id = useSelector(state => state.worker.profile.id);
@@ -33,10 +35,12 @@ export default function Messages({ data, navigation }) {
   const senderWorkerName = data.worker.worker_name;
   const workerData = data.worker
   const userData = data.user
+
+  const messagesRef = firestore()
+  .collection(`messagesTask${data.id}`)
   // const messageArrayLength = data.messages.length;
   // const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
   // const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
-
 
   useEffect(() => {
     getMessages()
@@ -56,26 +60,56 @@ export default function Messages({ data, navigation }) {
     setMessage(messageResponse.data)
     setMessageBell(messageResponse.data.messages)
 
-    const messagesLength = messageResponse.data.messages.length
+    // const messagesLength = messageResponse.data.messages.length
     // console.tron.log(messagesLength)
 
-    const last_message = messageResponse.data.messages[0]
-      ? messageResponse.data.messages[messagesLength-1].message
-      : null
-    setLastMessage(last_message)
+    // const last_message = messageResponse.data.messages[0]
+    //   ? messageResponse.data.messages[messagesLength-1].message
+    //   : null
+    // setLastMessage(last_message)
 
-    const last_message_time = messageResponse.data.messages[0]
-      ? messageResponse.data.messages[messagesLength-1].timestamp
-      : null
-    setLastMessageTime(last_message_time)
+    // const last_message_time = messageResponse.data.messages[0]
+    //   ? messageResponse.data.messages[messagesLength-1].timestamp
+    //   : null
+    // setLastMessageTime(last_message_time)
+
+    const unsubscribe = firestore()
+      .collection(`messagesTask${data.id}`)
+      .orderBy('createdAt')
+      .onSnapshot((querySnapshot) => {
+        const data = querySnapshot.docs.map(d => ({
+          ...d.data(),
+        }));
+        // console.tron.log(data)
+        setMessageBell(data)
+        let messagesLength = data.length
+
+        const last_message = data[0]
+          ? data[messagesLength-1].message
+          : null
+        setLastMessage(last_message)
+
+        const last_message_time = data[0]
+          ? data[messagesLength-1].timestamp
+          : null
+        setLastMessageTime(last_message_time)
+        // console.tron.log(last_message_time)
+        // lastMessageRef.current.scrollToEnd({ animated: false })
+      })
+      return unsubscribe;
   }
 
-
-
   async function handleMessageConversation() {
+    firestore().collection(`messagesTask${data.id}`)
+    .orderBy('createdAt')
+    .get().then(resp => {
+      // console.tron.log(resp.docs)
+      resp.forEach(doc => {
+        doc.ref.update({worker_read: true})
+      })
+    })
 
     let editedMessages = messageBell;
-
     if (forwardValue) {
       const message_id = Math.floor(Math.random() * 1000000)
       editedMessages.push({
@@ -105,8 +139,6 @@ export default function Messages({ data, navigation }) {
         return m
       })
     }
-    // console.tron.log(editedMessages)
-
 
     await api.put(`messages/update/${data.message_id}`, {
       messages: editedMessages,
@@ -122,7 +154,6 @@ export default function Messages({ data, navigation }) {
       message_id: data.message_id,
       messages: messageBell,
       avatar: workerData.avatar,
-
     });
     setResetConversation();
 

@@ -4,8 +4,9 @@ import { TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import CheckBox from '@react-native-community/checkbox'; //https://github.com/react-native-checkbox/react-native-checkbox
-// -----------------------------------------------------------------------------
+import firestore from '@react-native-firebase/firestore';
 import pt from 'date-fns/locale/pt';
+// -----------------------------------------------------------------------------
 import {
   AlignBottomView, AlignView, AsideView, AlignCheckBoxView,
   ButtonView,
@@ -14,7 +15,7 @@ import {
   DescriptionView, DescriptionBorderView, DescriptionSpan,
   DatesAndButtonView, DueTimeView, DueTime,
   HeaderView, HrTitleLine, HrLine,
-  InnerStatusView,
+  Image, ImageView, ImageWrapper, InnerStatusView,
   Label,
   MainHeaderView, MiddleHeaderView,
   NameText,
@@ -25,7 +26,7 @@ import {
 } from './styles';
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
-
+// import message from '../../store/modules/message/reducer';
 // -----------------------------------------------------------------------------
 const formattedDate = fdate =>
   fdate == null
@@ -39,14 +40,36 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
   const [toggleTask, setToggleTask] = useState();
   const [toggleCheckBox, setToggleCheckBox] = useState(false)
   const [statusResult, setStatusResult] = useState(0);
-  const today = new Date();
+  const [messageBell, setMessageBell] = useState();
+
   const dueDate = parseISO(data.due_date);
   const subTasks = data.sub_task_list
 
   useEffect (() => {
     // handleStatus()
+    handleMessageBell()
     setStatusResult(handleStatus())
+    // console.tron.log(data)
   }, [ updated_tasks ])
+
+  async function handleMessageBell() {
+    const response = await api.get(`messages/${data.message_id}`)
+    // setMessageBell(response.data.messages)
+
+    const unsubscribe = firestore()
+      .collection(`messagesTask${data.id}`)
+      .orderBy('createdAt')
+      .onSnapshot((querySnapshot) => {
+        const data = querySnapshot.docs.map(d => ({
+          ...d.data(),
+        }));
+        // console.tron.log(data)
+        // lastMessageRef.current.scrollToEnd({ animated: false })
+        setMessageBell(data)
+      })
+    return unsubscribe;
+
+  }
 
   function handleStatus() {
     let weige = 0;
@@ -60,7 +83,7 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
 
   const pastDueDate = () => {
     let flag = false;
-    today > dueDate ? flag = true : flag = false
+    new Date() > dueDate ? flag = true : flag = false
     return flag
   }
 
@@ -96,7 +119,12 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
       user_name: data.user.user_name,
-      messages: data.messages
+      worker_id: data.worker.id,
+      worker_name: data.worker.worker_name,
+      worker_phonenumber: data.workerphonenumber,
+      message_id: data.message_id,
+      messages: data.messageBell,
+      avatar: data.worker.avatar,
     });
   }
 
@@ -128,10 +156,6 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
   function handleScoreTask() {
 
   }
-
-  // function handleConfirm() {
-  //   navigation.navigate('Confirm', { task_id: data.id, taskName: data.name });
-  // }
 
   const hasUnread = (array) => {
     try {
@@ -211,13 +235,13 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
                   </BellIcon>
                 )
               }
-              { (hasUnread(data.messages) === 0)
+              { (hasUnread(messageBell) === 0)
                 ? (
                   null
                 )
                 : (
                   <BellIcon name="message-circle">
-                    <UnreadMessageCountText>{hasUnread(data.messages)}</UnreadMessageCountText>
+                    <UnreadMessageCountText>{hasUnread(messageBell)}</UnreadMessageCountText>
                   </BellIcon>
                 )
               }
@@ -255,6 +279,12 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
               ))}
             </DescriptionBorderView>
           </DescriptionView>
+          <DatesAndButtonView>
+            <UserView>
+              <Label>Confirmação com foto?</Label>
+              <NameText>Sim</NameText>
+            </UserView>
+          </DatesAndButtonView>
 
           <DatesAndButtonView>
           <ButtonView>
@@ -314,6 +344,14 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
               </TouchableOpacity>
             </ButtonView>
           </DatesAndButtonView>
+          { data.signature &&
+            <ImageWrapper>
+              <Label>Foto de confirmação:</Label>
+              <ImageView>
+                <Image source={{ uri: data.signature.url }}/>
+              </ImageView>
+            </ImageWrapper>
+          }
         </>
       )}
     </Container>

@@ -3,14 +3,7 @@ import { KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from '
 import { useDispatch, useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import insert from '~/assets/insert_photo-24px.svg';
-
-// import * as firebase from 'firebase'
-import firebase from '~/services/firebase'
-// import '@react-native-firebase/app';
-import messaging from '@react-native-firebase/messaging';
 import firestore from '@react-native-firebase/firestore';
-import { useCollectionData } from 'react-firebase-hooks/firestore'
 // -----------------------------------------------------------------------------
 import {
   AlignView,
@@ -23,7 +16,8 @@ import {
   LineView,
   MessageView, MessageText, MessageContainer,
   MessageWrapper, MessageListView, MessageListItemView,
-  MessageListItemText,  MessageTime, MessageIcon, MessageBottomView,
+  MessageListItemText, MessageListButton, MessageTime, MessageIcon,
+  MessageBottomView,
   // ParsedKeyboardAvoidingView,
   ReplyOnTopView, ReplyNameText, ReplyOnTopText,
   SendInput, SendButton, SendButtonAlignView,
@@ -34,8 +28,9 @@ import {
 } from './styles'
 import api from '~/services/api';
 import { updateMessagesRequest, updateForwardMessage } from '~/store/modules/message/actions';
-import user from '../../../store/modules/user/reducer';
-// import firebase from '../../../services/firebase';
+import insert from '~/assets/insert_photo-24px.svg';
+// import messaging from '@react-native-firebase/messaging';
+
 
 export default function MessagesConversationPage({ navigation, route }) {
   const messageUserId = useSelector(state => state.user.profile.id);
@@ -47,7 +42,7 @@ export default function MessagesConversationPage({ navigation, route }) {
 
   // const [messages, setMessages] = useState(route.params.messages);
   // const [defaultMessages, setDefaultMessages] = useState(route.params.messages);
-  const [messages, setMessages] = useState();
+  const [messages, setMessages] = useState([]);
   const [defaultMessages, setDefaultMessages] = useState();
 
   const [replyValue, setReplyValue] = useState();
@@ -56,6 +51,8 @@ export default function MessagesConversationPage({ navigation, route }) {
   const [messageDropMenu, setMessageDropMenu] = useState();
   const [toggleDropMenu, setToggleDropMenu] = useState(false);
   const [workerData, setWorkerData] = useState();
+  const [load, setLoad] = useState();
+  const lastMessageRef = useRef()
 
   const messageId = route.params.message_id;
   const task = route.params;
@@ -64,7 +61,7 @@ export default function MessagesConversationPage({ navigation, route }) {
 
 
   const messagesRef = firestore()
-  .collection(`messages`)
+  .collection(`messagesTask${task.id}`)
   // .doc(`messages for task ${task.id}`)
   // .collection('messages');
 
@@ -77,7 +74,6 @@ export default function MessagesConversationPage({ navigation, route }) {
     getPhoto(worker_phonenumber)
     // setMessages(route.params.messages)
     getMessages()
-
     // const unsubscribe = messaging().onMessage(async remoteMessage => {
     //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     // });
@@ -88,44 +84,19 @@ export default function MessagesConversationPage({ navigation, route }) {
     // setMessages(response.data.messages)
     // setDefaultMessages(response.data.messages)
 
-    // const query = messagesRef.orderBy('timestamp').limit(25);
-    // const [messagesTest] = useCollectionData(query, { idField: 'id' });
-    // console.tron.log(messagesTest)
-
-    let messagesArray= [];
-
-    const unsubscribe = await firebase.firestore()
-      .collection(`messages`)
-      // .doc(`messages for task ${task.id}`)
-      // .collection('messages').orderBy('timestamp')
+    const unsubscribe = firestore()
+      .collection(`messagesTask${task.id}`)
+      .orderBy('createdAt')
       .onSnapshot((querySnapshot) => {
-        // querySnapshot.forEach((doc) => {
-        //   messagesArray.push(doc.data())
-        // })
-
         const data = querySnapshot.docs.map(d => ({
           ...d.data(),
         }));
-        console.log(data)
+        // console.tron.log(data)
         setMessages(data)
-
-        // console.log(doc.data())
+        setDefaultMessages(data)
+        // lastMessageRef.current.scrollToEnd({ animated: false })
       })
       return unsubscribe;
-
-      // function onResult(QuerySnapshot) {
-      //   console.tron.log('Got Users collection result.');
-      //   QuerySnapshot.forEach((doc) => {
-      //   messagesArray.push(doc.data())
-      //   });
-      // }
-
-      // function onError(error) {
-      //   console.tron.error('Hi');
-      // }
-
-    // setMessages(messagesArray)
-    // setDefaultMessages(messagesArray)
   }
 
   async function getPhoto(phonenumber) {
@@ -136,9 +107,11 @@ export default function MessagesConversationPage({ navigation, route }) {
   }
 
   async function handleSend() {
+    setLoad(true)
     let newMessage = null
     let formattedTimeStamp = formattedMessageDate(new Date())
-    const message_id = Math.floor(Math.random() * 1000000)
+    // const message_id = Math.floor(Math.random() * 1000000)
+    const message_id = messages.length
     if (replyValue) {
       newMessage = {
         id: message_id,
@@ -151,7 +124,7 @@ export default function MessagesConversationPage({ navigation, route }) {
         reply_sender: replySender,
         forward_message: false,
         visible: true,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore.FieldValue.serverTimestamp(),
       }
     } else {
       newMessage = {
@@ -165,7 +138,7 @@ export default function MessagesConversationPage({ navigation, route }) {
         reply_sender: '',
         forward_message: false,
         visible: true,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore.FieldValue.serverTimestamp(),
       }
     }
     const response = await api.put(`messages/${messageId}`, {
@@ -173,7 +146,8 @@ export default function MessagesConversationPage({ navigation, route }) {
     });
 
     // Firebase Messaging ******************************************************
-    await messagesRef.add(newMessage)
+    await messagesRef
+    .doc(`${message_id}`).set(newMessage)
     .then(() => {
       console.tron.log(`task ${task.id}`);
     })
@@ -181,11 +155,17 @@ export default function MessagesConversationPage({ navigation, route }) {
       console.tron.log("Error writing document: ", error);
     });
 
+    await api.put(`tasks/${task.id}`, {
+      messaged_at: new Date(),
+    })
+
     // setMessages(response.data.messages)
     // setMessages(messagesRef)
     setValue();
     setReplyValue();
     dispatch(updateMessagesRequest(new Date()))
+    // lastMessageRef.current.scrollToEnd()
+    setLoad(false)
   }
 
   function handleMessageDropMenu(position) {
@@ -218,7 +198,7 @@ export default function MessagesConversationPage({ navigation, route }) {
   const renderItem = ({ item, index }) => (
     <AlignView key={item.id} sender={item.sender} userIsWorker={userIsWorker}>
       <LineView>
-        <MessageContainer>
+        <MessageContainer sender={item.sender}>
           { userIsWorker
             ? (
               <MessageWrapper>
@@ -320,27 +300,27 @@ export default function MessagesConversationPage({ navigation, route }) {
 
           { (messageDropMenu === index) && (toggleDropMenu === true) && (
             <MessageListView>
-              <TouchableOpacity
+              <MessageListButton
                 onPress={() => handleMessageReply(item.message, item.sender)}
               >
                 <MessageListItemView>
                   <MessageListItemText>Responder</MessageListItemText>
                 </MessageListItemView>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </MessageListButton>
+              <MessageListButton
                 onPress={() => handleMessageForward(item.message)}
               >
                 <MessageListItemView>
                   <MessageListItemText>Encaminhar</MessageListItemText>
                 </MessageListItemView>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </MessageListButton>
+              <MessageListButton
                 onPress={() => handleMessageDelete(index)}
               >
                 <MessageListItemView>
                   <MessageListItemText>Deletar</MessageListItemText>
                 </MessageListItemView>
-              </TouchableOpacity>
+              </MessageListButton>
             </MessageListView>
           )}
         </MessageContainer>
@@ -361,7 +341,7 @@ export default function MessagesConversationPage({ navigation, route }) {
                     {/* <Image
                       source={require('~/assets/insert_photo-24px.svg')}
                     /> */}
-                    <SenderText>n/a</SenderText>
+                    <Image/>
                   </>
                 )
                 : (
@@ -406,7 +386,7 @@ export default function MessagesConversationPage({ navigation, route }) {
               {/* keep "if else" below */}
               { value
                 ? (
-                  <TouchableOpacity onPress={handleSend}>
+                  <TouchableOpacity onPress={handleSend} disabled={load}>
                     <SendButton>
                       <SendButtonAlignView>
                         <SendIcon name="send"/>
@@ -427,7 +407,11 @@ export default function MessagesConversationPage({ navigation, route }) {
             data={messages}
             renderItem={renderItem}
             keyExtractor={item => String(item.id)}
-            // initialScrollIndex={messages.length-1}
+            ref={lastMessageRef}
+            // initialScrollIndex={2}
+            // getItemLayout={(data, index) => (
+            //   {length: 50, offset: 50 * index, index, animation: false}
+            // )}
           />
         </ConversationView>
         {/* <ParsedKeyboardAvoidingView

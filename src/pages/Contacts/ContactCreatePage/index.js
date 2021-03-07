@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, Alert } from 'react-native'
 // -----------------------------------------------------------------------------
 import {
   Container, FormScrollView, ItemWrapperView, LabelText,
   Input,  SubmitView, AlignView, SubmitIcon,  PhoneMask
 } from './styles'
 import { updateContacts } from '~/store/modules/contact/actions';
+import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
 
 export default function ContactCreatePage({ navigation }) {
@@ -24,7 +25,7 @@ export default function ContactCreatePage({ navigation }) {
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )
     const unmaskedPhoneNumber = unmaskPhoneNumber(phonenumber)
-    const parsedUnmaskedPhoneNumber = '+55'+unmaskedPhoneNumber
+    const parsedUnmaskedPhoneNumber = unmaskedPhoneNumber
     const id = Math.floor(Math.random() * 1000000)
     try {
       api.post(`users/${userId}/contact-list`, {
@@ -35,15 +36,16 @@ export default function ContactCreatePage({ navigation }) {
         department: department,
         phonenumber: parsedUnmaskedPhoneNumber,
       })
-      dispatch(updateContacts(new Date()))
+      dispatch(updateContacts(new Date()));
       navigation.navigate('Contacts')
-    } catch(error) {
-      console.tron.log(error);
+      Alert.alert('Contato cadastrado com sucesso!')
     }
-
-
+    catch(error) {
+      console.tron.log(error);
+      Alert.alert('Erro. Por faovr, verificar se o contato já possui cadastro no godtasker.')
+    }
   }
-    // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   return (
     <Container>
       <FormScrollView contentContainerStyle={{ alignItems: 'center'}}>

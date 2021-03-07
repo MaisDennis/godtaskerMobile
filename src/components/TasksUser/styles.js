@@ -155,6 +155,37 @@ box-shadow: 2px 2px 2px #ccc;
 margin: 0 auto;
 `;
 
+export const ImageWrapper = styled.View`
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  width: 95%;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  /* background-color: #ee44; */
+`;
+
+export const ImageView = styled.View`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 36px;
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #F5F5F5;
+`;
+
+export const Image = styled.Image`
+  height: 300px;
+  width: 300px;
+  margin: 8px;
+  /* border-radius: 48px; */
+  background-color: #f5f5f5;
+`;
+
 export const InnerStatusView = styled(LinearGradient)`
   height: 8px;
   /* width: 50%; */

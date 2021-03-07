@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
 import Button from '~/components/Button';
 import { ScrollView, FlatList, KeyboardAvoidingView, SafeAreaView } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 export const AlignView = styled.View`
 display: flex;
@@ -122,6 +123,8 @@ background-color: #f5f5f5;
 
 `;
 
+export const LastMessageView = styled.View``;
+
 export const LineView = styled.View`
 display: flex;
 flex-direction: row;
@@ -134,10 +137,11 @@ export const MessageView = styled.View`
 display: flex;
 flex-direction: column;
 align-items: center;
+max-width: 66%;
 padding: 4px;
 border-radius: 8px;
 /* background-color: #4ee; */
-background-color: #73a6c4;
+/* background-color: #73a6c4; */
 background-color: ${
   props => props.sender === 'user' ? '#daf1e0' : '#b4c7db'
 };
@@ -147,15 +151,18 @@ export const MessageBottomView = styled.View`
   flex-direction: row;
   align-items: center;
   margin: 4px;
-  /* background-color: #f5f5f5; */
+  /* background-color: #f5f; */
 `;
 export const MessageText = styled.Text`
-font-style: ${
-  props => props.removedMessage ? 'italic' : 'normal'
-};
-color: ${
-  props => props.removedMessage ? '#666' : '#222'
-};
+  font-style: ${
+    props => props.removedMessage ? 'italic' : 'normal'
+  };
+  color: ${
+    props => props.removedMessage ? '#666' : '#222'
+  };
+  max-width: 93%;
+  padding: 0 4px;
+  /* background-color: #666; */
 `;
 export const MessageTime = styled.Text`
 font-size: 12px;
@@ -166,13 +173,21 @@ export const MessageIcon = styled(Icon)`
 font-size: 16px;
 margin-left: 8px;
 /* margin-right: 8px; */
-color: #ccc;
+color: #999;
 `;
 
 export const MessageContainer = styled.View`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  /* align-items: flex-end; */
+  align-items: ${ props => props.sender
+  ? (
+    (props.sender === 'user') ? 'flex-start' : 'flex-end'
+  )
+  : (
+    (props.sender === 'user') ? 'flex-end' : 'flex-start'
+  )
+};
   margin: 0;
   /* background-color: #44cc33; */
 `;
@@ -183,23 +198,41 @@ export const MessageWrapper = styled.View`
   margin: 0;
   /* background-color: #4ee; */
 `;
+
 export const MessageListView = styled.View`
   display: flex;
-  flex-direction: column;
-  width: 90px;
-  margin: 8px 0;
+  flex-direction: row;
+  /* width: 90px; */
+  margin-top: 8px;
+  /* background-color: #44cc; */
 `;
+
+export const MessageListButton = styled(TouchableOpacity)`
+  display: flex;
+  flex-direction: row;
+  /* align-items: center; */
+  height: 36px;
+  padding: 0 4px;
+  margin: 4px 0;
+  margin: 4px;
+  /* background-color: #f44; */
+
+`;
+
+
 export const MessageListItemView = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 36px;
-  padding: 0 4px;
-  margin: 4px 0;
+  /* height: 36px; */
+  border-radius: 4px;
+  padding: 0 8px;
+  /* margin: 4px 0; */
   background-color: #f5f5f5;
+  background-color: #fff;
 `;
 export const MessageListItemText = styled.Text`
-color: #999;
+color: #4433ee;
 text-align: left;
 margin: 0 auto;
 `;
@@ -226,7 +259,7 @@ padding: 4px;
 background-color: #fff;
 `;
 export const ReplyNameText = styled.Text`
-  color: #4433ee;
+  color: #f3c775;
 `;
 export const ReplyOnTopText = styled.Text``;
 
