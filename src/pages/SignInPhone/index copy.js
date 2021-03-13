@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Alert } from 'react-native';
+import { Button, TextInput, Alert } from 'react-native';
 // import PhoneInput, { getPickerData } from 'react-native-phone-input'
 // import PhoneInput from "react-native-phone-number-input";
 // import OTPInputView from '@twotalltotems/react-native-otp-input'
-// import OtpInputs from 'react-native-otp-inputs';
+import OtpInputs from 'react-native-otp-inputs';
+
 import auth from '@react-native-firebase/auth';
 // -----------------------------------------------------------------------------
 import { signInRequest } from '~/store/modules/auth/actions';
@@ -18,20 +19,39 @@ import {
   SubmitButton, ButtonText, SignUpTouchable, SignUpText,
   FormInputWorkerPassword, PhoneMask, StyledScrollView
 } from './styles';
+
+// import firebase from '~/services/firebase'
 // -----------------------------------------------------------------------------
 export default function SignInPhone({ navigation }) {
+  const dispatch = useDispatch();
+  const [phonenumber, setPhonenumber] = useState('');
+  const [password, setPassword] = useState('');
+  const loading = useSelector(state => state.auth.loading);
   const signed = useSelector(state => state.auth.signed);
 
-  const [phonenumber, setPhonenumber] = useState('');
+  const [value, setValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState("");
+  const [valid, setValid] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [code, setCode] = useState('');
+  // const phoneInput = useRef<PhoneInput>(null);
+
+  function handleSubmit() {
+    // const unmaskedPhoneNumber = (
+    //   maskedPhoneNumber => '+55'+maskedPhoneNumber.replace(/[()\s-]/g, '')
+    // )
+    // console.tron.log(unmaskedPhoneNumber(phonenumber))
+    dispatch(
+      signInRequest(
+        // unmaskedPhoneNumber(phonenumber), password
+        '+5511983495853', '123123'
+      )
+    );
+  }
 
   async function handleSubmitPhone(phonenumber) {
     try {
-      const countryCode = '+'+'55'
-      const unmaskedPhonenumber = phonenumber.replace(/[()\s-]/g, '')
-      // const parsedPhonenumber = countryCode+unmaskedPhonenumber;
-      const parsedPhonenumber = '+5511983495853'
       const confirmation = await auth().signInWithPhoneNumber(phonenumber);
       setConfirm(confirmation);
       console.tron.log(confirmation)
@@ -49,22 +69,22 @@ export default function SignInPhone({ navigation }) {
         codeVar => codeVar.replace(/[()\s-]/g, '')
       )
       const response = await confirm.confirm(unmaskedCode(code));
-      const countryCode = '+'+'55'
-      const unmaskedPhonenumber = phonenumber.replace(/[()\s-]/g, '')
-      console.tron.log(unmaskedPhonenumber)
-      navigation.navigate('SignIn',
-        {
-          phonenumber: countryCode+unmaskedPhonenumber,
-        }
-      )
+      console.tron.log(response);
+      navigation.navigate('SignIn')
     } catch (error) {
+      console.tron.log('Invalid code.');
       Alert.alert('O código não confere.')
     }
+  }
+
+  function handleSignUp() {
+    navigation.navigate('SignUp')
   }
 
   if (signed) {
     navigation.navigate('Home')
   }
+
   // -----------------------------------------------------------------------------
   return (
     <Background>
@@ -99,6 +119,7 @@ export default function SignInPhone({ navigation }) {
                       </SubmitButton>
                     </FormWorker>
                   </>
+
                 )
               : (
                 <>

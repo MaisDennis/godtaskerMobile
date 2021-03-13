@@ -6,17 +6,14 @@ import { ptBR } from 'date-fns/locale';
 import firestore from '@react-native-firebase/firestore';
 // -----------------------------------------------------------------------------
 import {
-  Container, LeftDoubleView, LeftView, ImageView,
-  AlignView, Image, BodyView, MainView, TitleView,
+  Container, LeftDoubleView, LeftView,
+  AlignView, Image, BodyView, MainView, TitleView, TitleIcon, TitleWrapper,
   TitleText, SenderText, LastMessageView, LastMessageText, RightView,
   LastMessageTimeView, LastMessageTimeText,
-  // UnreadMessageCountView,
   MessageIcon, UnreadMessageCountText,
-  // HrLine,
 } from './styles'
 import { updateForwardMessage, updateMessagesRequest } from '~/store/modules/message/actions';
 import api from '~/services/api';
-import firebase from '~/services/firebase'
 
 export default function Messages({ data, navigation }) {
   const worker_id = useSelector(state => state.worker.profile.id);
@@ -37,7 +34,7 @@ export default function Messages({ data, navigation }) {
   const userData = data.user
 
   const messagesRef = firestore()
-  .collection(`messagesTask${data.id}`)
+  .collection(`messages/task/${data.id}`)
   // const messageArrayLength = data.messages.length;
   // const lastMessage = data.messages[messageArrayLength-1] ? data.messages[messageArrayLength-1].message : "";
   // const lastMessageTime = data.messages[messageArrayLength-1] ? (data.messages[messageArrayLength-1].timestamp).slice(-20, ) : "";
@@ -45,7 +42,7 @@ export default function Messages({ data, navigation }) {
   useEffect(() => {
     getMessages()
   }, [updatedMessage])
-  // console.tron.log(message)
+  // console.tron.log(data)
   const messageId = data.message_id;
 
   const formattedMessageDate = fdate =>
@@ -56,9 +53,9 @@ export default function Messages({ data, navigation }) {
 
 
   async function getMessages() {
-    const messageResponse = await api.get(`messages/${messageId}`)
-    setMessage(messageResponse.data)
-    setMessageBell(messageResponse.data.messages)
+    // const messageResponse = await api.get(`messages/${messageId}`)
+    // setMessage(messageResponse.data)
+    // setMessageBell(messageResponse.data.messages)
 
     // const messagesLength = messageResponse.data.messages.length
     // console.tron.log(messagesLength)
@@ -73,14 +70,14 @@ export default function Messages({ data, navigation }) {
     //   : null
     // setLastMessageTime(last_message_time)
 
-    const unsubscribe = firestore()
-      .collection(`messagesTask${data.id}`)
+    const unsubscribe = messagesRef
       .orderBy('createdAt')
       .onSnapshot((querySnapshot) => {
         const data = querySnapshot.docs.map(d => ({
           ...d.data(),
         }));
         // console.tron.log(data)
+        // setMessage(messageResponse.data)
         setMessageBell(data)
         let messagesLength = data.length
 
@@ -100,14 +97,14 @@ export default function Messages({ data, navigation }) {
   }
 
   async function handleMessageConversation() {
-    firestore().collection(`messagesTask${data.id}`)
-    .orderBy('createdAt')
-    .get().then(resp => {
-      // console.tron.log(resp.docs)
-      resp.forEach(doc => {
-        doc.ref.update({worker_read: true})
+    messagesRef
+      .orderBy('createdAt')
+      .get().then(resp => {
+        // console.tron.log(resp.docs)
+        resp.forEach(doc => {
+          doc.ref.update({worker_read: true})
+        })
       })
-    })
 
     let editedMessages = messageBell;
     if (forwardValue) {
@@ -140,16 +137,16 @@ export default function Messages({ data, navigation }) {
       })
     }
 
-    await api.put(`messages/update/${data.message_id}`, {
-      messages: editedMessages,
-    })
-    dispatch(updateMessagesRequest(new Date()))
+    // await api.put(`messages/update/${data.message_id}`, {
+    //   messages: editedMessages,
+    // })
+    // dispatch(updateMessagesRequest(new Date()))
 
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
-      user_name: message.user_name,
-      worker_id: message.worker_id,
-      worker_name: message.worker_name,
+      user_name: data.user.user_name,
+      worker_id: data.worker.id,
+      worker_name: data.worker.worker_name,
       worker_phonenumber: data.workerphonenumber,
       message_id: data.message_id,
       messages: messageBell,
@@ -224,7 +221,10 @@ export default function Messages({ data, navigation }) {
           <BodyView>
             <MainView>
               <TitleView>
-                <TitleText colorProp={worker_id === data.worker_id}>{data.name}</TitleText>
+                <TitleWrapper>
+                  <TitleIcon name="clipboard" colorProp={worker_id === data.worker_id}/>
+                  <TitleText colorProp={worker_id === data.worker_id}>{data.name}</TitleText>
+                </TitleWrapper>
                 { (worker_id === data.worker_id)
                   ? (
                     <SenderText>{senderUserName}</SenderText>

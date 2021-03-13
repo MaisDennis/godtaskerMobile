@@ -56,7 +56,7 @@ export const OthersView = styled.View`
 export const ContactsIcon = styled(Icon)`
   font-size: 24px;
   margin: 0 auto;
-  color: #ccc;
+  color: #18A0FB;
 
 `;
 
@@ -100,5 +100,5 @@ export const ContactText = styled.Text`
 
 export const ButtonsText = styled.Text`
   font-weight: 600;
-  color: #999;
+  color: #18A0FB;
 `;

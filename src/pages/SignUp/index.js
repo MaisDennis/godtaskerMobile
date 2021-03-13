@@ -19,8 +19,8 @@ import {
 import { signUpRequest } from '~/store/modules/auth/actions';
 import { goBack } from '../../services/NavigationService';
 // -----------------------------------------------------------------------------
-export default function SignUp({ navigation }) {
-    const dispatch = useDispatch();
+export default function SignUp({ navigation, route }) {
+  const dispatch = useDispatch();
 
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -32,6 +32,8 @@ export default function SignUp({ navigation }) {
   const [birthDate, setBirthDate] = useState();
   const [gender, setGender] = useState("feminino");
   const [signUpError, setSignUpError] = useState();
+  const test = route.params.phonenumber;
+  console.tron.log(test)
 
   const schema = Yup.object().shape({
     first_name: Yup.string().required('O nome é obrigatório'),
@@ -63,10 +65,12 @@ export default function SignUp({ navigation }) {
     const unmaskedPhoneNumber = (
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )
+    const countryCode = '+55'
+    const parsedPhonenumber = countryCode+unmaskedPhoneNumber(phonenumber)
     try {
       dispatch(signUpRequest(
         firstName, lastName, userName, password,
-        unmaskedPhoneNumber(phonenumber), email, birthDate, gender
+        parsedPhonenumber, email, birthDate, gender
       ));
       navigation.goBack();
     }

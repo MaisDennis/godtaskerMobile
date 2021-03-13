@@ -16,7 +16,7 @@ import {
   DatesAndButtonView, DueTimeView, DueTime,
   HeaderView, HrTitleLine, HrLine,
   Image, ImageView, ImageWrapper, InnerStatusView,
-  Label,
+  Label, LabelInitiated, LabelEnded,
   MainHeaderView, MiddleHeaderView,
   NameText,
   OuterStatusView,
@@ -53,7 +53,7 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
   }, [ updated_tasks ])
 
   async function handleMessageBell() {
-    const response = await api.get(`messages/${data.message_id}`)
+    // const response = await api.get(`messages/${data.message_id}`)
     // setMessageBell(response.data.messages)
 
     const unsubscribe = firestore()
@@ -195,16 +195,44 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
                 </DatesAndButtonView>
                 <DatesAndButtonView>
                   <TagView>
-                    <Label>Início:</Label>
-                    <StartTimeView>
-                      <StartTime>{formattedDate(data.start_date)}</StartTime>
-                    </StartTimeView>
+                    { data.initiated_at
+                      ? (
+                        <>
+                          <LabelInitiated>Iniciado!</LabelInitiated>
+                          <StartTimeView>
+                            <StartTime>{formattedDate(data.initiated_at)}</StartTime>
+                          </StartTimeView>
+                        </>
+                      )
+                      : (
+                        <>
+                          <Label>Início:</Label>
+                          <StartTimeView initiated={data.initiated_at}>
+                            <StartTime>{formattedDate(data.start_date)}</StartTime>
+                          </StartTimeView>
+                        </>
+                      )
+                    }
                   </TagView>
                   <TagView>
-                    <Label>Prazo:</Label>
-                    <DueTimeView pastDueDate={pastDueDate()}>
-                      <DueTime>{formattedDate(data.due_date)}</DueTime>
-                    </DueTimeView>
+                    { data.end_date
+                      ? (
+                        <>
+                          <LabelEnded pastDueDate={pastDueDate()}>Finalizou!</LabelEnded>
+                          <DueTimeView pastDueDate={pastDueDate()}>
+                            <DueTime>{formattedDate(data.end_date)}</DueTime>
+                          </DueTimeView>
+                        </>
+                      )
+                      : (
+                        <>
+                          <Label>Prazo:</Label>
+                          <DueTimeView pastDueDate={pastDueDate()}>
+                            <DueTime>{formattedDate(data.due_date)}</DueTime>
+                          </DueTimeView>
+                        </>
+                      )
+                    }
                   </TagView>
                 </DatesAndButtonView>
               </AlignView>
@@ -336,13 +364,37 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
                 null
               )
             }
-            <ButtonView>
-              <TouchableOpacity onPress={handleCancelTask}>
-                <ConfirmButton>
-                  <TaskIcon name="trash-2"/>
-                </ConfirmButton>
-              </TouchableOpacity>
-            </ButtonView>
+            { taskConditionIndex === 1
+              ? (
+                <ButtonView>
+                  <TouchableOpacity onPress={handleCancelTask}>
+                    <ConfirmButton>
+                      <TaskIcon name="trash-2"/>
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              )
+              : (
+                null
+              )
+            }
+            { taskConditionIndex === 3
+              ? (
+                <ButtonView>
+                  <TouchableOpacity>
+                    <ConfirmButton>
+                      <TaskIcon
+                        name="trash-2"
+                        style={{color: '#ccc'}}
+                      />
+                    </ConfirmButton>
+                  </TouchableOpacity>
+                </ButtonView>
+              )
+              : (
+                null
+              )
+            }
           </DatesAndButtonView>
           { data.signature &&
             <ImageWrapper>

@@ -15,12 +15,13 @@ import {
 import api from '~/services/api';
 import { updateImageRequest } from '~/store/modules/image/actions';
 // -----------------------------------------------------------------------------
-export default function Confirm({ route }) {
-  const { task_id, taskName } = route.params;
+export default function UpdateProfilePhoto({ navigation, route }) {
+  const { user_id, userName } = route.params;
   const [toggleFlash, setToggleFlash] = useState(true);
-  const [toggleCameraReverse, setToggleCameraReverse] = useState(true);
   const [image, setImage] = useState();
+  const [toggleCameraReverse, setToggleCameraReverse] = useState(true);
   const camera = useRef(null);
+  console.tron.log(route.params)
 
   async function takePicture() {
     if (camera) {
@@ -46,15 +47,20 @@ export default function Confirm({ route }) {
       //   name: `signature_${task_id}.jpg`,
       // });
 
-      const formData = new FormData();
-      formData.append('signatureImage', {
-        uri: Platform.OS === 'ios' ? data.sourseURL : data.uri,
-        type: "image/jpg",
-        name: `signature_${task_id}.jpg`,
-      });
+      setImage(data.uri)
+      navigation.navigate('UpdateProfile', {
+        image: data.uri
+      })
+
+      // const formData = new FormData();
+      // formData.append('profileImage', {
+      //   uri: data.uri,
+      //   type: "image/jpg",
+      //   name: `profile_${user_id}.jpg`,
+      // });
 
       try {
-        const response = await api.post('signatures', formData,
+      //   const response = await api.post('files', formData,
           // {
           //   headers: {
           //     'accept': 'application/json',
@@ -62,13 +68,13 @@ export default function Confirm({ route }) {
           //     'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
           //   }
           // }
-        );
+        // );
 
-        const { signature_id } = response.data;
+        // const { signature_id } = response.data;
 
-        await api.put(`tasks/confirm/${task_id}`, {
-          signature_id,
-        });
+        // await api.put(`tasks/confirm/${task_id}`, {
+        //   signature_id,
+        // });
 
         Alert.alert(
           'Confirmação',
@@ -107,21 +113,38 @@ export default function Confirm({ route }) {
         cropping: true
       }).then(async image => {
         console.log(image.path)
+        setImage(image.path)
         const formData = new FormData();
-        formData.append('signatureImage', {
+        formData.append('profileImage', {
           uri: Platform.OS === 'ios' ? image.sourceURL : image.path,
           type: "image/jpg",
-          name: `signature_${task_id}.jpg`,
+          name: `profile_${user_id}.jpg`,
         });
 
         try {
-          const response = await api.post('signatures', formData);
+          const response = await api.post('files', formData);
+          const { image, location } = response.data;
+          console.tron.log(image)
+          // dispatch(updateProfileRequest({
+          //   first_name,
+          //   last_name,
+          //   user_name,
+          //   oldPassword,
+          //   password,
+          //   confirmPassword,
+          //   phonenumber,
+          //   email,
+          //   birth_date,
+          //   gender,
+          //   image,
+          //   preview
+          // }));
 
-          const { signature_id } = response.data;
+          // const { signature_id } = response.data;
 
-          await api.put(`tasks/confirm/${task_id}`, {
-            signature_id,
-          });
+          // await api.put(`tasks/confirm/${task_id}`, {
+          //   signature_id,
+          // });
 
           Alert.alert(
             'Confirmação',
@@ -157,8 +180,8 @@ export default function Confirm({ route }) {
     {/* <StyledScrollView> */}
       <Container>
         <TitleView>
-          <Icon name="clipboard" size={20} style={{ color: '#222'}}/>
-          <TaskName>{taskName}</TaskName>
+          <Icon name="user" size={20} style={{ color: '#222'}}/>
+          <TaskName>{userName}</TaskName>
         </TitleView>
         {/* <CameraView> */}
           <StyledRNCamera

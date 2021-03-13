@@ -32,6 +32,12 @@ width: 10%;
   /* background-color: #336622; */
 `;
 
+export const AcceptButton = styled(Button)`
+  height: 36px;
+  width: 108px;
+  background-color: #18A0FB;
+`;
+
 export const BellIcon = styled(Icon)`
 font-size: 24px;
 margin: 4px 0;
@@ -40,7 +46,7 @@ color: #ccc;
 export const ButtonIcon = styled(Icon)`
 font-size: 21px;
 padding: 4px;
-color: #4433ee;
+color: #18A0FB;
 `;
 export const BottomHeaderView = styled.View`
   display: flex;
@@ -59,7 +65,7 @@ export const ButtonView = styled.View`
 export const ButtonText = styled.Text`
   font-weight: bold;
   font-size: 14px;
-  color: #222;
+  color: #fff;
 `;
 
 export const CheckBoxView = styled.View`
@@ -201,6 +207,22 @@ export const Label = styled.Text`
   color: #888;
 `;
 
+export const LabelInitiated = styled.Text`
+  font-weight: normal;
+  font-size: 14px;
+  margin-right: 4px;
+  max-width: 60px;
+  color: #009966;
+`;
+
+export const LabelEnded = styled.Text`
+  font-weight: normal;
+  font-size: 14px;
+  margin-right: 4px;
+  max-width: 60px;
+  color: ${props => props.pastDueDate === true ? '#f64C75' : '#009966'};
+`;
+
 export const MainHeaderView = styled.View`
   width: 90%;
   /* background-color: #ee3; */
@@ -213,10 +235,7 @@ export const MiddleHeaderView = styled.View`
   /* background-color: #f00; */
   /* padding: 4px 0; */
 `;
-export const MessageButton = styled(Button)`
-/* background: #58595B; */
-background-color: #43ee;
-`;
+
 export const NameText = styled.Text`
   font-weight: bold;
   font-size: 16px;
@@ -266,10 +285,16 @@ export const RejectTaskInput = styled.TextInput`
   background-color: #fff;
 `;
 
+export const RejectButton = styled(Button)`
+  height: 36px;
+  width: 108px;
+  background-color: #999;
+`;
+
 export const StartTimeView = styled.View`
 padding: 0 4px;
 border-radius: 12px;
-background: #F5F5F5;
+background: ${props => props.initiated === null ? '#F5F5F5' : '#009966'};
 `;
 export const StartTime = styled.Text`
   font-weight: bold;

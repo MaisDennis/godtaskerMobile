@@ -58,10 +58,8 @@ export default function MessagesConversationPage({ navigation, route }) {
   const task = route.params;
   const worker_phonenumber = route.params.worker_phonenumber
 
-
-
   const messagesRef = firestore()
-  .collection(`messagesTask${task.id}`)
+  .collection(`messages/task/${task.id}`)
   // .doc(`messages for task ${task.id}`)
   // .collection('messages');
 
@@ -80,12 +78,11 @@ export default function MessagesConversationPage({ navigation, route }) {
   }, [task]);
 
   async function getMessages() {
-    const response = await api.get(`messages/${task.message_id}`)
+    // const response = await api.get(`messages/${task.message_id}`)
     // setMessages(response.data.messages)
     // setDefaultMessages(response.data.messages)
 
-    const unsubscribe = firestore()
-      .collection(`messagesTask${task.id}`)
+    const unsubscribe = messagesRef
       .orderBy('createdAt')
       .onSnapshot((querySnapshot) => {
         const data = querySnapshot.docs.map(d => ({
@@ -117,8 +114,8 @@ export default function MessagesConversationPage({ navigation, route }) {
         id: message_id,
         message: value,
         sender: `${userIsWorker ? "worker" : "user"}`,
-        user_read: `${userIsWorker ? false : true}`,
-        worker_read: false,
+        user_read: userIsWorker ? false : true,
+        worker_read: userIsWorker ? true : false,
         timestamp: formattedTimeStamp,
         reply_message: replyValue,
         reply_sender: replySender,
@@ -131,8 +128,8 @@ export default function MessagesConversationPage({ navigation, route }) {
         id: message_id,
         message: value,
         sender: `${userIsWorker ? "worker" : "user"}`,
-        user_read: `${userIsWorker ? false : true}`,
-        worker_read: false,
+        user_read: userIsWorker ? false : true,
+        worker_read: userIsWorker ? true : false,
         timestamp: formattedTimeStamp,
         reply_message: '',
         reply_sender: '',
@@ -149,7 +146,7 @@ export default function MessagesConversationPage({ navigation, route }) {
     await messagesRef
     .doc(`${message_id}`).set(newMessage)
     .then(() => {
-      console.tron.log(`task ${task.id}`);
+      // console.tron.log(`task ${task.id}`);
     })
     .catch((error) => {
       console.tron.log("Error writing document: ", error);

@@ -38,7 +38,7 @@ export default function EditContactPage({ navigation, route }) {
         last_name: lastName,
         worker_name: workerName,
         department: department,
-        phonenumber: unmaskedPhoneNumber,
+        phonenumber: phonenumber,
       })
     } catch(error) {
       console.tron.log(error);

@@ -41,12 +41,23 @@ export const Form = styled.ScrollView`
 `;
 export const FormInput = styled(Input)`
 `;
-export const HrLine = styled.View`
-  height: 0;
-  border: .5px solid #666;
-  width: 50%;
+
+export const ImageView = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
   margin: 12px 0;
+  /* background-color: #f00; */
 `;
+
+export const UserImage = styled.Image`
+  height: 148px;
+  width: 148px;
+  border-radius: 148px;
+  background-color: #fff;
+`;
+
 export const Options = styled(Picker)`
   height: 48px;
   width: 90%;

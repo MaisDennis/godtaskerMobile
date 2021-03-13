@@ -21,15 +21,13 @@ export default function Contacts({ navigation, data }) {
 
   useEffect(() => {
     getPhoto(data.phonenumber)
-  }, [userId])
-  // console.tron.log(workerData)
+  }, [updateContacts])
 
   async function getPhoto(phonenumber) {
     const worker = await api.get('workers/individual', {
       params: {phonenumber: phonenumber},
     })
     setWorkerData(worker.data)
-    // console.tron.log('worker')
     return worker
   }
 
@@ -39,24 +37,26 @@ export default function Contacts({ navigation, data }) {
 
   function handleContactTasks() {
     navigation.navigate('ContactTasks', {
-      id: data.id,
+      id: data.worker_id,
       first_name: data.first_name,
       last_name: data.last_name,
       worker_name: data.worker_name,
       department: data.department,
       phonenumber: data.phonenumber,
     })
+    setToggleContact(false)
   }
 
   function handleEditContact() {
     navigation.navigate('ContactEdit', {
-      id: data.id,
+      id: data.worker_id,
       first_name: data.first_name,
       last_name: data.last_name,
       worker_name: data.worker_name,
       department: data.department,
       phonenumber: data.phonenumber,
     });
+    setToggleContact(false)
   }
 
   async function handleRemoveContact() {

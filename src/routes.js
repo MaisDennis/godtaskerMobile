@@ -16,10 +16,12 @@ import SignInPhone from './pages/SignInPhone';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import UpdateProfile from './pages/UpdateProfile';
+import UpdateProfilePhoto from './pages/UpdateProfilePhoto';
 
 import TaskCreate from './pages/Tasks/TaskCreatePage';
 import TaskEdit from './pages/Tasks/TaskEditPage';
 import Confirm from './pages/Confirm';
+
 
 import TabRoutes from '~/components/TabRoutes';
 import HeaderView from './components/HeaderRoutesView'
@@ -29,12 +31,12 @@ import { Header } from './pages/RoutesStyles/styles'
 const Stack = createStackNavigator();
 // -----------------------------------------------------------------------------
 export default function App() {
-  const signed = useSelector(state => state.signed);
-
-  const formattedDate = fdate =>
-  fdate == null
-    ? '-'
-    : format(fdate, "dd 'de' MMMM',' yyyy", { locale: pt });
+  const signed = useSelector(state => state.auth.signed);
+  console.tron.log(signed)
+  // const formattedDate = fdate =>
+  // fdate == null
+  //   ? '-'
+  //   : format(fdate, "dd 'de' MMMM',' yyyy", { locale: pt });
   // const todayDate = formattedDate(new Date())
   // -----------------------------------------------------------------------------
   return (
@@ -72,12 +74,14 @@ export default function App() {
             headerTintColor: '#fff',
             headerStyle: {
               height: 66,
-              backgroundColor: '#73c479',
+              // backgroundColor: '#73c479',
               backgroundColor: '#222',
             },
           }}
         />
-        <Stack.Screen name="UpdateProfile" component={UpdateProfile}
+        <Stack.Screen
+          name="UpdateProfile"
+          component={UpdateProfile}
           options={{
             headerTitle: (() => (
               <Header>
@@ -91,8 +95,30 @@ export default function App() {
             headerTintColor: '#fff',
             headerStyle: {
               height: 66,
-              backgroundColor: '#73c479',
+              // backgroundColor: '#73c479',
               backgroundColor: '#222',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="UpdateProfilePhoto"
+          component={UpdateProfilePhoto}
+          options={{
+            headerTitle: (() => (
+              <>
+                <HeaderView data={'Atualizar a foto de perfil'}/>
+              </>
+            )),
+            headerShown: true,
+            headerBackTitleVisible: false,
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 24,
+            },
+            headerStyle: {
+              backgroundColor: '#222',
+              height: 90,
             },
           }}
         />
@@ -130,7 +156,7 @@ export default function App() {
             headerTintColor: '#fff',
             headerStyle: {
               height: 66,
-              backgroundColor: '#73c479',
+              // backgroundColor: '#73c479',
               backgroundColor: '#222',
             },
           }}

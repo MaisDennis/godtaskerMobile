@@ -206,9 +206,25 @@ export const Label = styled.Text`
   font-weight: normal;
   font-size: 14px;
   margin-right: 4px;
-  /* padding: 4px 0; */
   color: #888;
 `;
+
+export const LabelInitiated = styled.Text`
+  font-weight: normal;
+  font-size: 14px;
+  margin-right: 4px;
+  max-width: 60px;
+  color: #009966;
+`;
+
+export const LabelEnded = styled.Text`
+  font-weight: normal;
+  font-size: 14px;
+  margin-right: 4px;
+  max-width: 60px;
+  color: ${props => props.pastDueDate === true ? '#f64C75' : '#009966'};
+`;
+
 
 export const MainHeaderView = styled.View`
   width: 90%;
@@ -243,7 +259,7 @@ export const OuterStatusView = styled.View`
 export const StartTimeView = styled.View`
 padding: 0 4px;
 border-radius: 12px;
-background: #F5F5F5;
+background: ${props => props.initiated === null ? '#F5F5F5' : '#009966'};
 `;
 export const StartTime = styled.Text`
   font-weight: bold;
@@ -271,7 +287,7 @@ padding: 4px;
 /* color: #0077b3; */
 /* color: #222;
 color: #0ddcef; */
-color: #4433ee;
+color: #18A0FB
 /* color: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */
 `;
 export const TitleText = styled.Text`
@@ -297,7 +313,6 @@ export const TopHeaderView = styled.View`
   display: flex;
   flex-direction:row;
   width: 100%;
-  margin: 0 20px;
   /* border-top-left-radius: 4px; */
   /* border-top-right-radius: 4px; */
   /* background-color: #f03a1f; */

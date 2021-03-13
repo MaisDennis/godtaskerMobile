@@ -70,6 +70,19 @@ padding: 8px;
 /* background-color: #ee3; */
 `;
 export const TitleView = styled.View``;
+
+export const TitleWrapper = styled.View`
+display: flex;
+flex-direction: row;
+align-items: center;
+width: 100%;
+`;
+
+export const TitleIcon = styled(Icon)`
+  font-size: 18px;
+  color: ${props => props.colorProp == true ? '#334466' : '#009966'};
+`;
+
 export const TitleText = styled.Text`
   color: #4433ee;
   font-weight: 700;

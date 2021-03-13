@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
+import Modal from 'react-native-modal';
+import { RNCamera } from 'react-native-camera';
+import ImagePicker from 'react-native-image-crop-picker';
 // -----------------------------------------------------------------------------
 import { Container, Header, SpaceView,
   UserProfileView, UserImageView, UserImage, UserInfoView, UserText,
@@ -15,12 +18,29 @@ import insert from '~/assets/insert_photo-24px.svg';
 
 export default function SettingsPage({ navigation }) {
   const dispatch = useDispatch();
-  let userData = useSelector(state => state.user.profile)
+  const userData = useSelector(state => state.user.profile)
+
+  const [modal, setModal] = useState();
 
   // console.tron.log(userData)
 
+  // function handleUpdateProfile() {
+  //   navigation.navigate('UpdateProfile')
+  // }
+
   function handleUpdateProfile() {
     navigation.navigate('UpdateProfile')
+  }
+
+  function handleModal() {
+    setModal(!modal)
+  }
+
+  function handleEdit() {
+    navigation.navigate('UpdateProfilePhoto', {
+      user_id: userData.id, user_name: userData.name
+    })
+    setModal(!modal)
   }
 
   function handleSignOut() {
@@ -28,6 +48,8 @@ export default function SettingsPage({ navigation }) {
     // console.tron.log(userData.avatar)
     dispatch(signOut())
   }
+
+
   // ---------------------------------------------------------------------------
   return (
     <Container>
@@ -36,33 +58,35 @@ export default function SettingsPage({ navigation }) {
         <HeaderView data="Configurações"/>
         <SpaceView/>
       </Header>
-      <UserProfileView>
-        {/* <UserImageView> */}
-          { userData === undefined || userData.avatar === null
-            ? (
-              <>
+      <TouchableOpacity onPress={() => handleModal()}>
+        <UserProfileView>
+          {/* <UserImageView> */}
+            { userData === undefined || userData.avatar === null
+              ? (
+                <>
+                  <UserImage
+                    source={require('~/assets/insert_photo-24px.svg')}
+                  />
+                  {/* <UserText>n/a</UserText> */}
+                </>
+              )
+              : (
                 <UserImage
-                  source={require('~/assets/insert_photo-24px.svg')}
+                  source={
+                    userData.avatar
+                      ? { uri: userData.avatar.url }
+                      : insert
+                  }
                 />
-                {/* <UserText>n/a</UserText> */}
-              </>
-            )
-            : (
-              <UserImage
-                source={
-                  userData.avatar.url
-                    ? { uri: userData.avatar.url }
-                    : insert
-                }
-              />
-            )
-          }
-        {/* </UserImageView> */}
-        <UserInfoView>
-          <UserText>{userData.user_name}</UserText>
-          <UserAboutText>At the gym</UserAboutText>
-        </UserInfoView>
-      </UserProfileView>
+              )
+            }
+          {/* </UserImageView> */}
+          <UserInfoView>
+            <UserText>{userData.user_name}</UserText>
+            <UserAboutText>At the gym</UserAboutText>
+          </UserInfoView>
+        </UserProfileView>
+      </TouchableOpacity>
       {/* <HrView/> */}
 
       <SettingsMenuView>
@@ -78,7 +102,7 @@ export default function SettingsPage({ navigation }) {
           <AlignView>
             <SettingsRightView>
               <TouchableOpacity onPress={handleUpdateProfile}>
-                <NextIcon name="arrow-right" size={16}></NextIcon>
+                <NextIcon name="arrow-right" size={16} style={{color: '#18A0FB'}}></NextIcon>
               </TouchableOpacity>
             </SettingsRightView>
           </AlignView>
@@ -88,14 +112,14 @@ export default function SettingsPage({ navigation }) {
           <SettignsLeftView>
           <AlignView>
             <SettingsImageView>
-              <SettingsImage name="info" size={24}/>
+              <SettingsImage name="info" size={24} style={{color: '#ddd'}}/>
             </SettingsImageView>
             </AlignView>
-            <SettingsItemText>Ajuda</SettingsItemText>
+            <SettingsItemText style={{color: '#ddd'}}>Ajuda</SettingsItemText>
           </SettignsLeftView>
           <AlignView>
             <SettingsRightView>
-              <NextIcon name="arrow-right" size={16}></NextIcon>
+              <NextIcon name="arrow-right" size={16} style={{color: '#ddd'}}></NextIcon>
             </SettingsRightView>
           </AlignView>
         </SettingsItemView>
@@ -104,14 +128,14 @@ export default function SettingsPage({ navigation }) {
           <SettignsLeftView>
           <AlignView>
             <SettingsImageView>
-              <SettingsImage name="heart" size={24}/>
+              <SettingsImage name="heart" size={24} style={{color: '#ddd'}}/>
             </SettingsImageView>
             </AlignView>
-            <SettingsItemText>Compartilhar godtasker</SettingsItemText>
+            <SettingsItemText style={{color: '#ddd'}}>Compartilhar godtasker</SettingsItemText>
           </SettignsLeftView>
           <AlignView>
             <SettingsRightView>
-              <NextIcon name="arrow-right" size={16}></NextIcon>
+              <NextIcon name="arrow-right" size={16} style={{color: '#ddd'}}></NextIcon>
             </SettingsRightView>
           </AlignView>
         </SettingsItemView>
@@ -129,7 +153,7 @@ export default function SettingsPage({ navigation }) {
           <AlignView>
             <SettingsRightView>
               <TouchableOpacity onPress={handleSignOut}>
-                <NextIcon name="arrow-right" size={16}></NextIcon>
+                <NextIcon name="arrow-right" size={16} style={{color: '#18A0FB'}}></NextIcon>
               </TouchableOpacity>
             </SettingsRightView>
           </AlignView>

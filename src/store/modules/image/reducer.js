@@ -1,7 +1,7 @@
 import produce from 'immer';
 // -----------------------------------------------------------------------------
 const INITIAL_STATE = {
-  image: {},
+  image: null,
 };
 // -----------------------------------------------------------------------------
 export default function (state= INITIAL_STATE, action) {

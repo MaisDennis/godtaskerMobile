@@ -19,12 +19,14 @@ export default function SignIn({ navigation }) {
   const [password, setPassword] = useState('');
   const loading = useSelector(state => state.auth.loading);
   const signed = useSelector(state => state.auth.signed);
-
+  // const test = route.params.phonenumber;
+  // console.tron.log(route.params)
   function handleSubmit() {
     const unmaskedPhoneNumber = (
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )
-    const parsedUnmaskedPhoneNumber = unmaskedPhoneNumber(phonenumber)
+    const countryCode = '+55'
+    const parsedUnmaskedPhoneNumber = countryCode+unmaskedPhoneNumber(phonenumber)
     // console.tron.log(parsedUnmaskedPhoneNumber)
     dispatch(
       signInRequest(
@@ -34,7 +36,11 @@ export default function SignIn({ navigation }) {
   }
 
   function handleSignUp() {
-    navigation.navigate('SignUp')
+    navigation.navigate('SignUp',
+      // {
+      //   phonenumber: test
+      // }
+    )
   }
 
   if (signed) {

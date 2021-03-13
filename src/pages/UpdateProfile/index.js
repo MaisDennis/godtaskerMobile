@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
+import { Alert, TouchableOpacity, Text } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { Image } from 'react-native';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
+import ImagePicker from 'react-native-image-crop-picker';
 // -----------------------------------------------------------------------------
 import Background from '~/components/Background';
 import {
@@ -9,16 +10,20 @@ import {
   ButtonText,
   Container,
   Form, FormInput,
+  ImageView,
   Options,
   PhoneMask,
   SignUpErrorText,
   SubmitButton,
+  UserImage,
 } from './styles';
 import { updateProfileRequest } from '~/store/modules/user/actions';
+import api from '~/services/api';
 // -----------------------------------------------------------------------------
-export default function SignUp({ navigation }) {
+export default function UpdateProfile({ navigation, route }) {
   const user = useSelector(state => state.user.profile);
-  // const image = useSelector(state => state.image.image);
+  const userData = useSelector(state => state.user.profile)
+  // const previewImage = useSelector(state => state.image.image);
   const dispatch = useDispatch();
 
   const [firstName, setFirstName] = useState(user.first_name);
@@ -32,6 +37,8 @@ export default function SignUp({ navigation }) {
   const [birthDate, setBirthDate] = useState(user.birth_date);
   const [gender, setGender] = useState(user.gender);
   const [signUpError, setSignUpError] = useState();
+  const [imagePath, setImagePath] = useState();
+  const [previewImage, setPreviewImage] = useState();
 
   // const schema = Yup.object().shape({
   //   first_name: Yup.string().required('O nome é obrigatório'),
@@ -59,20 +66,42 @@ export default function SignUp({ navigation }) {
 
   const genderOptions = [ 'feminino', 'masculino', 'alien', 'outro', '']
 
+  async function handleUpdatePhoto() {
+    await ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true
+    }).then(async image => {
+      // console.log(image.path)
+      setImagePath(image.path)
+      const formData = new FormData();
+      formData.append('profileImage', {
+        uri: Platform.OS === 'ios' ? image.sourceURL : image.path,
+        type: "image/jpg",
+        name: `profile_${user.id}.jpg`,
+      });
+
+      try {
+        const response = await api.post('files', formData);
+        const { image } = response.data;
+        setPreviewImage(image)
+      }
+      catch(err) {
+        Alert.alert(
+          'Erro ao carregar a foto.',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('OKBJ')
+            }
+          ],
+          {cancelable: false }
+        )
+      }
+    })
+  }
+
   function handleSubmit() {
-    // console.tron.log({
-    //   first_name: firstName,
-    //   last_name: lastName,
-    //   user_name: userName,
-    //   oldPassword,
-    //   password,
-    //   confirmPassword,
-    //   phonenumber,
-    //   birth_date: birthDate,
-    //   gender,
-    //   // image,
-    //   // preview
-    // })
     try {
       dispatch(updateProfileRequest({
         first_name: firstName,
@@ -82,15 +111,16 @@ export default function SignUp({ navigation }) {
         password,
         confirmPassword,
         phonenumber,
+        email: email,
         birth_date: birthDate,
         gender,
-        // image,
-        // preview
+        image: previewImage,
+        // preview,
       }));
       // navigation.goBack();
-      console.tron.log('OK')
+      console.tron.log('dispatch profile OK')
     }
-    catch (error) {
+    catch {
       setSignUpError('erro nos dados');
     }
 
@@ -102,6 +132,41 @@ export default function SignUp({ navigation }) {
 
         <Form contentContainerStyle={{ alignItems: 'center' }}>
         <AllIcon name='user'/>
+          <TouchableOpacity onPress={() => handleUpdatePhoto()}>
+            <ImageView>
+              { imagePath
+                ? (
+                  <UserImage
+                    source={{uri: imagePath}}
+                  />
+                )
+                : (
+                  <>
+                    { userData === undefined || userData.avatar === null
+                      ? (
+                        <>
+                          <UserImage
+                            source={require('~/assets/insert_photo-24px.svg')}
+                          />
+                          <Text>n/a</Text>
+                        </>
+                      )
+                      : (
+                        <UserImage
+                          source={
+                            userData.avatar
+                              ? { uri: userData.avatar.url }
+                              : null
+                          }
+                        />
+                      )
+                    }
+                  </>
+                )
+              }
+
+            </ImageView>
+          </TouchableOpacity>
           <FormInput
             autoCorrect={false}
             autoCapitalize="none"

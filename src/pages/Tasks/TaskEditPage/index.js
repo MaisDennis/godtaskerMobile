@@ -55,7 +55,7 @@ export default function TaskEditPage({ navigation, route }) {
       description: addSubTaskInputValue,
       weige: editWeigeInputValue,
       complete: false,
-      user_read: false,
+      user_read: true,
     })
     setSubTaskList(editedSubTaskList)
     setAddSubTaskInputValue();

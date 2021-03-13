@@ -11,26 +11,26 @@ import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/Feather';
 // import Button from '~/components/Button';
 import {
-  AsideView, AlignBottomView, AlignView, AlignCheckBoxView,
+  AsideView, AlignBottomView, AlignView, AlignCheckBoxView, AcceptButton,
   ButtonView, ButtonText, BottomHeaderView, BellIcon, ButtonIcon,
   ConfirmButton, CheckBoxView, Container,
   DescriptionView, DescriptionBorderView, DescriptionSpan,
   DatesAndButtonView, DueTimeView, DueTime,
   HeaderView, HrLine, HrTitleLine,
   Image, ImageView, ImageWrapper, InnerStatusView,
-  Label,
+  Label, LabelInitiated, LabelEnded,
   ModalView, ModalText, MessageButton, MiddleHeaderView, MainHeaderView,
   NameText,
   OuterStatusView,
-  RejectTaskInput,
+  RejectTaskInput, RejectButton,
   StartTimeView, StartTime,
   TopHeaderView, TagView, TitleView, TaskIcon, TitleText,
   UnreadMessageCountText, UserView,
 } from './styles';
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
-import message from '../../store/modules/message/reducer';
-import firebase from '~/services/firebase'
+// import message from '../../store/modules/message/reducer';
+// import firebase from '~/services/firebase'
 // -----------------------------------------------------------------------------
 const formattedDate = fdate =>
   fdate == null
@@ -61,7 +61,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
   }, [updateStatus]);
 
   async function handleMessageBell() {
-    const response = await api.get(`messages/${data.message_id}`)
+    // const response = await api.get(`messages/${data.message_id}`)
     // setMessageBell(response.data.messages)
 
     const unsubscribe = firestore()
@@ -226,16 +226,44 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                 </DatesAndButtonView>
                 <DatesAndButtonView>
                   <TagView>
-                    <Label>Início:</Label>
-                    <StartTimeView>
-                      <StartTime pastDueDate={pastDueDate()}>{formattedDate(data.start_date)}</StartTime>
-                    </StartTimeView>
+                    { data.initiated_at
+                      ? (
+                        <>
+                          <LabelInitiated>Iniciado!</LabelInitiated>
+                          <StartTimeView>
+                            <StartTime>{formattedDate(data.initiated_at)}</StartTime>
+                          </StartTimeView>
+                        </>
+                      )
+                      : (
+                        <>
+                          <Label>Início:</Label>
+                          <StartTimeView initiated={data.initiated_at}>
+                            <StartTime>{formattedDate(data.start_date)}</StartTime>
+                          </StartTimeView>
+                        </>
+                      )
+                    }
                   </TagView>
                   <TagView>
-                    <Label>Prazo:</Label>
-                    <DueTimeView pastDueDate={pastDueDate()}>
-                      <DueTime>{formattedDate(data.due_date)}</DueTime>
-                    </DueTimeView>
+                   { data.end_date
+                      ? (
+                        <>
+                          <LabelEnded pastDueDate={pastDueDate()}>Finalizou!</LabelEnded>
+                          <DueTimeView pastDueDate={pastDueDate()}>
+                            <DueTime>{formattedDate(data.end_date)}</DueTime>
+                          </DueTimeView>
+                        </>
+                      )
+                      : (
+                        <>
+                          <Label>Prazo:</Label>
+                          <DueTimeView pastDueDate={pastDueDate()}>
+                            <DueTime>{formattedDate(data.due_date)}</DueTime>
+                          </DueTimeView>
+                        </>
+                      )
+                    }
                   </TagView>
                 </DatesAndButtonView>
               </AlignView>
@@ -330,7 +358,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                     </ConfirmButton>
                   </TouchableOpacity>
                 </ButtonView>
-                { taskConditionIndex === 2
+                {/* { taskConditionIndex === 2
                   ? (
                     <ButtonView>
                       <TouchableOpacity onPress={handleConfirm}>
@@ -344,7 +372,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                     null
                   )
 
-                }
+                } */}
                 { taskConditionIndex === 1
                   ? (
                     <ButtonView>
@@ -357,9 +385,9 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                   )
                   : (
                     <ButtonView>
-                      <TouchableOpacity onPress={handleConfirm}>
+                      <TouchableOpacity>
                         <ConfirmButton>
-                          <ButtonIcon name="trash-2"/>
+                          <ButtonIcon name="trash-2" style={{color: '#ccc'}}/>
                         </ConfirmButton>
                       </TouchableOpacity>
                     </ButtonView>
@@ -375,16 +403,16 @@ export default function Task({ data, navigation, taskConditionIndex }) {
                     <>
                       <ButtonView>
                         <TouchableOpacity onPress={handleToggleAccept}>
-                          <MessageButton>
+                          <AcceptButton>
                             <ButtonText>Aceitar</ButtonText>
-                          </MessageButton>
+                          </AcceptButton>
                         </TouchableOpacity>
                       </ButtonView>
                       <ButtonView>
                         <TouchableOpacity onPress={() => setToggleModal(!toggleModal)}>
-                          <MessageButton>
+                          <RejectButton>
                           <ButtonText>Recusar</ButtonText>
-                          </MessageButton>
+                          </RejectButton>
                         </TouchableOpacity>
                       </ButtonView>
                     </>
@@ -422,16 +450,16 @@ export default function Task({ data, navigation, taskConditionIndex }) {
 
                 <ButtonView>
                   <TouchableOpacity onPress={handleCancelTask}>
-                    <MessageButton>
+                    <AcceptButton>
                       <ButtonText>Sim</ButtonText>
-                    </MessageButton>
+                    </AcceptButton>
                   </TouchableOpacity>
                 </ButtonView>
                 <ButtonView>
                   <TouchableOpacity onPress={() => setToggleModal(!toggleModal)}>
-                    <MessageButton>
+                    <RejectButton>
                     <ButtonText>Voltar</ButtonText>
-                    </MessageButton>
+                    </RejectButton>
                   </TouchableOpacity>
                 </ButtonView>
               </DatesAndButtonView>
