@@ -144,6 +144,7 @@ export default function Messages({ data, navigation }) {
 
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
+      user_id: data.user.id,
       user_name: data.user.user_name,
       worker_id: data.worker.id,
       worker_name: data.worker.worker_name,

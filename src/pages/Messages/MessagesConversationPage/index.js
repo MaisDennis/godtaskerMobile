@@ -33,10 +33,14 @@ import insert from '~/assets/insert_photo-24px.svg';
 
 
 export default function MessagesConversationPage({ navigation, route }) {
-  const messageUserId = useSelector(state => state.user.profile.id);
+  const userId = useSelector(state => state.user.profile.id);
+  // const user = useSelector(state => state.user.profile);
   const messageWorkerId = route.params.worker_id;
+  const messageUserId = route.params.user_id;
+
   const avatar = route.params.avatar;
-  const userIsWorker = messageUserId === messageWorkerId;
+
+  const userIsWorker = userId === messageWorkerId;
 
   const dispatch = useDispatch();
 
@@ -104,65 +108,84 @@ export default function MessagesConversationPage({ navigation, route }) {
   }
 
   async function handleSend() {
-    setLoad(true)
-    let newMessage = null
-    let formattedTimeStamp = formattedMessageDate(new Date())
-    // const message_id = Math.floor(Math.random() * 1000000)
-    const message_id = messages.length
-    if (replyValue) {
-      newMessage = {
-        id: message_id,
-        message: value,
-        sender: `${userIsWorker ? "worker" : "user"}`,
-        user_read: userIsWorker ? false : true,
-        worker_read: userIsWorker ? true : false,
-        timestamp: formattedTimeStamp,
-        reply_message: replyValue,
-        reply_sender: replySender,
-        forward_message: false,
-        visible: true,
-        createdAt: firestore.FieldValue.serverTimestamp(),
+    try {
+      setLoad(true)
+      let newMessage = null
+      let formattedTimeStamp = formattedMessageDate(new Date())
+      const message_id = Math.floor(Math.random() * 1000000)
+      // const message_id = messages.length
+      if (replyValue) {
+        newMessage = {
+          id: message_id,
+          message: value,
+          sender: `${userIsWorker ? "worker" : "user"}`,
+          user_read: userIsWorker ? false : true,
+          worker_read: userIsWorker ? true : false,
+          timestamp: formattedTimeStamp,
+          reply_message: replyValue,
+          reply_sender: replySender,
+          forward_message: false,
+          visible: true,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        }
+      } else {
+        newMessage = {
+          id: message_id,
+          message: value,
+          sender: `${userIsWorker ? "worker" : "user"}`,
+          user_read: userIsWorker ? false : true,
+          worker_read: userIsWorker ? true : false,
+          timestamp: formattedTimeStamp,
+          reply_message: '',
+          reply_sender: '',
+          forward_message: false,
+          visible: true,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+        }
       }
-    } else {
-      newMessage = {
-        id: message_id,
-        message: value,
-        sender: `${userIsWorker ? "worker" : "user"}`,
-        user_read: userIsWorker ? false : true,
-        worker_read: userIsWorker ? true : false,
-        timestamp: formattedTimeStamp,
-        reply_message: '',
-        reply_sender: '',
-        forward_message: false,
-        visible: true,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-      }
+      // Firebase Messaging ******************************************************
+      await messagesRef
+      .doc(`${message_id}`).set(newMessage)
+      .then(() => {
+        console.log(userIsWorker)
+        if (userIsWorker) {
+          api.put(`messages/${messageId}/worker`, {
+            messages: newMessage,
+            task_id: task.id,
+            task_name: task.name,
+            user_id: messageUserId,
+            user_name: user.user_name,
+            worker_id: messageWorkerId,
+          });
+        } else {
+          api.put(`messages/${messageId}/user`, {
+            messages: newMessage,
+            task_id: task.id,
+            task_name: task.name,
+            user_id: messageUserId,
+            user_name: user.user_name,
+          });
+        }
+      })
+      .catch((error) => {
+        console.tron.log("Error writing document: ", error);
+      });
+
+      await api.put(`tasks/${task.id}`, {
+        messaged_at: new Date(),
+      })
+
+
+
+      setValue();
+      setReplyValue();
+      // dispatch(updateMessagesRequest(new Date()))
+      // lastMessageRef.current.scrollToEnd()
+      setLoad(false)
     }
-    const response = await api.put(`messages/${messageId}`, {
-      messages: newMessage,
-    });
-
-    // Firebase Messaging ******************************************************
-    await messagesRef
-    .doc(`${message_id}`).set(newMessage)
-    .then(() => {
-      // console.tron.log(`task ${task.id}`);
-    })
-    .catch((error) => {
-      console.tron.log("Error writing document: ", error);
-    });
-
-    await api.put(`tasks/${task.id}`, {
-      messaged_at: new Date(),
-    })
-
-    // setMessages(response.data.messages)
-    // setMessages(messagesRef)
-    setValue();
-    setReplyValue();
-    dispatch(updateMessagesRequest(new Date()))
-    // lastMessageRef.current.scrollToEnd()
-    setLoad(false)
+    catch(error) {
+      console.log(error)
+    }
   }
 
   function handleMessageDropMenu(position) {

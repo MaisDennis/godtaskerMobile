@@ -65,13 +65,12 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     // setMessageBell(response.data.messages)
 
     const unsubscribe = firestore()
-      .collection(`messagesTask${data.id}`)
+      .collection(`messages/task/${data.id}`)
       .orderBy('createdAt')
       .onSnapshot((querySnapshot) => {
         const data = querySnapshot.docs.map(d => ({
           ...d.data(),
         }));
-        // console.tron.log(data)
         // lastMessageRef.current.scrollToEnd({ animated: false })
         setMessageBell(data)
       })
@@ -132,6 +131,7 @@ export default function Task({ data, navigation, taskConditionIndex }) {
   function handleMessage() {
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
+      user_id: data.user.id,
       user_name: data.user.user_name,
       worker_id: data.worker.id,
       worker_name: data.worker.worker_name,
@@ -150,19 +150,6 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     } else {
       setToggleConfirmModal(!toggleConfirmModal)
     }
-
-  }
-
-  async function handleToggleAccept() {
-    // setToggleAccept(!toggleAccept)
-    await api.put(`tasks/${data.id}`, {
-      status: {
-        status: 2,
-        comment: new Date(),
-      },
-      initiated_at: new Date(),
-    })
-    dispatch(updateTasks(new Date()))
   }
 
   async function handleConfirmWithoutPhoto() {
@@ -171,12 +158,24 @@ export default function Task({ data, navigation, taskConditionIndex }) {
     dispatch(updateTasks(new Date()))
   }
 
+  async function handleToggleAccept() {
+    // setToggleAccept(!toggleAccept)
+    await api.put(`tasks/${data.id}/notification/worker`, {
+      status: {
+        status: 2,
+        comment: `Accepted on ${new Date()}`,
+      },
+      initiated_at: new Date(),
+    })
+    dispatch(updateTasks(new Date()))
+  }
+
   async function handleCancelTask() {
-    await api.put(`tasks/${data.id}`, {
+    await api.put(`tasks/${data.id}/notification/worker`, {
       status: {
         status: 4,
         canceled_by: "worker",
-        comment: `${rejectTaskInputValue}`,
+        comment: `Declined. Comment: ${rejectTaskInputValue}`,
       },
       canceled_at: new Date(),
     });

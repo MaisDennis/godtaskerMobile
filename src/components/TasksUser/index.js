@@ -57,7 +57,7 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
     // setMessageBell(response.data.messages)
 
     const unsubscribe = firestore()
-      .collection(`messagesTask${data.id}`)
+      .collection(`messages/task/${data.id}`)
       .orderBy('createdAt')
       .onSnapshot((querySnapshot) => {
         const data = querySnapshot.docs.map(d => ({
@@ -118,6 +118,7 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
   function handleMessage() {
     navigation.navigate('MessagesConversationPage', {
       id: data.id,
+      user_id: data.user.id,
       user_name: data.user.user_name,
       worker_id: data.worker.id,
       worker_name: data.worker.worker_name,

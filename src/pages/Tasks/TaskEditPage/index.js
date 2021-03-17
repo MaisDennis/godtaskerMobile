@@ -109,18 +109,24 @@ export default function TaskEditPage({ navigation, route }) {
   }
 
   async function handleSubmit() {
-    weigeToPercentage(subTaskList)
+    try {
+      weigeToPercentage(subTaskList)
 
-    await api.put(`tasks/${data.id}`, {
-      name: name,
-      description: description,
-      sub_task_list: subTaskList,
-      task_attributes: [prior, urgent, complex],
-      start_date: startDate,
-      due_date: dueDate,
-    });
-    dispatch(updateTasks(new Date()))
-    navigation.goBack();
+      await api.put(`tasks/${data.id}/notification`, {
+        name: name,
+        description: description,
+        sub_task_list: subTaskList,
+        task_attributes: [prior, urgent, complex],
+        start_date: startDate,
+        due_date: dueDate,
+      });
+      dispatch(updateTasks(new Date()))
+      navigation.goBack();
+    }
+    catch(error) {
+      console.log(error)
+    }
+
   }
   // ---------------------------------------------------------------------------
   return (

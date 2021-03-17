@@ -32,8 +32,8 @@ export default function SignUp({ navigation, route }) {
   const [birthDate, setBirthDate] = useState();
   const [gender, setGender] = useState("feminino");
   const [signUpError, setSignUpError] = useState();
-  const test = route.params.phonenumber;
-  console.tron.log(test)
+  // const test = route.params.phonenumber;
+  // console.tron.log(test)
 
   const schema = Yup.object().shape({
     first_name: Yup.string().required('O nome é obrigatório'),
