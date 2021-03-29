@@ -79,13 +79,6 @@ export const ButtonsView = styled.View`
   /* background-color: #ccc; */
 `;
 
-export const ImageView = styled.View`
-  height: 36px;
-  width: 36px;
-  border-radius: 36px;
-  border: 1px solid #ccc;
-`;
-
 export const Image = styled.Image`
   height: 36px;
   width: 36px;

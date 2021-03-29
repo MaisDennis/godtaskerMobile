@@ -17,9 +17,6 @@ align-items: ${ props => props.userIsWorker
   )
 };
 width: 100%;
-/* background-color: ${
-  props => props.sender === 'user' ? '#44cc33' : '#73a6c4'
-} */
 /* background-color: #665544; */
 `;
 
@@ -99,7 +96,11 @@ justify-content: space-between;
 height: auto;
 width: 100%;
 background-color: #f5f5f5;
-background-color: #334466;
+/* background-color: #334466; */
+background-color: ${props => props.userIsWorker === true
+  ? '#334466'
+  : '#007f66'
+}
 `;
 
 export const HrLine = styled.View`
@@ -142,8 +143,9 @@ padding: 4px;
 border-radius: 8px;
 /* background-color: #4ee; */
 /* background-color: #73a6c4; */
-background-color: ${
-  props => props.sender === 'user' ? '#daf1e0' : '#b4c7db'
+background-color: ${ props => props.sender === 'user'
+  ? '#daf1e0'
+  : '#b4c7db'
 };
 `;
 export const MessageBottomView = styled.View`
@@ -202,7 +204,6 @@ export const MessageWrapper = styled.View`
 export const MessageListView = styled.View`
   display: flex;
   flex-direction: row;
-  /* width: 90px; */
   margin-top: 8px;
   /* background-color: #44cc; */
 `;
@@ -210,7 +211,6 @@ export const MessageListView = styled.View`
 export const MessageListButton = styled(TouchableOpacity)`
   display: flex;
   flex-direction: row;
-  /* align-items: center; */
   height: 36px;
   padding: 0 4px;
   margin: 4px 0;
@@ -224,10 +224,8 @@ export const MessageListItemView = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* height: 36px; */
   border-radius: 4px;
   padding: 0 8px;
-  /* margin: 4px 0; */
   background-color: #f5f5f5;
   background-color: #fff;
 `;
@@ -243,15 +241,12 @@ flex-direction: column;
 align-items: center;
 height: auto;
 width: 100%;
-/* padding: 50px 0; */
-/* padding: 10px; */
 background-color: #4433ee;
 `;
 
 export const ReplyOnTopView = styled.View`
 display: flex;
 flex-direction: column;
-/* align-items: center; */
 width: 100%;
 border-radius: 4px;
 margin: 4px;
@@ -277,7 +272,7 @@ export const SenderText = styled.Text`
   color: #fff;
 `;
 export const SenderAboutText = styled.Text`
-  color: #ccc;
+  color: #ddd;
 `;
 
 export const SendInput = styled.TextInput`
@@ -299,9 +294,7 @@ export const SendButton = styled.View`
   width: 36px;
   border-radius: 36px;
   margin: 0;
-  /* background-color: #4ee; */
-  /* background-color: #007f66; */
-  background-color: #4433ee;
+  background-color: #18A0FB;
 `;
 export const SendButtonAlignView = styled.View`
   display: flex;
@@ -313,7 +306,6 @@ export const SendButtonAlignView = styled.View`
 `;
 export const SendIcon = styled(Icon)`
 font-size: 20px;
-/* margin-right: 8px; */
 color: #fff;
 `;
 

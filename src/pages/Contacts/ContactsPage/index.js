@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { TouchableOpacity } from 'react-native'
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 // -----------------------------------------------------------------------------
 import {
-  Container, List, Header, AddIcon, SpaceView, HeaderTouchable,
-  HeaderTabView, SearchBarTextInput
+  ContactsButton, Container,
+  List, Header, AddIcon, SpaceView, HeaderTouchable,
+  HeaderTabView, SearchBarTextInput,
+  UpperTabView, UpperTabText,
 } from './styles'
 import HeaderView from '~/components/HeaderView'
 import Contacts from '~/components/Contacts'
@@ -27,18 +30,26 @@ export default function ContactsPage({ navigation }) {
 
   useEffect(() => {
     loadContacts(userId);
+
   }, [contacts_update]);
 
   async function loadContacts(userID) {
+    console.tron.log(userID)
     const response = await api.get(`users/${userID}/contact-list`, {
     })
+
     // sorter
     if(response.data) {
       const sortedResponseData = response.data.sort(compare)
       setContacts(sortedResponseData)
+      // setContacts('HELLO')
       setDefaultContacts(sortedResponseData)
     }
 
+  }
+
+  function handleLoadContacts() {
+    loadContacts(userId);
   }
 
   function compare(a, b) {
@@ -78,12 +89,18 @@ export default function ContactsPage({ navigation }) {
         </HeaderTouchable>
       </Header>
       <HeaderTabView>
-        <SearchBarTextInput
+        <UpperTabView>
+          <TouchableOpacity onPress={handleLoadContacts}>
+            <UpperTabText>atualizar</UpperTabText>
+          </TouchableOpacity>
+        </UpperTabView>
+      </HeaderTabView>
+      <SearchBarTextInput
           value={inputState}
           onChangeText={handleUpdateInput}
           placeholder='Procurar o contato'
         ></SearchBarTextInput>
-      </HeaderTabView>
+
       <List
         data={contacts}
         keyExtractor={item => String(item.worker_id)}

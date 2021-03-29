@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { KeyboardAvoidingView, FlatList, SafeAreaView, TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import firestore from '@react-native-firebase/firestore';
 // -----------------------------------------------------------------------------
@@ -11,7 +11,6 @@ import {
   Container, ConversationView,
   FooterView, FooterContainer, ForwardText, ForwardOnTopView,
   Header, HrLine,
-  // ImageView,
   Image,
   LineView,
   MessageView, MessageText, MessageContainer,
@@ -28,7 +27,6 @@ import {
 } from './styles'
 import api from '~/services/api';
 import { updateMessagesRequest, updateForwardMessage } from '~/store/modules/message/actions';
-import insert from '~/assets/insert_photo-24px.svg';
 // import messaging from '@react-native-firebase/messaging';
 
 
@@ -37,9 +35,6 @@ export default function MessagesConversationPage({ navigation, route }) {
   // const user = useSelector(state => state.user.profile);
   const messageWorkerId = route.params.worker_id;
   const messageUserId = route.params.user_id;
-
-  const avatar = route.params.avatar;
-
   const userIsWorker = userId === messageWorkerId;
 
   const dispatch = useDispatch();
@@ -63,9 +58,7 @@ export default function MessagesConversationPage({ navigation, route }) {
   const worker_phonenumber = route.params.worker_phonenumber
 
   const messagesRef = firestore()
-  .collection(`messages/task/${task.id}`)
-  // .doc(`messages for task ${task.id}`)
-  // .collection('messages');
+    .collection(`messages/task/${task.id}`)
 
   const formattedMessageDate = fdate =>
   fdate == null
@@ -76,9 +69,6 @@ export default function MessagesConversationPage({ navigation, route }) {
     getPhoto(worker_phonenumber)
     // setMessages(route.params.messages)
     getMessages()
-    // const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //   Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    // });
   }, [task]);
 
   async function getMessages() {
@@ -92,7 +82,7 @@ export default function MessagesConversationPage({ navigation, route }) {
         const data = querySnapshot.docs.map(d => ({
           ...d.data(),
         }));
-        // console.tron.log(data)
+        // console.log(data)
         setMessages(data)
         setDefaultMessages(data)
         // lastMessageRef.current.scrollToEnd({ animated: false })
@@ -143,11 +133,11 @@ export default function MessagesConversationPage({ navigation, route }) {
           createdAt: firestore.FieldValue.serverTimestamp(),
         }
       }
-      // Firebase Messaging ******************************************************
+      // Firebase Messaging *****
       await messagesRef
       .doc(`${message_id}`).set(newMessage)
       .then(() => {
-        console.log(userIsWorker)
+        // console.log(userIsWorker)
         if (userIsWorker) {
           api.put(`messages/${messageId}/worker`, {
             messages: newMessage,
@@ -168,18 +158,15 @@ export default function MessagesConversationPage({ navigation, route }) {
         }
       })
       .catch((error) => {
-        console.tron.log("Error writing document: ", error);
+        console.log("Error writing document: ", error);
       });
 
       await api.put(`tasks/${task.id}`, {
         messaged_at: new Date(),
       })
 
-
-
       setValue();
       setReplyValue();
-      // dispatch(updateMessagesRequest(new Date()))
       // lastMessageRef.current.scrollToEnd()
       setLoad(false)
     }
@@ -205,6 +192,7 @@ export default function MessagesConversationPage({ navigation, route }) {
     navigation.goBack()
   }
 
+  // update with firebase!!!
   async function handleMessageDelete(position) {
     const editedTaskMessages = task.messages;
     editedTaskMessages[position].removed_message = editedTaskMessages[position].message;
@@ -352,17 +340,11 @@ export default function MessagesConversationPage({ navigation, route }) {
   return (
     <SafeAreaView>
       <Container>
-        <Header >
+        <Header userIsWorker={userIsWorker}>
           <BodyView>
-            {/* <ImageView> */}
               { route.params === undefined || route.params.avatar === null
                 ? (
-                  <>
-                    {/* <Image
-                      source={require('~/assets/insert_photo-24px.svg')}
-                    /> */}
-                    <Image/>
-                  </>
+                  <Image/>
                 )
                 : (
                   <Image
@@ -370,7 +352,6 @@ export default function MessagesConversationPage({ navigation, route }) {
                   />
                 )
               }
-            {/* </ImageView> */}
             <SenderView>
               <SenderText>{route.params.user_name}</SenderText>
               <SenderAboutText>Busy</SenderAboutText>

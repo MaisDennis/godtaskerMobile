@@ -53,6 +53,14 @@ export const ButtonView = styled.View`
   margin: 8px auto;
   /* background: #f4f; */
 `;
+export const ButtonWrapper = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  margin: 4px 0;
+  /* background-color: #fe2; */
+`;
 
 export const CheckBoxView = styled.View`
   display: flex;
@@ -81,6 +89,20 @@ export const Container = styled.View`
   /* background: #F5F5; */
 `;
 
+export const DatesAndButtonView = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  /* background-color: #f00; */
+`;
+export const DetailsView = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: auto;
+  /* background-color: #fe2; */
+`;
 export const DescriptionView = styled.View`
   display: flex;
   flex-direction: column;
@@ -111,21 +133,14 @@ export const DescriptionSpan = styled.Text`
   margin: 4px;
   color: #222;
 `;
-export const DatesAndButtonView = styled.View`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  /* background-color: #f00; */
-`;
 export const DueTimeView = styled.View`
   border-radius: 12px;
-  padding: 0 4px;
+  padding: 0 8px;
   background: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'};
 `;
 export const DueTime = styled.Text`
   font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
 `;
 
 export const FinishedButton = styled(Button)`
@@ -145,7 +160,7 @@ export const HeaderView = styled.View`
 export const HrLine = styled.View`
 width: 100%;
 border: 0.5px #dddcda;
-margin: 0 auto;
+margin: 4px auto;
 `;
 export const HrTitleLine = styled.View`
 width: 100%;
@@ -204,14 +219,15 @@ export const InnerStatusView = styled(LinearGradient)`
 
 export const Label = styled.Text`
   font-weight: normal;
-  font-size: 14px;
+  font-size: 12px;
+  margin: 4px;
   margin-right: 4px;
   color: #888;
 `;
 
 export const LabelInitiated = styled.Text`
   font-weight: normal;
-  font-size: 14px;
+  font-size: 12px;
   margin-right: 4px;
   max-width: 60px;
   color: #009966;
@@ -219,7 +235,7 @@ export const LabelInitiated = styled.Text`
 
 export const LabelEnded = styled.Text`
   font-weight: normal;
-  font-size: 14px;
+  font-size: 12px;
   margin-right: 4px;
   max-width: 60px;
   color: ${props => props.pastDueDate === true ? '#f64C75' : '#009966'};
@@ -257,13 +273,13 @@ export const OuterStatusView = styled.View`
 `;
 
 export const StartTimeView = styled.View`
-padding: 0 4px;
+padding: 0 8px;
 border-radius: 12px;
 background: ${props => props.initiated === null ? '#F5F5F5' : '#009966'};
 `;
 export const StartTime = styled.Text`
   font-weight: bold;
-  font-size: 14px;
+  font-size: 12px;
 `;
 
 export const TitleView = styled.View`
@@ -287,12 +303,12 @@ padding: 4px;
 /* color: #0077b3; */
 /* color: #222;
 color: #0ddcef; */
-color: #18A0FB
+color: #18A0FB;
 /* color: ${props => props.pastDueDate == true ? '#f64C75' : '#009966'}; */
 `;
 export const TitleText = styled.Text`
   font-weight: 600;
-  font-size: 16px;
+  font-size: 14px;
   color: #fff;
   /* margin: auto 4px; */
 `;
@@ -301,6 +317,7 @@ export const TagView = styled.View`
   flex-direction: row;
   align-items: center;
   margin: 4px auto;
+  /* background-color: #4433ee; */
 `;
 export const Time = styled.Text`
   font-weight: bold;
@@ -321,6 +338,22 @@ export const TopHeaderView = styled.View`
   /* background-color: #2dba2d; */
   /* background-color: ${props => props.taskConditionIndex === 1 ? '#009966' : '#666'}; */
 `;
+export const TaskAttributesView = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  border-radius: 4px;
+  background: ${ props => props.taskAttributes === 0
+    ? '#F3E675'
+    : props => props.taskAttributes === 1
+      ? '#f3c775'
+      : props => props.taskAttributes === 2
+        ? '#ED7777'
+        : '#fff'
+  };
+`;
 
 export const UserView = styled.View`
   display: flex;
@@ -332,4 +365,24 @@ export const UnreadMessageCountText = styled.Text`
   font-size: 12px;
   margin: auto;
   /* background-color: #f00; */
+`;
+export const UserImage = styled.Image`
+  height: 36px;
+  width: 36px;
+  border-radius: 36px;
+  border: 1px solid #fff;
+
+  background-color: #f5f5f5;
+`;
+export const UserImageBackground = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  border-radius: 40px;
+  border: 1px solid #ccc;
+  margin: 0 8px 0 4px;
+  /* background-color: #666; */
 `;

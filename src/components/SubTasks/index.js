@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text } from 'react-native'
 import {Container, SubTaskTitleView, LabelText, AddSubTaskIcon, AddSubTaskButton } from './styles'
 
 export default function SubTasks({ subTaskList }) {

@@ -1,23 +1,22 @@
 import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Image } from 'react-native';
+import { useDispatch } from 'react-redux';
+// import { Image } from 'react-native';
 import * as Yup from 'yup';
 // -----------------------------------------------------------------------------
 import Background from '~/components/Background';
-import logo from '~/assets/logo.png';
+// import logo from '~/assets/logo.png';
 import {
   AllIcon,
   ButtonText,
   Container,
   Form, FormInput,
-  HrLine,
   Options,
   PhoneMask,
   SignUpErrorText,
   SubmitButton,
 } from './styles';
 import { signUpRequest } from '~/store/modules/auth/actions';
-import { goBack } from '../../services/NavigationService';
+// import { goBack } from '../../services/NavigationService';
 // -----------------------------------------------------------------------------
 export default function SignUp({ navigation, route }) {
   const dispatch = useDispatch();
@@ -33,7 +32,7 @@ export default function SignUp({ navigation, route }) {
   const [gender, setGender] = useState("feminino");
   const [signUpError, setSignUpError] = useState();
   // const test = route.params.phonenumber;
-  // console.tron.log(test)
+  // console.log(test)
 
   const schema = Yup.object().shape({
     first_name: Yup.string().required('O nome é obrigatório'),
@@ -61,7 +60,7 @@ export default function SignUp({ navigation, route }) {
   const genderOptions = [ 'feminino', 'masculino', 'alien', 'outro', '']
 
   function handleSubmit() {
-    console.tron.log(schema)
+    // console.log(schema)
     const unmaskedPhoneNumber = (
       maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
     )

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useField } from '@rocketseat/unform';
 import { View, Text, Image } from 'react-native';
 import { Container } from './styles';
-import Avatar from '~/pages/Dashboard/styles';
+// import Avatar from '~/pages/Dashboard/styles';
 import Input from '~/components/Input';
 import insert_photo from '~/assets/insert_photo-24px.svg';
 import api from '~/services/api';

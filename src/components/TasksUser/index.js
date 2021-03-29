@@ -8,33 +8,42 @@ import firestore from '@react-native-firebase/firestore';
 import pt from 'date-fns/locale/pt';
 // -----------------------------------------------------------------------------
 import {
-  AlignBottomView, AlignView, AsideView, AlignCheckBoxView,
-  ButtonView,
-  BottomHeaderView, BellIcon,
-  Container, ConfirmButton, CheckBoxView,
+  AsideView, AlignBottomView, AlignView, AlignCheckBoxView,
+  ButtonView, BottomHeaderView,
+  BellIcon, ButtonWrapper,
+  ConfirmButton, CheckBoxView, Container,
   DescriptionView, DescriptionBorderView, DescriptionSpan,
-  DatesAndButtonView, DueTimeView, DueTime,
-  HeaderView, HrTitleLine, HrLine,
+  DatesAndButtonView, DueTimeView, DueTime, DetailsView,
+  HeaderView, HrLine, HrTitleLine,
   Image, ImageView, ImageWrapper, InnerStatusView,
   Label, LabelInitiated, LabelEnded,
-  MainHeaderView, MiddleHeaderView,
+  MiddleHeaderView, MainHeaderView,
   NameText,
   OuterStatusView,
   StartTimeView, StartTime,
-  TagView, TopHeaderView,  TitleView, TitleIcon, TaskIcon, TitleText,
-  UserView, UnreadMessageCountText
+  TopHeaderView, TagView, TitleView, TaskIcon, TitleIcon,
+  TitleText, TaskAttributesView,
+  UserView, UnreadMessageCountText, UserImage, UserImageBackground,
 } from './styles';
 import { updateTasks } from '~/store/modules/task/actions';
 import api from '~/services/api';
 // import message from '../../store/modules/message/reducer';
 // -----------------------------------------------------------------------------
+const taskAttributesArray = [ 'baixa', 'média', 'alta', '-']
 const formattedDate = fdate =>
   fdate == null
     ? '-'
     : format(parseISO(fdate), "dd'-'MMM'-'yyyy", { locale: pt });
 
-export default function TaskUser({ data, navigation, taskConditionIndex }) {
+const formattedDateTime = fdate =>
+  fdate == null
+    ? '-'
+    : format(parseISO(fdate), "dd'-'MMM'-'yyyy HH:mm", { locale: pt });
+
+  export default function TaskUser({ data, navigation, taskConditionIndex }) {
   const dispatch = useDispatch();
+  const workerData = data.worker
+
   const updated_tasks = useSelector( state => state.task.tasks)
 
   const [toggleTask, setToggleTask] = useState();
@@ -49,7 +58,7 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
     // handleStatus()
     handleMessageBell()
     setStatusResult(handleStatus())
-    // console.tron.log(data)
+    // console.log(data)
   }, [ updated_tasks ])
 
   async function handleMessageBell() {
@@ -60,12 +69,18 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
       .collection(`messages/task/${data.id}`)
       .orderBy('createdAt')
       .onSnapshot((querySnapshot) => {
-        const data = querySnapshot.docs.map(d => ({
-          ...d.data(),
-        }));
-        // console.tron.log(data)
-        // lastMessageRef.current.scrollToEnd({ animated: false })
-        setMessageBell(data)
+        try {
+          const data = querySnapshot.docs.map(d => ({
+            ...d.data(),
+          }));
+          // console.log(data)
+          // lastMessageRef.current.scrollToEnd({ animated: false })
+          setMessageBell(data)
+        }
+        catch {
+          console.log('Error from querySnapshot')
+        }
+
       })
     return unsubscribe;
 
@@ -88,9 +103,15 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
   }
 
   async function updateBell(editedSubTaskList) {
-    await api.put(`tasks/${data.id}`, {
-      sub_task_list: editedSubTaskList
-    })
+    try {
+      // await api.put(`tasks/${data.id}`, {
+      //   sub_task_list: editedSubTaskList
+      // })
+    }
+    catch(error) {
+      console.log('error in put tasks/:id')
+    }
+
   }
 
   function handleToggleTask() {
@@ -109,9 +130,9 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
     setToggleCheckBox(!toggleCheckBox) // this distoggles the checkbox
     const editedSubTaskList = data.sub_task_list
     editedSubTaskList[position].complete = value
-    await api.put(`tasks/${data.id}`, {
-      sub_task_list: editedSubTaskList
-    })
+    // await api.put(`tasks/${data.id}`, {
+    //   sub_task_list: editedSubTaskList
+    // })
     return
   }
 
@@ -143,13 +164,13 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
   }
 
   function handleReviveTask() {
-    api.put(`tasks/${data.id}`);
+    // api.put(`tasks/${data.id}`);
     setToggleTask(!toggleTask)
     dispatch(updateTasks(new Date()));
   }
 
   function handleCancelTask() {
-    api.delete(`tasks/${data.id}`);
+    // api.delete(`tasks/${data.id}`);
     setToggleTask(!toggleTask)
     dispatch(updateTasks(new Date()));
   }
@@ -190,7 +211,18 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
               <AlignView>
                 <DatesAndButtonView>
                   <UserView>
-                    <Label>Delegado para:</Label>
+                    <Label>De:</Label>
+                    { workerData === undefined || workerData.avatar === null
+                      ? (
+                        <UserImage/>
+                        // <SenderText>Hi</SenderText>
+                      )
+                      : (
+                        <UserImageBackground>
+                        <UserImage source={{ uri: workerData.avatar.url }}/>
+                        </UserImageBackground>
+                      )
+                    }
                     <NameText>{data.worker.worker_name}</NameText>
                   </UserView>
                 </DatesAndButtonView>
@@ -234,6 +266,20 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
                         </>
                       )
                     }
+                  </TagView>
+                </DatesAndButtonView>
+                <DatesAndButtonView>
+                  <TagView>
+                    <Label>Prioridade:</Label>
+                    <TaskAttributesView taskAttributes={data.task_attributes[0]-1}>
+                      <DueTime>{taskAttributesArray[JSON.stringify(data.task_attributes[0]-1)]}</DueTime>
+                    </TaskAttributesView>
+                  </TagView>
+                  <TagView>
+                    <Label>Urgência:</Label>
+                    <TaskAttributesView taskAttributes={data.task_attributes[1]-1}>
+                      <DueTime>{taskAttributesArray[data.task_attributes[1]-1]}</DueTime>
+                    </TaskAttributesView>
                   </TagView>
                 </DatesAndButtonView>
               </AlignView>
@@ -281,6 +327,7 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
       { toggleTask && (
         <>
           <DescriptionView>
+            {/* ------------------------------------------------------------ */}
             <HrLine/>
             <Label>Descrição</Label>
             <DescriptionBorderView pastDueDate={pastDueDate()}>
@@ -308,12 +355,31 @@ export default function TaskUser({ data, navigation, taskConditionIndex }) {
               ))}
             </DescriptionBorderView>
           </DescriptionView>
-          <DatesAndButtonView>
+          <DetailsView>
+            <TagView>
+              <Label>Prazo com horário:</Label>
+              <DueTimeView pastDueDate={pastDueDate()}>
+                <DueTime>{formattedDateTime(data.due_date)}</DueTime>
+              </DueTimeView>
+            </TagView>
+          </DetailsView>
+          <DetailsView>
+            <TagView>
+              <Label>Complexidade:</Label>
+              <TaskAttributesView taskAttributes={data.task_attributes[1]-1}>
+                <DueTime>{taskAttributesArray[data.task_attributes[1]-1]}</DueTime>
+              </TaskAttributesView>
+            </TagView>
+          </DetailsView>
+
+          <DetailsView>
             <UserView>
               <Label>Confirmação com foto?</Label>
               <NameText>Sim</NameText>
             </UserView>
-          </DatesAndButtonView>
+          </DetailsView>
+          {/* -------------------------------------------------------------- */}
+          <HrLine/>
 
           <DatesAndButtonView>
           <ButtonView>

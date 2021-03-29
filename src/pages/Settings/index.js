@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import Modal from 'react-native-modal';
-import { RNCamera } from 'react-native-camera';
-import ImagePicker from 'react-native-image-crop-picker';
 // -----------------------------------------------------------------------------
 import { Container, Header, SpaceView,
   UserProfileView, UserImageView, UserImage, UserInfoView, UserText,
@@ -20,27 +17,10 @@ export default function SettingsPage({ navigation }) {
   const dispatch = useDispatch();
   const userData = useSelector(state => state.user.profile)
 
-  const [modal, setModal] = useState();
-
   // console.tron.log(userData)
-
-  // function handleUpdateProfile() {
-  //   navigation.navigate('UpdateProfile')
-  // }
 
   function handleUpdateProfile() {
     navigation.navigate('UpdateProfile')
-  }
-
-  function handleModal() {
-    setModal(!modal)
-  }
-
-  function handleEdit() {
-    navigation.navigate('UpdateProfilePhoto', {
-      user_id: userData.id, user_name: userData.name
-    })
-    setModal(!modal)
   }
 
   function handleSignOut() {
@@ -58,35 +38,33 @@ export default function SettingsPage({ navigation }) {
         <HeaderView data="Configurações"/>
         <SpaceView/>
       </Header>
-      <TouchableOpacity onPress={() => handleModal()}>
-        <UserProfileView>
-          {/* <UserImageView> */}
-            { userData === undefined || userData.avatar === null
-              ? (
-                <>
-                  <UserImage
-                    source={require('~/assets/insert_photo-24px.svg')}
-                  />
-                  {/* <UserText>n/a</UserText> */}
-                </>
-              )
-              : (
+      <UserProfileView>
+        {/* <UserImageView> */}
+          { userData === undefined || userData.avatar === null
+            ? (
+              <>
                 <UserImage
-                  source={
-                    userData.avatar
-                      ? { uri: userData.avatar.url }
-                      : insert
-                  }
+                  source={require('~/assets/insert_photo-24px.svg')}
                 />
-              )
-            }
-          {/* </UserImageView> */}
-          <UserInfoView>
-            <UserText>{userData.user_name}</UserText>
-            <UserAboutText>At the gym</UserAboutText>
-          </UserInfoView>
-        </UserProfileView>
-      </TouchableOpacity>
+                {/* <UserText>n/a</UserText> */}
+              </>
+            )
+            : (
+              <UserImage
+                source={
+                  userData.avatar
+                    ? { uri: userData.avatar.url }
+                    : insert
+                }
+              />
+            )
+          }
+        {/* </UserImageView> */}
+        <UserInfoView>
+          <UserText>{userData.user_name}</UserText>
+          <UserAboutText>At the gym</UserAboutText>
+        </UserInfoView>
+      </UserProfileView>
       {/* <HrView/> */}
 
       <SettingsMenuView>

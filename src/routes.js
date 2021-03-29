@@ -1,10 +1,15 @@
 import 'react-native-gesture-handler';
 import * as React from 'react';
+// import { Alert, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, HeaderStyleInterpolators, TransitionPresets } from '@react-navigation/stack';
-import { format } from 'date-fns';
-import pt from 'date-fns/locale/pt';
+import {
+  createStackNavigator,
+  // HeaderStyleInterpolators,
+  TransitionPresets,
+} from '@react-navigation/stack';
+// import { format } from 'date-fns';
+// import pt from 'date-fns/locale/pt';
 // -----------------------------------------------------------------------------
 import ContactCreate from './pages/Contacts/ContactCreatePage';
 import ContactEdit from './pages/Contacts/ContactEditPage';
@@ -22,9 +27,10 @@ import TaskCreate from './pages/Tasks/TaskCreatePage';
 import TaskEdit from './pages/Tasks/TaskEditPage';
 import Confirm from './pages/Confirm';
 
-
 import TabRoutes from '~/components/TabRoutes';
 import HeaderView from './components/HeaderRoutesView'
+
+import TestPage from './pages/TestPage';
 
 import { Header } from './pages/RoutesStyles/styles'
 // -----------------------------------------------------------------------------
@@ -32,22 +38,18 @@ const Stack = createStackNavigator();
 // -----------------------------------------------------------------------------
 export default function App() {
   const signed = useSelector(state => state.auth.signed);
-  console.tron.log(signed)
-  // const formattedDate = fdate =>
-  // fdate == null
-  //   ? '-'
-  //   : format(fdate, "dd 'de' MMMM',' yyyy", { locale: pt });
-  // const todayDate = formattedDate(new Date())
+  // console.log(signed)
   // -----------------------------------------------------------------------------
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={signed === true ? 'TabRoutes' : 'SignInPhone'}
-        screenOptions={{
-          headerTitleAlign: "center",
-          ...TransitionPresets.ModalTransition,
-        }}
-      >
+    return (
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={signed === true ? 'Home' : 'SignInPhone'}
+          // initialRouteName={'SignIn'}
+          screenOptions={{
+            headerTitleAlign: "center",
+            ...TransitionPresets.ModalTransition,
+          }}
+        >
         <Stack.Screen name="SignInPhone" component={SignInPhone}
           options={{
             title: 'Entrar',
@@ -79,88 +81,51 @@ export default function App() {
             },
           }}
         />
-        <Stack.Screen
-          name="UpdateProfile"
-          component={UpdateProfile}
+        <Stack.Screen name="TestPage" component={TestPage}
           options={{
-            headerTitle: (() => (
-              <Header>
-                {/* <SpaceView/> */}
-                  <HeaderView data={'Atualizar o cadastro'}/>
-                {/* <SpaceView/> */}
-              </Header>
-            )),
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerTintColor: '#fff',
-            headerStyle: {
-              height: 66,
-              // backgroundColor: '#73c479',
-              backgroundColor: '#222',
-            },
-          }}
-        />
-        <Stack.Screen
-          name="UpdateProfilePhoto"
-          component={UpdateProfilePhoto}
-          options={{
-            headerTitle: (() => (
-              <>
-                <HeaderView data={'Atualizar a foto de perfil'}/>
-              </>
-            )),
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 24,
-            },
-            headerStyle: {
-              backgroundColor: '#222',
-              height: 90,
-            },
-          }}
-        />
-        <Stack.Screen
-          name="Home"
-          component={TabRoutes}
-          options={{
+            title: 'Entrar',
             headerShown: false,
-            // headerTitle: (props => (
-            // <HeaderView/>
-            // )),
-            // headerRight: (props => (
-            //   <Text style={{'color': '#fff'}}>Hello</Text>
-            // )),
-            // headerStyleInterpolator: HeaderStyleInterpolators.forFade,
-            // headerTintColor: '#fff',
-            // // headerBackTitleVisible: false,
-            // headerStyle: {
-            //   backgroundColor: '#222',
-            //   height: 90,
-            // },
           }}
         />
-        <Stack.Screen
-          name="TaskCreate"
-          component={TaskCreate}
-          options={{
-            headerTitle: (() => (
-              <Header>
-                <HeaderView data={'Criar uma tarefa'}/>
-              </Header>
-            )),
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerTintColor: '#fff',
-            headerStyle: {
-              height: 66,
-              // backgroundColor: '#73c479',
-              backgroundColor: '#222',
-            },
-          }}
-        />
+         <Stack.Screen
+           name="Home"
+           component={TabRoutes}
+           options={{
+             headerShown: false,
+             // headerTitle: (props => (
+             // <HeaderView/>
+             // )),
+             // headerRight: (props => (
+             //   <Text style={{'color': '#fff'}}>Hello</Text>
+             // )),
+             // headerStyleInterpolator: HeaderStyleInterpolators.forFade,
+             // headerTintColor: '#fff',
+             // // headerBackTitleVisible: false,
+             // headerStyle: {
+             //   backgroundColor: '#222',
+             //   height: 90,
+             // },
+           }}
+         />
+         <Stack.Screen
+           name="TaskCreate"
+           component={TaskCreate}
+           options={{
+             headerTitle: (() => (
+               <Header>
+                 <HeaderView data={'Criar uma tarefa'}/>
+               </Header>
+             )),
+             headerShown: true,
+             headerBackTitleVisible: false,
+             headerTintColor: '#fff',
+             headerStyle: {
+               height: 66,
+               // backgroundColor: '#73c479',
+               backgroundColor: '#222',
+             },
+           }}
+         />
         <Stack.Screen
           name="TaskEdit"
           component={TaskEdit}
@@ -205,28 +170,7 @@ export default function App() {
             },
           }}
         />
-        <Stack.Screen
-          name="ContactCreate"
-          component={ContactCreate}
-          options={{
-            headerTitle: (() => (
-              <Header>
-                <HeaderView data={'Adicionar um funcionário'}/>
-              </Header>
-            )),
-            headerShown: true,
-            headerBackTitleVisible: false,
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 24,
-            },
-            headerStyle: {
-              backgroundColor: '#222',
-              height: 66,
-            },
-          }}
-        />
+
         <Stack.Screen
           name="ContactEdit"
           component={ContactEdit}
@@ -271,7 +215,7 @@ export default function App() {
             },
           }}
         />
-        <Stack.Screen
+       <Stack.Screen
           name="MessagesConversationPage"
           component={MessagesConversationPage}
           options={{
@@ -301,7 +245,88 @@ export default function App() {
             },
           }}
         />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+         <Stack.Screen
+           name="UpdateProfile"
+           component={UpdateProfile}
+           options={{
+             headerTitle: (() => (
+               <Header>
+                 {/* <SpaceView/> */}
+                   <HeaderView data={'Atualizar o cadastro'}/>
+                 {/* <SpaceView/> */}
+               </Header>
+             )),
+             headerShown: true,
+             headerBackTitleVisible: false,
+             headerTintColor: '#fff',
+             headerStyle: {
+               height: 66,
+               // backgroundColor: '#73c479',
+               backgroundColor: '#222',
+             },
+           }}
+         />
+         <Stack.Screen
+           name="UpdateProfilePhoto"
+           component={UpdateProfilePhoto}
+           options={{
+             headerTitle: (() => (
+               <>
+                 <HeaderView data={'Atualizar a foto de perfil'}/>
+               </>
+             )),
+             headerShown: true,
+             headerBackTitleVisible: false,
+             headerTintColor: '#fff',
+             headerTitleStyle: {
+               fontWeight: 'bold',
+               fontSize: 24,
+             },
+             headerStyle: {
+               backgroundColor: '#222',
+               height: 90,
+             },
+           }}
+         />
+         <Stack.Screen
+           name="ContactCreate"
+           component={ContactCreate}
+           options={{
+             headerTitle: (() => (
+               <Header>
+                 <HeaderView data={'Adicionar um funcionário'}/>
+               </Header>
+             )),
+             headerShown: true,
+             headerBackTitleVisible: false,
+             headerTintColor: '#fff',
+             headerTitleStyle: {
+               fontWeight: 'bold',
+               fontSize: 24,
+             },
+             headerStyle: {
+               backgroundColor: '#222',
+               height: 66,
+             },
+           }}
+         />
+
+
+        </Stack.Navigator>
+      </NavigationContainer>
+    )
+
+  // return (
+  //   <NavigationContainer>
+  //     <Stack.Navigator
+  //       initialRouteName={signed === true ? 'TabRoutes' : 'SignInPhone'}
+  //       screenOptions={{
+  //         headerTitleAlign: "center",
+  //         ...TransitionPresets.ModalTransition,
+  //       }}
+  //     >
+
+  //     </Stack.Navigator>
+  //   </NavigationContainer>
+  // );
 }

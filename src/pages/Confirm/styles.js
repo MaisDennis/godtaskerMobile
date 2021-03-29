@@ -1,8 +1,6 @@
 import styled from 'styled-components/native';
-import Button from '~/components/Button';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import Icon from 'react-native-vector-icons/Feather';
 
 export const StyledRNCamera = styled(RNCamera)`
   /* top: 40px; */

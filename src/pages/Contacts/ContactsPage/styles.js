@@ -4,6 +4,14 @@ import Button from '~/components/Button';
 import { RectButton } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather'
 
+export const ContactsButton = styled(TouchableOpacity)`
+  display: flex;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  background-color: #f5f;
+`;
+
 export const Container = styled.SafeAreaView`
   height: 100%;
 `;
@@ -21,7 +29,7 @@ export const HeaderTabView = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 66px;
+  height: 5%;
   width: 100%;
   /* background-color: #999; */
 `;
@@ -63,4 +71,14 @@ align-items: center;
 width: 12%;
 /* background-color: #f5f; */
 
+`;
+
+export const UpperTabView = styled.View`
+height: auto;
+/* width: 25%; */
+margin: auto;
+`;
+
+export const UpperTabText = styled.Text`
+color: #4433ee;
 `;

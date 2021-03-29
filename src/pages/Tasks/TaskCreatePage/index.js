@@ -105,7 +105,7 @@ export default function TaskCreatePage({ navigation }) {
     })
     setSubTaskList(editedSubTaskList)
     setAddSubTaskInputValue();
-    console.tron.log(subTaskList)
+    // console.log(subTaskList)
     navigation.navigate('TaskCreate');
     // dispatch(updateTasks(new Date()))
   }

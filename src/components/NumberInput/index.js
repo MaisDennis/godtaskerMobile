@@ -1,5 +1,4 @@
 import React from 'react'
-import { View, Text } from 'react-native'
 // -----------------------------------------------------------------------------
 import { Container, MinusButton, PlusButton, Input, NumberIcon } from './styles'
 

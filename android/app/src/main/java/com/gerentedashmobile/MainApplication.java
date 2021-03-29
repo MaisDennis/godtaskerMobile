@@ -1,5 +1,7 @@
 package com.gerentedashmobile;
 
+//2020-03-21 deploy to internal testers crash. Import Multidex. Solution: https://stackoverflow.com/questions/47307554/react-native-android-crash-java-lang-noclassdeffounderror
+// import android.support.multidex.MultiDexApplication;
 import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
@@ -46,6 +48,13 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
+
+  //2020-03-21 deploy to internal testers crash. Import Multidex. Solution: https://stackoverflow.com/questions/47307554/react-native-android-crash-java-lang-noclassdeffounderror
+  // @Override
+  // protected void attachBaseContext(Context context) {
+  //     super.attachBaseContext(context);
+  //     MultiDex.install(this);
+  // }
 
   /**
    * Loads Flipper in React Native templates. Call this in the onCreate method with something like

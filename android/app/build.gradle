@@ -137,8 +137,8 @@ android {
         applicationId "com.gerentedashmobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "1.17"
+        versionCode 76
+        versionName "2"
         missingDimensionStrategy 'react-native-camera', 'general' // <--- insert this line
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -175,7 +175,15 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
             signingConfig signingConfigs.release
-            minifyEnabled enableProguardInReleaseBuilds
+            // minifyEnabled
+          // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type.
+            // minifyEnabled true
+
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            // shrinkResources true
+            enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
@@ -220,10 +228,13 @@ dependencies {
 
     // Declare the dependencies for any other desired Firebase products
     // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
-    // implementation 'com.google.firebase:firebase-auth'
-    // implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
+
+    //2020-03-21 deploy to internal testers crash. Solution: https://stackoverflow.com/questions/47307554/react-native-android-crash-java-lang-noclassdeffounderror
+    implementation 'com.android.support:multidex:1.0.3'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
@@ -260,6 +271,8 @@ project.ext.vectoricons = [
 ];
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
+
 
 System.out.println("Hello Gradle!");
 

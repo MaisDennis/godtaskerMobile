@@ -26,10 +26,6 @@ export default function EditContactPage({ navigation, route }) {
   const defaultDepartment = data.department;
 
   async function handleSubmit() {
-    const unmaskPhoneNumber = (
-      maskedPhoneNumber => maskedPhoneNumber.replace(/[()\s-]/g, '')
-    )
-    const unmaskedPhoneNumber = unmaskPhoneNumber(phonenumber)
 
     try {
       await api.put(`users/${userId}/contact-list`, {
@@ -41,7 +37,7 @@ export default function EditContactPage({ navigation, route }) {
         phonenumber: phonenumber,
       })
     } catch(error) {
-      console.tron.log(error);
+      console.log(error);
     }
 
     dispatch(updateContacts(new Date()))

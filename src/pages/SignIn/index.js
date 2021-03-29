@@ -81,10 +81,15 @@ export default function SignIn({ navigation }) {
                   value={password}
                   onChangeText={setPassword}
                 />
-                <SubmitButton loading={loading} onPress={handleSubmit}>
+                <SubmitButton
+                  loading={loading}
+                  onPress={handleSubmit}
+                >
                   <ButtonText>Entrar</ButtonText>
                 </SubmitButton>
-                <SignUpTouchable onPress={handleSignUp}>
+                <SignUpTouchable
+                  onPress={handleSignUp}
+                >
                   <SignUpText>Junte-se a godtasker aqui!</SignUpText>
                 </SignUpTouchable>
               </FormWorker>

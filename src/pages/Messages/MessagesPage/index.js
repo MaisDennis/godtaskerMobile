@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { TouchableOpacity } from 'react-native'
 import { useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 // -----------------------------------------------------------------------------
 import {
   Container, List, Header, AlignView,
-  SearchBarTextInput, Title3
+  SearchBarTextInput, Title3,
+  HeaderTabView, UpperTabView, UpperTabText,
 } from './styles';
 import Messages from '~/components/Messages';
 import api from '~/services/api';
@@ -21,7 +23,7 @@ export default function MessagesPage({ navigation, route }) {
   const [defaultTasks, setDefaultTasks] = useState();
   const [inputState, setInputState] = useState();
   const [resetTasks, setResetTasks] = useState('Hello');
-  // console.tron.log(route)
+  // console.log(route)
   useEffect(() => {
     loadTasks('', user_id);
   }, [ messages_update ]);
@@ -35,7 +37,7 @@ export default function MessagesPage({ navigation, route }) {
       params: { workerNameFilter, userID }
     })
     response = [... workerResponse.data, ... userResponse.data]
-    // console.tron.log(response)
+    // console.log(response)
     // response.map(r => {
     //   getPhoto(r.phonenumber)
     // })
@@ -48,7 +50,7 @@ export default function MessagesPage({ navigation, route }) {
       return !duplicate
     })
     filteredResponse.sort(compare);
-    // console.tron.log(filteredResponse.length)
+    // console.log(filteredResponse.length)
 
     setTasks(filteredResponse);
     setDefaultTasks(filteredResponse);
@@ -59,7 +61,7 @@ export default function MessagesPage({ navigation, route }) {
       params: {phonenumber: phonenumber},
     })
     setWorkerData(worker.data)
-    // console.tron.log('worker')
+    // console.log('worker')
   }
 
   function compare(a, b) {
@@ -92,6 +94,13 @@ export default function MessagesPage({ navigation, route }) {
           ></SearchBarTextInput>
         </AlignView>
       </Header>
+      <HeaderTabView>
+        <UpperTabView>
+        <TouchableOpacity onPress={() => loadTasks('', user_id)}>
+            <UpperTabText>atualizar</UpperTabText>
+          </TouchableOpacity>
+        </UpperTabView>
+      </HeaderTabView>
       { tasks == ''
         ? (
           <Title3>Não há conversas em aberto.</Title3>

@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TouchableOpacity, Text } from 'react-native'
 // -----------------------------------------------------------------------------
 import {
-  Container, Header, Body,
+  Container, Body,
   TabView, UserInfoView, ButtonsView,
-  ImageView, Image, ContactText,
+  Image, ContactText,
   OthersView, ContactsIcon, BottomTabView, ButtonsText
 
 } from './styles'
@@ -61,7 +61,7 @@ export default function Contacts({ navigation, data }) {
 
   async function handleRemoveContact() {
     const phonenumber = data.phonenumber
-    // console.tron.log(phonenumber)
+    // console.log(phonenumber)
     await api.put(`/users/${userId}/remove-contact`, {
       phonenumber: phonenumber,
     })

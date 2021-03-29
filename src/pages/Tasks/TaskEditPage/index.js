@@ -59,7 +59,7 @@ export default function TaskEditPage({ navigation, route }) {
     })
     setSubTaskList(editedSubTaskList)
     setAddSubTaskInputValue();
-    // console.tron.log(subTaskList)
+    // console.log(subTaskList)
     navigation.navigate('TaskEdit');
     // dispatch(updateTasks(new Date()))
   }

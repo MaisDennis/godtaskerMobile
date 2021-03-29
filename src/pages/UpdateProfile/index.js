@@ -54,7 +54,7 @@ export default function UpdateProfile({ navigation, route }) {
   //   gender: Yup.string().required('Escolha o gênero'),
   // });
 
-  // console.tron.log(user)
+  // console.log(user)
   // const lastNameRef = useRef();
   // const userNameRef = useRef();
   // const passwordRef = useRef();
@@ -118,7 +118,7 @@ export default function UpdateProfile({ navigation, route }) {
         // preview,
       }));
       // navigation.goBack();
-      console.tron.log('dispatch profile OK')
+      console.log('dispatch profile OK')
     }
     catch {
       setSignUpError('erro nos dados');

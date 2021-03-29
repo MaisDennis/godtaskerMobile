@@ -19,7 +19,6 @@ export default function Confirm({ route }) {
   const { task_id, taskName } = route.params;
   const [toggleFlash, setToggleFlash] = useState(true);
   const [toggleCameraReverse, setToggleCameraReverse] = useState(true);
-  const [image, setImage] = useState();
   const camera = useRef(null);
 
   async function takePicture() {

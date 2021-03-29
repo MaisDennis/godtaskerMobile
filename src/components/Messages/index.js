@@ -23,7 +23,6 @@ export default function Messages({ data, navigation }) {
   const userIsWorker = worker_id === data.worker_id;
 
   const [resetConversation, setResetConversation] = useState();
-  const [message, setMessage] = useState();
   const [messageBell, setMessageBell] = useState();
   const [lastMessage, setLastMessage] = useState();
   const [lastMessageTime, setLastMessageTime] = useState();
@@ -42,7 +41,7 @@ export default function Messages({ data, navigation }) {
   useEffect(() => {
     getMessages()
   }, [updatedMessage])
-  // console.tron.log(data)
+  // console.log(data)
   const messageId = data.message_id;
 
   const formattedMessageDate = fdate =>
@@ -58,7 +57,7 @@ export default function Messages({ data, navigation }) {
     // setMessageBell(messageResponse.data.messages)
 
     // const messagesLength = messageResponse.data.messages.length
-    // console.tron.log(messagesLength)
+    // console.log(messagesLength)
 
     // const last_message = messageResponse.data.messages[0]
     //   ? messageResponse.data.messages[messagesLength-1].message
@@ -76,7 +75,7 @@ export default function Messages({ data, navigation }) {
         const data = querySnapshot.docs.map(d => ({
           ...d.data(),
         }));
-        // console.tron.log(data)
+        // console.log(data)
         // setMessage(messageResponse.data)
         setMessageBell(data)
         let messagesLength = data.length
@@ -90,7 +89,7 @@ export default function Messages({ data, navigation }) {
           ? data[messagesLength-1].timestamp
           : null
         setLastMessageTime(last_message_time)
-        // console.tron.log(last_message_time)
+        // console.log(last_message_time)
         // lastMessageRef.current.scrollToEnd({ animated: false })
       })
       return unsubscribe;
@@ -100,7 +99,7 @@ export default function Messages({ data, navigation }) {
     messagesRef
       .orderBy('createdAt')
       .get().then(resp => {
-        // console.tron.log(resp.docs)
+        // console.log(resp.docs)
         resp.forEach(doc => {
           doc.ref.update({worker_read: true})
         })

@@ -50,14 +50,14 @@ export const Container = styled.SafeAreaView`
 
 export const DateOptionsView = styled.View`
   display: flex;
-  width: 100%;
+  width: 80%;
   border-radius: 12px;
   /* border: 1px solid #ccc; */
   background-color: #fff;
 `;
 export const DateOptions = styled(DatePicker)`
   width: 100%;
-  height: 120px;
+  height: 172px;
   border: 1px solid #ccc;
   margin: 0;
   /* font-size: 20px; */
@@ -247,7 +247,7 @@ export const WeigeView = styled.View`
   justify-content: space-between;
   height: auto;
   width: 90%;
-  margin: 12px;
+  margin: 21px;
   /* padding: 12px; */
   /* background-color: #f00; */
 `;

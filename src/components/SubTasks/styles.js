@@ -1,6 +1,6 @@
 
 import styled from 'styled-components/native';
-import { ScrollView, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
 
 export const Container = styled.View`

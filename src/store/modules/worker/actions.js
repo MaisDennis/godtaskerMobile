@@ -1,18 +1,11 @@
 import React from 'react';
 
-// export function signInRequest(workerPhoneNumber, workerPassword) {
-//   return {
-//     type: '@worker/SIGN_IN_REQUEST',
-//     payload: { workerPhoneNumber, workerPassword },
-//   };
-// }
-
-// export function signInSuccess(workerPhoneNumber, workerData) {
-//   return {
-//     type: '@worker/SIGN_IN_SUCCESS',
-//     payload: { workerPhoneNumber, workerData },
-//   };
-// };
+export function signInSuccess(worker) {
+  return {
+    type: '@auth/SIGN_IN_SUCCESS',
+    payload: { workerPhoneNumber, workerData },
+  };
+};
 
 // export function signFailure() {
 //   return {

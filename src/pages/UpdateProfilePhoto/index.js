@@ -21,7 +21,7 @@ export default function UpdateProfilePhoto({ navigation, route }) {
   const [image, setImage] = useState();
   const [toggleCameraReverse, setToggleCameraReverse] = useState(true);
   const camera = useRef(null);
-  console.tron.log(route.params)
+  // console..log(route.params)
 
   async function takePicture() {
     if (camera) {
@@ -34,7 +34,7 @@ export default function UpdateProfilePhoto({ navigation, route }) {
       const data = await camera.current.takePictureAsync(options);
 
       //************* */
-      // console.tron.log(data);
+      // console.log(data);
       // const formData = new FormData();
 
       // formData.append('signature', {
@@ -124,7 +124,7 @@ export default function UpdateProfilePhoto({ navigation, route }) {
         try {
           const response = await api.post('files', formData);
           const { image, location } = response.data;
-          console.tron.log(image)
+          // console.log(image)
           // dispatch(updateProfileRequest({
           //   first_name,
           //   last_name,

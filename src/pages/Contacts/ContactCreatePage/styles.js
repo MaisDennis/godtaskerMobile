@@ -1,7 +1,4 @@
 import styled from 'styled-components/native';
-import { ScrollView } from 'react-native'
-import DatePicker from 'react-native-date-picker' // https://github.com/henninghall/react-native-date-picker
-import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Feather';
 import { TextInputMask as InputMask } from 'react-native-masked-text'
 
@@ -81,22 +78,6 @@ export const DateOptionsView = styled.View`
   width: 100%;
   border-radius: 12px;
   /* border: 1px solid #ccc; */
-  background-color: #fff;
-`;
-
-export const DateOptions = styled(DatePicker)`
-  width: 100%;
-
-  height: 120px;
-  border: 1px solid #ccc;
-  margin: 0;
-  /* font-size: 20px; */
-  /* background-color: #f5f; */
-`;
-
-export const Options = styled(Picker)`
-  width: 100%;
-  border-radius: 12px;
   background-color: #fff;
 `;
 

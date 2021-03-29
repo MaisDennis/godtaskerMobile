@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from 'react-native';
-// import PhoneInput, { getPickerData } from 'react-native-phone-input'
-// import PhoneInput from "react-native-phone-number-input";
 // import OTPInputView from '@twotalltotems/react-native-otp-input'
 // import OtpInputs from 'react-native-otp-inputs';
 import auth from '@react-native-firebase/auth';
@@ -34,11 +32,11 @@ export default function SignInPhone({ navigation }) {
       const parsedPhonenumber = '+5511983495853'
       const confirmation = await auth().signInWithPhoneNumber(phonenumber);
       setConfirm(confirmation);
-      console.tron.log(confirmation)
+      // console.log(confirmation)
       Alert.alert('Código enviado por SMS!')
     }
     catch (error) {
-      console.tron.log(error)
+      console.log(error)
 
     }
   }
@@ -51,7 +49,7 @@ export default function SignInPhone({ navigation }) {
       const response = await confirm.confirm(unmaskedCode(code));
       const countryCode = '+'+'55'
       const unmaskedPhonenumber = phonenumber.replace(/[()\s-]/g, '')
-      console.tron.log(unmaskedPhonenumber)
+      // console.log(unmaskedPhonenumber)
       navigation.navigate('SignIn',
         {
           phonenumber: countryCode+unmaskedPhonenumber,

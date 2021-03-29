@@ -38,11 +38,11 @@ export default function ContactCreatePage({ navigation }) {
         phonenumber: parsedUnmaskedPhoneNumber,
       })
       dispatch(updateContacts(new Date()));
-      // navigation.navigate('Contacts')
+      navigation.navigate('Contacts')
       Alert.alert('Contato cadastrado com sucesso!')
     }
     catch(error) {
-      console.tron.log(error);
+      console.log(error);
       Alert.alert('Erro. Por faovr, verificar se o contato já possui cadastro no godtasker.')
     }
   }

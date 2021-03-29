@@ -1,7 +1,8 @@
 import produce from 'immer';
 // -----------------------------------------------------------------------------
 const INITIAL_STATE = {
-  profile: {},
+  // workerData: null,
+  profile: null,
 }
 // -----------------------------------------------------------------------------
 export default function worker(state= INITIAL_STATE, action) {
