@@ -83,6 +83,13 @@ target 'gerenteDashMobile' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+
+  # Add the pods for the Firebase products you want to use in your app
+# For example, to use Firebase Authentication and Cloud Firestore
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Messaging'
+
   target 'gerenteDashMobileTests' do
     inherit! :complete
     # Pods for testing
